@@ -45,9 +45,9 @@ class User
     /**
      * @var string
      *
-     * @ORM\Column(name="roles", type="text", length=0, nullable=false)
+     * @ORM\Column(name="roles", type="text", length=0, nullable=false, options={"default"="user"})
      */
-    private $roles;
+    private $roles = 'user';
 
     /**
      * @var \DateTime

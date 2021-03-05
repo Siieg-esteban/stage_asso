@@ -35,6 +35,13 @@ class Proto
      */
     private $contenue;
 
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="date", type="datetime", nullable=false)
+     */
+    private $date;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -60,6 +67,18 @@ class Proto
     public function setContenue(string $contenue): self
     {
         $this->contenue = $contenue;
+
+        return $this;
+    }
+
+    public function getDate(): ?\DateTimeInterface
+    {
+        return $this->date;
+    }
+
+    public function setDate(\DateTimeInterface $date): self
+    {
+        $this->date = $date;
 
         return $this;
     }

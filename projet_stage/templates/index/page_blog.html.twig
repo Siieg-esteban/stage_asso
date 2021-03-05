@@ -9,6 +9,17 @@
 </style>
 
 <div class="example-wrapper">
-    <h1>BLOG</h1>
+    <h1>PAGE BLOG</h1>
+
+    le {{ blog.date|date('d/m/Y H:i') }}
+    <br>
+    <h1>{{ blog.titre }}</h1>
+    <br>
+    {{ blog.contenue }}
+    <br>
+    {% if blog.jeu %}
+        <a href="pagejeu{{ blog.jeu.id }}">{{ blog.jeu.titre }}</a>
+    {% endif %}
+
 </div>
 {% endblock %}

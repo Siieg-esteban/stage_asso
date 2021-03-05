@@ -56,6 +56,13 @@ class Jeu
      */
     private $lien;
 
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="date", type="datetime", nullable=false)
+     */
+    private $date;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -117,6 +124,18 @@ class Jeu
     public function setLien(?string $lien): self
     {
         $this->lien = $lien;
+
+        return $this;
+    }
+
+    public function getDate(): ?\DateTimeInterface
+    {
+        return $this->date;
+    }
+
+    public function setDate(\DateTimeInterface $date): self
+    {
+        $this->date = $date;
 
         return $this;
     }
