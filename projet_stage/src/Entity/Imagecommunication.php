@@ -7,7 +7,7 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * Imagecommunication
  *
- * @ORM\Table(name="imagecommunication", indexes={@ORM\Index(name="tchat", columns={"tchat"}), @ORM\Index(name="com", columns={"com"}), @ORM\Index(name="messagerie", columns={"messagerie"})})
+ * @ORM\Table(name="imagecommunication", indexes={@ORM\Index(name="com", columns={"com"}), @ORM\Index(name="tchat", columns={"tchat"}), @ORM\Index(name="messagerie", columns={"messagerie"})})
  * @ORM\Entity
  */
 class Imagecommunication
@@ -31,7 +31,7 @@ class Imagecommunication
     /**
      * @var string
      *
-     * @ORM\Column(name="type", type="text", length=65535, nullable=false, options={"comment"="com ou tchat ou messagerie"})
+     * @ORM\Column(name="type", type="text", length=65535, nullable=false, options={"comment"="com ou tchat ou messagerie	"})
      */
     private $type;
 
@@ -46,16 +46,6 @@ class Imagecommunication
     private $com;
 
     /**
-     * @var \Messagerie
-     *
-     * @ORM\ManyToOne(targetEntity="Messagerie")
-     * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="messagerie", referencedColumnName="id")
-     * })
-     */
-    private $messagerie;
-
-    /**
      * @var \Tchat
      *
      * @ORM\ManyToOne(targetEntity="Tchat")
@@ -64,6 +54,16 @@ class Imagecommunication
      * })
      */
     private $tchat;
+
+    /**
+     * @var \Messagerie
+     *
+     * @ORM\ManyToOne(targetEntity="Messagerie")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="messagerie", referencedColumnName="id")
+     * })
+     */
+    private $messagerie;
 
     public function getId(): ?int
     {
@@ -106,18 +106,6 @@ class Imagecommunication
         return $this;
     }
 
-    public function getMessagerie(): ?Messagerie
-    {
-        return $this->messagerie;
-    }
-
-    public function setMessagerie(?Messagerie $messagerie): self
-    {
-        $this->messagerie = $messagerie;
-
-        return $this;
-    }
-
     public function getTchat(): ?Tchat
     {
         return $this->tchat;
@@ -126,6 +114,18 @@ class Imagecommunication
     public function setTchat(?Tchat $tchat): self
     {
         $this->tchat = $tchat;
+
+        return $this;
+    }
+
+    public function getMessagerie(): ?Messagerie
+    {
+        return $this->messagerie;
+    }
+
+    public function setMessagerie(?Messagerie $messagerie): self
+    {
+        $this->messagerie = $messagerie;
 
         return $this;
     }

@@ -12,7 +12,7 @@
     <h1>LISTE BLOG</h1>
 
     {% for blog in listeblog %} 
-        <a href="pageblog{{ blog.id }}"><span>{{ blog.titre}}</span> : <span>{{ blog.date|date('d/m/Y H:i') }}</span></a>
+        <a href="pageblog{{ blog.id }}"><span>{{ blog.titre}}</span> : <span>{{ blog.datetime|date('d/m/Y H:i') }}</span></a>
         <br>
     {% endfor %}
 </div>

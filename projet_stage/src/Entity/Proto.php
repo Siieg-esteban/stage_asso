@@ -7,7 +7,7 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * Proto
  *
- * @ORM\Table(name="proto")
+ * @ORM\Table(name="proto", indexes={@ORM\Index(name="auteur", columns={"auteur"})})
  * @ORM\Entity
  */
 class Proto
@@ -38,9 +38,19 @@ class Proto
     /**
      * @var \DateTime
      *
-     * @ORM\Column(name="date", type="datetime", nullable=false)
+     * @ORM\Column(name="datetime", type="datetime", nullable=false)
      */
-    private $date;
+    private $datetime;
+
+    /**
+     * @var \User
+     *
+     * @ORM\ManyToOne(targetEntity="User")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="auteur", referencedColumnName="id")
+     * })
+     */
+    private $auteur;
 
     public function getId(): ?int
     {
@@ -71,14 +81,26 @@ class Proto
         return $this;
     }
 
-    public function getDate(): ?\DateTimeInterface
+    public function getDatetime(): ?\DateTimeInterface
     {
-        return $this->date;
+        return $this->datetime;
     }
 
-    public function setDate(\DateTimeInterface $date): self
+    public function setDatetime(\DateTimeInterface $datetime): self
     {
-        $this->date = $date;
+        $this->datetime = $datetime;
+
+        return $this;
+    }
+
+    public function getAuteur(): ?User
+    {
+        return $this->auteur;
+    }
+
+    public function setAuteur(?User $auteur): self
+    {
+        $this->auteur = $auteur;
 
         return $this;
     }

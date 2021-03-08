@@ -14,18 +14,6 @@
         {% endblock %}
     </head>
     <body>
-        <a href="listeblog">blog</a>
-        <a href="listejeu">jeu</a>
-        <a href="listeproto">proto</a>
-
-        {% if app.user %}
-            <p>Bonjour {{ app.user. getName() }}</p>
-            <a href="logout">logout </a>
-        {% else %}
-            <a href="login">login</a>
-            <a href="register">register</a>
-        {% endif %}
-
         {% block body %}{% endblock %}
     </body>
 </html>

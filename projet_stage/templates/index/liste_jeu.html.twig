@@ -12,7 +12,7 @@
     <h1>LISTE JEU</h1>
 
     {% for jeu in listejeu %} 
-        <a href="pagejeu{{ jeu.id }}"><span>{{ jeu.titre}}</span> : <span>{{ jeu.date|date('d/m/Y H:i') }}</span></a>
+        <a href="pagejeu{{ jeu.id }}"><span>{{ jeu.titre}}</span> : <span>{{ jeu.datetime|date('d/m/Y H:i') }}</span></a>
         <br>
     {% endfor %}
 </div>

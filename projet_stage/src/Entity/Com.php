@@ -7,7 +7,7 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * Com
  *
- * @ORM\Table(name="com", indexes={@ORM\Index(name="jeu", columns={"jeu"}), @ORM\Index(name="envoyeur", columns={"envoyeur"}), @ORM\Index(name="proto", columns={"proto"}), @ORM\Index(name="blog", columns={"blog"})})
+ * @ORM\Table(name="com", indexes={@ORM\Index(name="envoyer", columns={"envoyer"}), @ORM\Index(name="proto", columns={"proto"}), @ORM\Index(name="jeu", columns={"jeu"}), @ORM\Index(name="blog", columns={"blog"})})
  * @ORM\Entity
  */
 class Com
@@ -47,20 +47,10 @@ class Com
      *
      * @ORM\ManyToOne(targetEntity="User")
      * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="envoyeur", referencedColumnName="id")
+     *   @ORM\JoinColumn(name="envoyer", referencedColumnName="id")
      * })
      */
-    private $envoyeur;
-
-    /**
-     * @var \Blog
-     *
-     * @ORM\ManyToOne(targetEntity="Blog")
-     * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="blog", referencedColumnName="id")
-     * })
-     */
-    private $blog;
+    private $envoyer;
 
     /**
      * @var \Jeu
@@ -71,6 +61,16 @@ class Com
      * })
      */
     private $jeu;
+
+    /**
+     * @var \Blog
+     *
+     * @ORM\ManyToOne(targetEntity="Blog")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="blog", referencedColumnName="id")
+     * })
+     */
+    private $blog;
 
     /**
      * @var \Proto
@@ -123,26 +123,14 @@ class Com
         return $this;
     }
 
-    public function getEnvoyeur(): ?User
+    public function getEnvoyer(): ?User
     {
-        return $this->envoyeur;
+        return $this->envoyer;
     }
 
-    public function setEnvoyeur(?User $envoyeur): self
+    public function setEnvoyer(?User $envoyer): self
     {
-        $this->envoyeur = $envoyeur;
-
-        return $this;
-    }
-
-    public function getBlog(): ?Blog
-    {
-        return $this->blog;
-    }
-
-    public function setBlog(?Blog $blog): self
-    {
-        $this->blog = $blog;
+        $this->envoyer = $envoyer;
 
         return $this;
     }
@@ -155,6 +143,18 @@ class Com
     public function setJeu(?Jeu $jeu): self
     {
         $this->jeu = $jeu;
+
+        return $this;
+    }
+
+    public function getBlog(): ?Blog
+    {
+        return $this->blog;
+    }
+
+    public function setBlog(?Blog $blog): self
+    {
+        $this->blog = $blog;
 
         return $this;
     }

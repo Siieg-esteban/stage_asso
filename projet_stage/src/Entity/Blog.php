@@ -7,7 +7,7 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * Blog
  *
- * @ORM\Table(name="blog", indexes={@ORM\Index(name="jeu", columns={"jeu"})})
+ * @ORM\Table(name="blog", indexes={@ORM\Index(name="auteur", columns={"auteur"}), @ORM\Index(name="jeu", columns={"jeu"})})
  * @ORM\Entity
  */
 class Blog
@@ -38,9 +38,9 @@ class Blog
     /**
      * @var \DateTime
      *
-     * @ORM\Column(name="date", type="datetime", nullable=false)
+     * @ORM\Column(name="datetime", type="datetime", nullable=false)
      */
-    private $date;
+    private $datetime;
 
     /**
      * @var string
@@ -48,6 +48,16 @@ class Blog
      * @ORM\Column(name="type", type="text", length=65535, nullable=false, options={"comment"="news ou info ou maj"})
      */
     private $type;
+
+    /**
+     * @var \User
+     *
+     * @ORM\ManyToOne(targetEntity="User")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="auteur", referencedColumnName="id")
+     * })
+     */
+    private $auteur;
 
     /**
      * @var \Jeu
@@ -88,14 +98,14 @@ class Blog
         return $this;
     }
 
-    public function getDate(): ?\DateTimeInterface
+    public function getDatetime(): ?\DateTimeInterface
     {
-        return $this->date;
+        return $this->datetime;
     }
 
-    public function setDate(\DateTimeInterface $date): self
+    public function setDatetime(\DateTimeInterface $datetime): self
     {
-        $this->date = $date;
+        $this->datetime = $datetime;
 
         return $this;
     }
@@ -108,6 +118,18 @@ class Blog
     public function setType(string $type): self
     {
         $this->type = $type;
+
+        return $this;
+    }
+
+    public function getAuteur(): ?User
+    {
+        return $this->auteur;
+    }
+
+    public function setAuteur(?User $auteur): self
+    {
+        $this->auteur = $auteur;
 
         return $this;
     }

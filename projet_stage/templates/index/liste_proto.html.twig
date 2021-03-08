@@ -12,7 +12,7 @@
     <h1>LISTE PROTO</h1>
 
     {% for proto in listeproto %} 
-        <a href="pageproto{{ proto.id}}"><span>{{ proto.titre}}</span> : <span>{{ proto.date|date('d/m/Y H:i') }}</span></a>
+        <a href="pageproto{{ proto.id}}"><span>{{ proto.titre}}</span> : <span>{{ proto.datetime|date('d/m/Y H:i') }}</span></a>
         <br>
     {% endfor %}
 </div>

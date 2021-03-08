@@ -1,0 +1,12 @@
+{% extends 'base2.html.twig' %}
+
+{% block title %}Inscription{% endblock %}
+
+{% block body %}
+<h3>Vous l'avez fait ! vous êtes inscrit</h3>
+Bonjour {{ name }} ! Vous vous êtes inscrit avec succès !
+{# example, assuming you have a route named "login" #}
+Pour vous connecter, allez <a href="{{ url('app_login') }}">ici</a> !
+Merci !
+{% endblock %}
+

@@ -7,7 +7,7 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * Jeu
  *
- * @ORM\Table(name="jeu")
+ * @ORM\Table(name="jeu", indexes={@ORM\Index(name="auteur", columns={"auteur"})})
  * @ORM\Entity
  */
 class Jeu
@@ -47,7 +47,7 @@ class Jeu
      *
      * @ORM\Column(name="upvote", type="integer", nullable=false)
      */
-    private $upvote;
+    private $upvote = '0';
 
     /**
      * @var string|null
@@ -59,9 +59,19 @@ class Jeu
     /**
      * @var \DateTime
      *
-     * @ORM\Column(name="date", type="datetime", nullable=false)
+     * @ORM\Column(name="datetime", type="datetime", nullable=false)
      */
-    private $date;
+    private $datetime;
+
+    /**
+     * @var \User
+     *
+     * @ORM\ManyToOne(targetEntity="User")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="auteur", referencedColumnName="id")
+     * })
+     */
+    private $auteur;
 
     public function getId(): ?int
     {
@@ -128,14 +138,26 @@ class Jeu
         return $this;
     }
 
-    public function getDate(): ?\DateTimeInterface
+    public function getDatetime(): ?\DateTimeInterface
     {
-        return $this->date;
+        return $this->datetime;
     }
 
-    public function setDate(\DateTimeInterface $date): self
+    public function setDatetime(\DateTimeInterface $datetime): self
     {
-        $this->date = $date;
+        $this->datetime = $datetime;
+
+        return $this;
+    }
+
+    public function getAuteur(): ?User
+    {
+        return $this->auteur;
+    }
+
+    public function setAuteur(?User $auteur): self
+    {
+        $this->auteur = $auteur;
 
         return $this;
     }

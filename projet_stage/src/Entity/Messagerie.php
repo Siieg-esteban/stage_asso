@@ -7,7 +7,7 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * Messagerie
  *
- * @ORM\Table(name="messagerie", indexes={@ORM\Index(name="receveur", columns={"receveur"}), @ORM\Index(name="envoyeur", columns={"envoyeur"})})
+ * @ORM\Table(name="messagerie", indexes={@ORM\Index(name="envoyer", columns={"envoyer"}), @ORM\Index(name="receveur", columns={"receveur"})})
  * @ORM\Entity
  */
 class Messagerie
@@ -40,20 +40,20 @@ class Messagerie
      *
      * @ORM\ManyToOne(targetEntity="User")
      * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="receveur", referencedColumnName="id")
+     *   @ORM\JoinColumn(name="envoyer", referencedColumnName="id")
      * })
      */
-    private $receveur;
+    private $envoyer;
 
     /**
      * @var \User
      *
      * @ORM\ManyToOne(targetEntity="User")
      * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="envoyeur", referencedColumnName="id")
+     *   @ORM\JoinColumn(name="receveur", referencedColumnName="id")
      * })
      */
-    private $envoyeur;
+    private $receveur;
 
     public function getId(): ?int
     {
@@ -84,6 +84,18 @@ class Messagerie
         return $this;
     }
 
+    public function getEnvoyer(): ?User
+    {
+        return $this->envoyer;
+    }
+
+    public function setEnvoyer(?User $envoyer): self
+    {
+        $this->envoyer = $envoyer;
+
+        return $this;
+    }
+
     public function getReceveur(): ?User
     {
         return $this->receveur;
@@ -92,18 +104,6 @@ class Messagerie
     public function setReceveur(?User $receveur): self
     {
         $this->receveur = $receveur;
-
-        return $this;
-    }
-
-    public function getEnvoyeur(): ?User
-    {
-        return $this->envoyeur;
-    }
-
-    public function setEnvoyeur(?User $envoyeur): self
-    {
-        $this->envoyeur = $envoyeur;
 
         return $this;
     }

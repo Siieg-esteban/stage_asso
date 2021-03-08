@@ -7,7 +7,7 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * Imagejeuproto
  *
- * @ORM\Table(name="imagejeuproto", indexes={@ORM\Index(name="proto", columns={"proto"}), @ORM\Index(name="jeu", columns={"jeu"})})
+ * @ORM\Table(name="imagejeuproto", indexes={@ORM\Index(name="jeu", columns={"jeu"}), @ORM\Index(name="proto", columns={"proto"})})
  * @ORM\Entity
  */
 class Imagejeuproto
@@ -36,16 +36,6 @@ class Imagejeuproto
     private $type;
 
     /**
-     * @var \Proto
-     *
-     * @ORM\ManyToOne(targetEntity="Proto")
-     * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="proto", referencedColumnName="id")
-     * })
-     */
-    private $proto;
-
-    /**
      * @var \Jeu
      *
      * @ORM\ManyToOne(targetEntity="Jeu")
@@ -54,6 +44,16 @@ class Imagejeuproto
      * })
      */
     private $jeu;
+
+    /**
+     * @var \Proto
+     *
+     * @ORM\ManyToOne(targetEntity="Proto")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="proto", referencedColumnName="id")
+     * })
+     */
+    private $proto;
 
     public function getId(): ?int
     {
@@ -84,18 +84,6 @@ class Imagejeuproto
         return $this;
     }
 
-    public function getProto(): ?Proto
-    {
-        return $this->proto;
-    }
-
-    public function setProto(?Proto $proto): self
-    {
-        $this->proto = $proto;
-
-        return $this;
-    }
-
     public function getJeu(): ?Jeu
     {
         return $this->jeu;
@@ -104,6 +92,18 @@ class Imagejeuproto
     public function setJeu(?Jeu $jeu): self
     {
         $this->jeu = $jeu;
+
+        return $this;
+    }
+
+    public function getProto(): ?Proto
+    {
+        return $this->proto;
+    }
+
+    public function setProto(?Proto $proto): self
+    {
+        $this->proto = $proto;
 
         return $this;
     }
