@@ -9,12 +9,56 @@
 </style>
 
 <div class="example-wrapper">
-    <h1>PAGE JEU</h1>
+    <h3>PAGE JEU</h3>
 
     le {{ jeu.datetime|date('d/m/Y H:i') }}
     <br>
     <h1>{{ jeu.titre }}</h1>
     <br>
     {{ jeu.contenue }}
+    <br>
+
+    {% for img in images %}
+        <img src="data:image/png;base64, {{ img.image }}">
+        <br><br>
+    {% endfor %}
+
+    <br><br><br>
+
+    <h3>Commentaire :</h3>
+    {% for com in comments %}
+        le {{ com.datetime|date('d/m/Y H:i') }} {{ com.envoyer.name }} dit : {{ com.contenue }}
+        <br><br>
+    {% endfor %}
+
+    {% if app.user %}
+        <button id="btnFormCom" class="btn btn-light" onclick="showFormCom()">laisser un commentaire</button> 
+
+        <form id="formCom" action="commentaire" style="display: none">
+            <textarea name="textComment" class="form-control" rows="3" placeholder="plouf"></textarea>
+            
+            <input type="hidden" name="type" value="jeu"> 
+            <input type="hidden" name="pageid" value="{{ jeu.id }}"> 
+            
+            <button class="btn btn-light">envoyer</button> 
+        </form>   
+    {% endif %}  
+
 </div>
+{% endblock %}
+
+{% block javascripts %}
+    <script>
+        var visible=false;
+        
+        function showFormCom(){
+            if (visible==false){
+                document.getElementById("formCom").style.display = "block";
+                visible=true;
+            }else{
+                document.getElementById("formCom").style.display = "none";
+                visible=false;
+            }
+        }
+    </script>
 {% endblock %}

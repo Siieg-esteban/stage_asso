@@ -7,7 +7,7 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * Imagejeuproto
  *
- * @ORM\Table(name="imagejeuproto", indexes={@ORM\Index(name="jeu", columns={"jeu"}), @ORM\Index(name="proto", columns={"proto"})})
+ * @ORM\Table(name="imagejeuproto", indexes={@ORM\Index(name="jeu", columns={"jeu"}), @ORM\Index(name="proto", columns={"proto"}), @ORM\Index(name="blog", columns={"blog"})})
  * @ORM\Entity
  */
 class Imagejeuproto
@@ -54,6 +54,16 @@ class Imagejeuproto
      * })
      */
     private $proto;
+
+    /**
+     * @var \Blog
+     *
+     * @ORM\ManyToOne(targetEntity="Blog")
+     * @ORM\JoinColumns({
+     *   @ORM\JoinColumn(name="blog", referencedColumnName="id")
+     * })
+     */
+    private $blog;
 
     public function getId(): ?int
     {
@@ -104,6 +114,18 @@ class Imagejeuproto
     public function setProto(?Proto $proto): self
     {
         $this->proto = $proto;
+
+        return $this;
+    }
+
+    public function getBlog(): ?Blog
+    {
+        return $this->blog;
+    }
+
+    public function setBlog(?Blog $blog): self
+    {
+        $this->blog = $blog;
 
         return $this;
     }

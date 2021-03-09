@@ -5,9 +5,17 @@ namespace App\Controller;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
+use Symfony\Component\HttpFoundation\Session\Session;
+use Symfony\Contracts\Translation\TranslatorInterface;
+
 use App\Entity\Blog;
 use App\Entity\Jeu;
 use App\Entity\Proto;
+use App\Entity\Com;
+use App\Entity\User;
+use App\Entity\Imagejeuproto;
 
 class IndexController extends AbstractController
 {
@@ -76,8 +84,36 @@ class IndexController extends AbstractController
         $em=$this->getDoctrine()->getRepository(Blog::class);
         $blog=$em->findOneby(array('id'=>$id));
 
+        $em2=$this->getDoctrine()->getRepository(Com::class);
+        $AllBlogCom=$em2->findBy(array('type'=>'blog'));
+        $countCom=count($AllBlogCom);
+
+        //
+        $em3=$this->getDoctrine()->getRepository(Imagejeuproto::class);
+        $AllBlogImage=$em3->findBy(array('type'=>'blog'));
+        $countImg=count($AllBlogImage);
+        //
+
+        $comment=array();
+        for ($i=0;$i<$countCom;$i++) {
+            if ($AllBlogCom[$i]->getBlog()->getId()==$id) {
+                $comment[]=$AllBlogCom[$i];
+            } 
+        }
+
+        //
+        $images=array();
+        for ($i=0;$i<$countImg;$i++) {
+            if ($AllBlogImage[$i]->getBlog()->getId()==$id) {
+                $images[]=$AllBlogImage[$i];
+            } 
+        }
+        //
+
         return $this->render('index/page_blog.html.twig', [
             'blog' => $blog,
+            'comments' => $comment,
+            'images' => $images,
         ]);
     }
 
@@ -89,8 +125,32 @@ class IndexController extends AbstractController
         $em=$this->getDoctrine()->getRepository(Jeu::class);
         $jeu=$em->findOneby(array('id'=>$id));
 
+        $em2=$this->getDoctrine()->getRepository(Com::class);
+        $AllJeuCom=$em2->findBy(array('type'=>'jeu'));
+        $countCom=count($AllJeuCom);
+
+        $em3=$this->getDoctrine()->getRepository(Imagejeuproto::class);
+        $AllBlogImage=$em3->findBy(array('type'=>'blog'));
+        $countImg=count($AllBlogImage);
+
+        $comment=array();
+        for ($i=0;$i<$countCom;$i++) {
+            if ($AllJeuCom[$i]->getJeu()->getId()==$id) {
+                $comment[]=$AllJeuCom[$i];
+            } 
+        }
+
+        $images=array();
+        for ($i=0;$i<$countImg;$i++) {
+            if ($AllBlogImage[$i]->getBlog()->getId()==$id) {
+                $images[]=$AllBlogImage[$i];
+            } 
+        }
+
         return $this->render('index/page_jeu.html.twig', [
             'jeu' => $jeu,
+            'comments' => $comment,
+            'images' => $images,
         ]);
     }
 
@@ -102,8 +162,84 @@ class IndexController extends AbstractController
         $em=$this->getDoctrine()->getRepository(Proto::class);
         $proto=$em->findOneby(array('id'=>$id));
 
+        $em2=$this->getDoctrine()->getRepository(Com::class);
+        $AllProtoCom=$em2->findBy(array('type'=>'proto'));
+        $countCom=count($AllProtoCom);
+
+        $em3=$this->getDoctrine()->getRepository(Imagejeuproto::class);
+        $AllBlogImage=$em3->findBy(array('type'=>'blog'));
+        $countImg=count($AllBlogImage);
+
+        $comment=array();
+        for ($i=0;$i<$countCom;$i++) {
+            if ($AllProtoCom[$i]->getProto()->getId()==$id) {
+                $comment[]=$AllProtoCom[$i];
+            } 
+        }
+
+        $images=array();
+        for ($i=0;$i<$countImg;$i++) {
+            if ($AllBlogImage[$i]->getBlog()->getId()==$id) {
+                $images[]=$AllBlogImage[$i];
+            } 
+        }
+
         return $this->render('index/page_proto.html.twig', [
             'proto' => $proto,
+            'comments' => $comment,
+            'images' => $images,
         ]);
+    }
+
+    /**
+     * @Route("/commentaire", name="commentaire")
+     */
+    public function comment(Request $request): Response
+    {
+        if ($request->query->get("textComment")){
+            $em=$this->getDoctrine()->getRepository(User::class);
+            $test=$this->getUser()->getId();
+            $userid=$em->findOneBy(array('id' => $test));
+
+            $Comment = new Com();
+            $datetime = new \DateTime('@'.strtotime('now'));
+
+            if ($request->query->get("type")=="blog") {
+                $emBlog=$this->getDoctrine()->getRepository(Blog::class);
+                $pageId=$request->query->get("pageid");
+                $realpage=$emBlog->findOneBy(array('id' => $pageId));
+                $Comment->setBlog($realpage);  
+
+            }elseif ($request->query->get("type")=="jeu") {
+                $emJeu=$this->getDoctrine()->getRepository(Jeu::class);
+                $pageId=$request->query->get("pageid");
+                $realpage=$emJeu->findOneBy(array('id' => $pageId));
+                $Comment->setJeu($realpage);
+
+            }else {
+                $emProto=$this->getDoctrine()->getRepository(Proto::class);
+                $pageId=$request->query->get("pageid");
+                $realpage=$emProto->findOneBy(array('id' => $pageId));
+                $Comment->setProto($realpage);
+            }
+            
+            $Comment->setContenue($request->query->get("textComment"));
+            $Comment->setType($request->query->get("type"));
+    
+            $Comment->setDatetime($datetime);
+            $Comment->setEnvoyer($userid);
+
+            $em=$this->getDoctrine()->getManager();
+            $em->persist($Comment);
+            $em->flush();
+        }
+        if ($request->query->get("type")=="blog") {
+            return $this->redirectToRoute('pageblog', ['id' => $pageId]);
+        }elseif ($request->query->get("type")=="jeu") {
+            return $this->redirectToRoute('pagejeu', ['id' => $pageId]);
+        }else{
+            return $this->redirectToRoute('pageproto', ['id' => $pageId]);
+            // return $this->redirectToRoute('person_in_need_view', ['id' => $yourEntity->getId()]);
+        }
     }
 }

@@ -8,7 +8,7 @@
     .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
 </style>
 <div class="example-wrapper">
-    <h1>PAGE BLOG</h1>
+    <h3>PAGE BLOG</h3>
 
     le {{ blog.datetime|date('d/m/Y H:i') }}
     <br>
@@ -16,9 +16,54 @@
     <br>
     {{ blog.contenue }}
     <br>
+
+    {% for img in images %}
+        <img src="data:image/png;base64, {{ img.image }}">
+        <br><br>
+    {% endfor %}
+
+    <br><br>
     {% if blog.jeu %}
+        lien du jeu :
         <a href="pagejeu{{ blog.jeu.id }}">{{ blog.jeu.titre }}</a>
     {% endif %}
 
+    <br><br><br>
+
+    <h3>Commentaire :</h3>
+    {% for com in comments %}
+        le {{ com.datetime|date('d/m/Y H:i') }} {{ com.envoyer.name }} dit : {{ com.contenue }}
+        <br><br>
+    {% endfor %}
+
+    {% if app.user %}
+        <button id="btnFormCom" class="btn btn-light" onclick="showFormCom()">laisser un commentaire</button> 
+
+        <form id="formCom" action="commentaire" style="display: none">
+            <textarea name="textComment" class="form-control" rows="3" placeholder="plouf"></textarea>
+            
+            <input type="hidden" name="type" value="blog"> 
+            <input type="hidden" name="pageid" value="{{ blog.id }}"> 
+            
+            <button class="btn btn-light">envoyer</button> 
+        </form>   
+    {% endif %}   
+ 
 </div>
+{% endblock %}
+
+{% block javascripts %}
+    <script>
+        var visible=false;
+        
+        function showFormCom(){
+            if (visible==false){
+                document.getElementById("formCom").style.display = "block";
+                visible=true;
+            }else{
+                document.getElementById("formCom").style.display = "none";
+                visible=false;
+            }
+        }
+    </script>
 {% endblock %}
