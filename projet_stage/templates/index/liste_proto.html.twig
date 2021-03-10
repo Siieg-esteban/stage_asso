@@ -3,17 +3,23 @@
 {% block title %}Hello IndexController!{% endblock %}
 
 {% block body %}
-<style>
-    .example-wrapper { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; }
-    .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
-</style>
+{% if is_granted('ROLE_ADMIN') or is_granted('ROLE_CONTRIBUTOR') %}
+    <style>
+        .example-wrapper { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; }
+        .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
+    </style>
 
-<div class="example-wrapper">
-    <h1>LISTE PROTO</h1>
+    <div class="example-wrapper">
+        <h1>LISTE PROTO</h1>
 
-    {% for proto in listeproto %} 
-        <a href="pageproto{{ proto.id}}"><span>{{ proto.titre}}</span> : <span>{{ proto.datetime|date('d/m/Y H:i') }}</span></a>
-        <br>
-    {% endfor %}
-</div>
+        {% for proto in listeproto %} 
+            <a href="pageproto{{ proto.id}}"><span>{{ proto.titre}}</span> : <span>{{ proto.datetime|date('d/m/Y H:i') }}</span></a>
+            <br>
+        {% endfor %}
+    </div>
+{% else %}
+    <script>
+        window.location.href = 'listeblog';
+    </script>
+{% endif %}
 {% endblock %}

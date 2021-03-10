@@ -3,48 +3,54 @@
 {% block title %}Hello IndexController!{% endblock %}
 
 {% block body %}
-<style>
-    .example-wrapper { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; }
-    .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
-</style>
+{% if is_granted('ROLE_ADMIN') or is_granted('ROLE_CONTRIBUTOR') %}
+    <style>
+        .example-wrapper { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; }
+        .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
+    </style>
 
-<div class="example-wrapper">
-    <h3>PAGE PROTO</h3>
+    <div class="example-wrapper">
+        <h3>PAGE PROTO</h3>
 
-    le {{ proto.datetime|date('d/m/Y H:i') }}
-    <br>
-    <h1>{{ proto.titre }}</h1>
-    <br>
-    {{ proto.contenue }}
-    <br>
+        le {{ proto.datetime|date('d/m/Y H:i') }}
+        <br>
+        <h1>{{ proto.titre }}</h1>
+        <br>
+        {{ proto.contenue }}
+        <br>
 
-    {% for img in images %}
-        <img src="data:image/png;base64, {{ img.image }}">
-        <br><br>
-    {% endfor %}
+        {% for img in images %}
+            <img src="data:image/png;base64, {{ img.image }}">
+            <br><br>
+        {% endfor %}
 
-    <br><br><br>
+        <br><br><br>
 
-    <h3>Commentaire :</h3>
-    {% for com in comments %}
-        le {{ com.datetime|date('d/m/Y H:i') }} {{ com.envoyer.name }} dit : {{ com.contenue }}
-        <br><br>
-    {% endfor %}
+        <h3>Commentaire :</h3>
+        {% for com in comments %}
+            le {{ com.datetime|date('d/m/Y H:i') }} {{ com.envoyer.name }} dit : {{ com.contenue }}
+            <br><br>
+        {% endfor %}
 
-    {% if app.user %}
-        <button id="btnFormCom" class="btn btn-light" onclick="showFormCom()">laisser un commentaire</button> 
+        {% if app.user %}
+            <button id="btnFormCom" class="btn btn-light" onclick="showFormCom()">laisser un commentaire</button> 
 
-        <form id="formCom" action="commentaire" style="display: none">
-            <textarea name="textComment" class="form-control" rows="3" placeholder="plouf"></textarea>
-            
-            <input type="hidden" name="type" value="proto"> 
-            <input type="hidden" name="pageid" value="{{ proto.id }}"> 
-            
-            <button class="btn btn-light">envoyer</button> 
-        </form>   
-    {% endif %} 
+            <form id="formCom" action="commentaire" style="display: none">
+                <textarea name="textComment" class="form-control" rows="3" placeholder="plouf"></textarea>
+                
+                <input type="hidden" name="type" value="proto"> 
+                <input type="hidden" name="pageid" value="{{ proto.id }}"> 
+                
+                <button class="btn btn-light">envoyer</button> 
+            </form>   
+        {% endif %} 
 
-</div>
+    </div>
+{% else %}
+    <script>
+        window.location.href = 'listeblog';
+    </script>
+{% endif %}
 {% endblock %}
 
 {% block javascripts %}

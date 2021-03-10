@@ -16,7 +16,11 @@
     <body>
         <a href="listeblog">blog</a>
         <a href="listejeu">jeu</a>
-        <a href="listeproto">proto</a>
+        {% if app.user %}
+            {% if is_granted('ROLE_ADMIN') or is_granted('ROLE_CONTRIBUTOR') %}
+                <a href="listeproto">proto</a>
+            {% endif %}
+        {% endif %}
 
         {% if app.user %}
             <p>Bonjour {{ app.user. getName() }}</p>
