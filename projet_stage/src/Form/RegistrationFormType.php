@@ -2,7 +2,9 @@
 
 namespace App\Form;
 
+
 use App\Entity\User;
+use FOS\CKEditorBundle\Form\Type\CKEditorType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;
@@ -23,6 +25,7 @@ class RegistrationFormType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
+            // ->add('username', CKEditorType::class)
             ->add('username', TextType::class)
             ->add('name', TextType::class)
             ->add('agreeTerms', CheckboxType::class, [
@@ -63,8 +66,7 @@ class RegistrationFormType extends AbstractType
                         'max' => 4096,
                     ]),
                 ],
-            ])
-        ;
+            ]);
     }
 
     public function configureOptions(OptionsResolver $resolver)

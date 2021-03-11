@@ -11,6 +11,8 @@
         "doctrine/doctrine-bundle": "^2.2",
         "doctrine/doctrine-migrations-bundle": "^3.0",
         "doctrine/orm": "^2.8",
+        "easycorp/easyadmin-bundle": "^3.2",
+        "friendsofsymfony/ckeditor-bundle": "^2.3",
         "sensio/framework-extra-bundle": "^6.1",
         "swiftmailer/swiftmailer": "^6.2",
         "symfony/apache-pack": "^1.0",
