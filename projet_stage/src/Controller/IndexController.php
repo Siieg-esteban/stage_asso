@@ -10,6 +10,10 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
+use App\Form\MakeprotoType;
+use App\Form\MakejeuType;
+use App\Form\MakeblogType;
+
 use App\Entity\Blog;
 use App\Entity\Jeu;
 use App\Entity\Proto;
@@ -22,57 +26,143 @@ class IndexController extends AbstractController
     /**
      * @Route("/listeblog", name="listeblog")
      */
-    public function listeblog(): Response
+    public function listeblog(Request $request): Response
     {
         $em=$this->getDoctrine()->getRepository(Blog::class);
         $Allblog=$em->findAll();
         $countblog=count($Allblog);
 
-        $blog=array();
+        $bloglist=array();
         for ($i=0;$i<$countblog;$i++) { 
-            $blog[]=$Allblog[$i];
+            $bloglist[]=$Allblog[$i];
+        }
+
+        $blog = new Blog();
+        $form = $this->createForm(MakeblogType::class, $blog);
+        $form->handlerequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $testdata = $form->getData();
+
+            $em=$this->getDoctrine()->getRepository(User::class);
+            $test=$this->getUser()->getId();
+            $userid=$em->findOneBy(array('id' => $test));
+
+            $datetime = new \DateTime('@'.strtotime('now'));
+
+            $blog->setTitre($testdata->getTitre());
+            $blog->setContenue($testdata->getContenue());
+            $blog->setType($testdata->getType());
+            $blog->setJeu($testdata->getJeu());
+
+            $blog->setDatetime($datetime);
+            $blog->setAuteur($userid);
+
+            $em=$this->getDoctrine()->getManager();
+            $em->persist($blog);
+            $em->flush();
+
+            return $this->redirect($request->getUri());
         }
 
         return $this->render('index/liste_blog.html.twig', [
-            'listeblog' => $blog,
+            'form' => $form->createView(),
+            'listeblog' => $bloglist,
         ]);
     }
 
     /**
      * @Route("/listejeu", name="listejeu")
      */
-    public function listejeu(): Response
+    public function listejeu(Request $request): Response
     {
         $em=$this->getDoctrine()->getRepository(Jeu::class);
         $Alljeu=$em->findAll();
         $countjeu=count($Alljeu);
 
-        $jeu=array();
+        $jeulist=array();
         for ($i=0;$i<$countjeu;$i++) { 
-            $jeu[]=$Alljeu[$i];
+            $jeulist[]=$Alljeu[$i];
+        }
+
+        $jeu = new Jeu();
+        $form = $this->createForm(MakejeuType::class, $jeu);
+        $form->handlerequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $testdata = $form->getData();
+
+            $em=$this->getDoctrine()->getRepository(User::class);
+            $test=$this->getUser()->getId();
+            $userid=$em->findOneBy(array('id' => $test));
+
+            $datetime = new \DateTime('@'.strtotime('now'));
+
+            $jeu->setTitre($testdata->getTitre());
+            $jeu->setContenue($testdata->getContenue());
+            $jeu->setLien($testdata->getLien());
+            $jeu->setEtat($testdata->getEtat());
+
+            $jeu->setUpvote('0');
+            $jeu->setDatetime($datetime);
+            $jeu->setAuteur($userid);
+
+            $em=$this->getDoctrine()->getManager();
+            $em->persist($jeu);
+            $em->flush();
+
+            return $this->redirect($request->getUri());
         }
 
         return $this->render('index/liste_jeu.html.twig', [
-            'listejeu' => $jeu,
+            'form' => $form->createView(),
+            'listejeu' => $jeulist,
         ]);
     }
 
     /**
      * @Route("/listeproto", name="listeproto")
      */
-    public function listeproto(): Response
+    public function listeproto(Request $request): Response
     {
         $em=$this->getDoctrine()->getRepository(Proto::class);
         $Allproto=$em->findAll();
         $countproto=count($Allproto);
 
-        $proto=array();
+        $protolist=array();
         for ($i=0;$i<$countproto;$i++) { 
-            $proto[]=$Allproto[$i];
+            $protolist[]=$Allproto[$i];
+        }
+
+        $proto = new Proto();
+        $form = $this->createForm(MakeprotoType::class, $proto);
+        $form->handlerequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $testdata = $form->getData();
+
+            $em=$this->getDoctrine()->getRepository(User::class);
+            $test=$this->getUser()->getId();
+            $userid=$em->findOneBy(array('id' => $test));
+
+            $datetime = new \DateTime('@'.strtotime('now'));
+
+            $proto->setTitre($testdata->getTitre());
+            $proto->setContenue($testdata->getContenue());
+            
+            $proto->setDatetime($datetime);
+            $proto->setAuteur($userid);
+
+            $em=$this->getDoctrine()->getManager();
+            $em->persist($proto);
+            $em->flush();
+
+            return $this->redirect($request->getUri());
         }
 
         return $this->render('index/liste_proto.html.twig', [
-            'listeproto' => $proto,
+            'form' => $form->createView(),
+            'listeproto' => $protolist,
         ]);
     }
 
@@ -241,5 +331,35 @@ class IndexController extends AbstractController
             return $this->redirectToRoute('pageproto', ['id' => $pageId]);
             // return $this->redirectToRoute('person_in_need_view', ['id' => $yourEntity->getId()]);
         }
+    }
+
+    /**
+     * @Route("/newproto", name="newproto")
+     */
+    public function newproto(Request $request): Response
+    {
+        $Proto = new Proto();
+        $form=$this->createForm(MakeprotoType::class, $Proto);
+        $form->handlerequest($request);
+
+        if ($request->query->get("titre")){
+            $em=$this->getDoctrine()->getRepository(User::class);
+            $test=$this->getUser()->getId();
+            $userid=$em->findOneBy(array('id' => $test));
+
+            $datetime = new \DateTime('@'.strtotime('now'));
+
+            $Proto->setTitre($request->query->get("titre"));
+            $Proto->setContenue($request->query->get("contenue"));
+            
+            $Proto->setDatetime($datetime);
+            $Proto->setAuteur($userid);
+
+            $em=$this->getDoctrine()->getManager();
+            $em->persist($Proto);
+            $em->flush();
+        }
+        
+        return $this->redirectToRoute('listeproto');
     }
 }

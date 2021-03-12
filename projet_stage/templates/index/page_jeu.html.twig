@@ -13,9 +13,9 @@
 
     le {{ jeu.datetime|date('d/m/Y H:i') }}
     <br>
-    <h1>{{ jeu.titre }}</h1>
+    <h1>{{ jeu.titre| raw }}</h1>
     <br>
-    {{ jeu.contenue }}
+    {{ jeu.contenue| raw }}
     <br>
 
     {% for img in images %}

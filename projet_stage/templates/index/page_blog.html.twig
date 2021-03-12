@@ -12,9 +12,9 @@
 
     le {{ blog.datetime|date('d/m/Y H:i') }}
     <br>
-    <h1>{{ blog.titre }}</h1>
+    <h1>{{ blog.titre| raw }}</h1>
     <br>
-    {{ blog.contenue }}
+    {{ blog.contenue| raw }}
     <br>
 
     {% for img in images %}

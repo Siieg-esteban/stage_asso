@@ -9,21 +9,51 @@
         .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
     </style>
 
+    {# listing #}
     <div class="example-wrapper">
         <h1>LISTE PROTO</h1>
 
         {% for proto in listeproto %} 
-            <a href="pageproto{{ proto.id}}"><span>{{ proto.titre}}</span> : <span>{{ proto.datetime|date('d/m/Y H:i') }}</span></a>
+            <a href="pageproto{{ proto.id}}"><span>{{ proto.titre| raw}}</span> : <span>{{ proto.datetime|date('d/m/Y H:i') }}</span></a>
             <br>
         {% endfor %}
     </div>
 
-    <textarea>
-
+    {# form add proto #}
+    <button id="btnFormProto" class="btn btn-light" onclick="showFormProto()">Créer un nouveau proto !</button> 
+    <div id="formProto" style="display: none">
+        {{ form_start(form) }}
+            {{ form_row(form.titre, {
+                label: 'titre'
+            }) }}
+            {{ form_row(form.contenue, {
+                label: 'Contenue'
+            }) }}
+            <button type="submit" class="btn">Créer</button>
+        {{ form_end(form) }}
+    </div>
     
+    {# redirect #}
 {% else %}
     <script>
         window.location.href = 'listeblog';
     </script>
 {% endif %}
 {% endblock %}
+
+{% block javascripts %}
+    <script>
+        var visible=false;
+        
+        function showFormProto(){
+            if (visible==false){
+                document.getElementById("formProto").style.display = "block";
+                visible=true;
+            }else{
+                document.getElementById("formProto").style.display = "none";
+                visible=false;
+            }
+        }
+    </script>
+{% endblock %}
+

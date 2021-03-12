@@ -8,12 +8,52 @@
     .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
 </style>
 
+{# listing #}
 <div class="example-wrapper">
     <h1>LISTE JEU</h1>
 
     {% for jeu in listejeu %} 
-        <a href="pagejeu{{ jeu.id }}"><span>{{ jeu.titre}}</span> : <span>{{ jeu.datetime|date('d/m/Y H:i') }}</span></a>
+        <a href="pagejeu{{ jeu.id }}"><span>{{ jeu.titre| raw}}</span> : <span>{{ jeu.datetime|date('d/m/Y H:i') }}</span></a>
         <br>
     {% endfor %}
 </div>
+
+{% if is_granted('ROLE_ADMIN') or is_granted('ROLE_CONTRIBUTOR') %}
+{# form add jeu #}
+<button id="btnFormJeu" class="btn btn-light" onclick="showFormJeu()">Créer un nouveau Jeu !</button> 
+<div id="formJeu" style="display: none">
+    {{ form_start(form) }}
+        {{ form_row(form.titre, {
+            label: 'titre'
+        }) }}
+        {{ form_row(form.contenue, {
+            label: 'Contenue'
+        }) }}
+        {{ form_row(form.etat, {
+            label: 'etat'
+        }) }}
+        {{ form_row(form.lien, {
+            label: 'lien'
+        }) }}
+        <button type="submit" class="btn">Créer</button>
+    {{ form_end(form) }}
+</div>
+{% endif %}
+
+{% endblock %}
+
+{% block javascripts %}
+    <script>
+        var visible=false;
+        
+        function showFormJeu(){
+            if (visible==false){
+                document.getElementById("formJeu").style.display = "block";
+                visible=true;
+            }else{
+                document.getElementById("formJeu").style.display = "none";
+                visible=false;
+            }
+        }
+    </script>
 {% endblock %}

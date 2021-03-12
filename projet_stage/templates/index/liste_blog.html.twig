@@ -8,12 +8,52 @@
     .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
 </style>
 
+{# listing #}
 <div class="example-wrapper">
     <h1>LISTE BLOG</h1>
 
     {% for blog in listeblog %} 
-        <a href="pageblog{{ blog.id }}"><span>{{ blog.titre}}</span> : <span>{{ blog.datetime|date('d/m/Y H:i') }}</span></a>
+        <a href="pageblog{{ blog.id }}"><span>{{ blog.titre| raw}}</span> : <span>{{ blog.datetime|date('d/m/Y H:i') }}</span></a>
         <br>
     {% endfor %}
 </div>
+
+{% if is_granted('ROLE_ADMIN') or is_granted('ROLE_CONTRIBUTOR') %}
+{# form add blog #}
+    <button id="btnFormBlog" class="btn btn-light" onclick="showFormBlog()">Créer un nouveau Blog !</button> 
+    <div id="formBlog" style="display: none">
+        {{ form_start(form) }}
+            {{ form_row(form.titre, {
+                label: 'titre'
+            }) }}
+            {{ form_row(form.contenue, {
+                label: 'Contenue'
+            }) }}
+            {{ form_row(form.type, {
+                label: 'type'
+            }) }}
+            {{ form_row(form.jeu, {
+                label: 'jeu'
+            }) }}
+            
+            <button type="submit" class="btn">Créer</button>
+        {{ form_end(form) }}
+    </div>
+{% endif %}
+{% endblock %}
+
+{% block javascripts %}
+    <script>
+        var visible=false;
+        
+        function showFormBlog(){
+            if (visible==false){
+                document.getElementById("formBlog").style.display = "block";
+                visible=true;
+            }else{
+                document.getElementById("formBlog").style.display = "none";
+                visible=false;
+            }
+        }
+    </script>
 {% endblock %}

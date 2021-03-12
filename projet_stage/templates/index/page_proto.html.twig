@@ -14,9 +14,9 @@
 
         le {{ proto.datetime|date('d/m/Y H:i') }}
         <br>
-        <h1>{{ proto.titre }}</h1>
+        <h1>{{ proto.titre| raw }}</h1>
         <br>
-        {{ proto.contenue }}
+        {{ proto.contenue| raw }}
         <br>
 
         {% for img in images %}
