@@ -42,9 +42,7 @@ class User implements UserInterface
     private $username;
 
     /**
-     * @var string|null
-     *
-     * @ORM\Column(name="avatar", type="blob", length=0, nullable=true)
+     * @ORM\Column(type="blob", nullable=true)
      */
     private $avatar;
 
@@ -137,7 +135,9 @@ class User implements UserInterface
 
     public function getAvatar()
     {
-        return $this->avatar;
+        if ($this->avatar) {   
+            return stream_get_contents($this->avatar); 
+        }
     }
 
     public function setAvatar($avatar): self

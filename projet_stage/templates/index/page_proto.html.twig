@@ -3,6 +3,7 @@
 {% block title %}Hello IndexController!{% endblock %}
 
 {% block body %}
+{# redirction si pas contrib ou admin #}
 {% if is_granted('ROLE_ADMIN') or is_granted('ROLE_CONTRIBUTOR') %}
     <style>
         .example-wrapper { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; }
@@ -26,9 +27,28 @@
 
         <br><br><br>
 
+        {% if listecontrib %}
+        {# contributeur #}
+            <h3>Liste des contributeurs :</h3>
+            {% for contrib in listecontrib %}
+                <a href="pageuser{{ contrib.user.id }}">{{ contrib.user.name }}</a>
+
+                {% set testimage = contrib.user.avatar %}
+
+                {% if testimage %}
+                    <img src="data:image/png;base64,{{ testimage }}" width='60px' height='60px' />
+                {% endif %}
+
+                <br><br>
+            {% endfor %}
+        {% endif %}
+
+        <br><br><br>
+
+        {# commentaire #}
         <h3>Commentaire :</h3>
         {% for com in comments %}
-            le {{ com.datetime|date('d/m/Y H:i') }} {{ com.envoyer.name }} dit : {{ com.contenue }}
+            le {{ com.datetime|date('d/m/Y H:i') }} <a href="pageuser{{ com.envoyer.id }}">{{ com.envoyer.name }}</a> dit : {{ com.contenue }}
             <br><br>
         {% endfor %}
 

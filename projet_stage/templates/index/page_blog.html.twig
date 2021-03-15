@@ -10,6 +10,7 @@
 <div class="example-wrapper">
     <h3>PAGE BLOG</h3>
 
+    poster par <a href="pageuser{{ blog.auteur.id }}">{{ blog.auteur.name }}</a>
     le {{ blog.datetime|date('d/m/Y H:i') }}
     <br>
     <h1>{{ blog.titre| raw }}</h1>
@@ -23,6 +24,7 @@
     {% endfor %}
 
     <br><br>
+    {# liste des blogs sur ce jeu #}
     {% if blog.jeu %}
         lien du jeu :
         <a href="pagejeu{{ blog.jeu.id }}">{{ blog.jeu.titre }}</a>
@@ -30,9 +32,10 @@
 
     <br><br><br>
 
+    {# Commentaire #}
     <h3>Commentaire :</h3>
     {% for com in comments %}
-        le {{ com.datetime|date('d/m/Y H:i') }} {{ com.envoyer.name }} dit : {{ com.contenue }}
+        le {{ com.datetime|date('d/m/Y H:i') }} <a href="pageuser{{ com.envoyer.id }}">{{ com.envoyer.name }}</a> dit : {{ com.contenue }}
         <br><br>
     {% endfor %}
 

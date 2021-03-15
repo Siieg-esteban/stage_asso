@@ -20,6 +20,7 @@ use App\Entity\Proto;
 use App\Entity\Com;
 use App\Entity\User;
 use App\Entity\Imagejeuproto;
+use App\Entity\Listecontributeur;
 
 class IndexController extends AbstractController
 {
@@ -178,11 +179,9 @@ class IndexController extends AbstractController
         $AllBlogCom=$em2->findBy(array('type'=>'blog'));
         $countCom=count($AllBlogCom);
 
-        //
         $em3=$this->getDoctrine()->getRepository(Imagejeuproto::class);
         $AllBlogImage=$em3->findBy(array('type'=>'blog'));
         $countImg=count($AllBlogImage);
-        //
 
         $comment=array();
         for ($i=0;$i<$countCom;$i++) {
@@ -191,14 +190,12 @@ class IndexController extends AbstractController
             } 
         }
 
-        //
         $images=array();
         for ($i=0;$i<$countImg;$i++) {
             if ($AllBlogImage[$i]->getBlog()->getId()==$id) {
                 $images[]=$AllBlogImage[$i];
             } 
         }
-        //
 
         return $this->render('index/page_blog.html.twig', [
             'blog' => $blog,
@@ -223,6 +220,13 @@ class IndexController extends AbstractController
         $AllBlogImage=$em3->findBy(array('type'=>'blog'));
         $countImg=count($AllBlogImage);
 
+        $em4=$this->getDoctrine()->getRepository(Blog::class);
+        $bloglink=$em4->findBy(array('jeu'=>$jeu));
+
+        $em5=$this->getDoctrine()->getRepository(Listecontributeur::class);
+        $contribAll=$em5->findBy(array('type'=>'jeu'));
+        $countContrib=count($contribAll);
+
         $comment=array();
         for ($i=0;$i<$countCom;$i++) {
             if ($AllJeuCom[$i]->getJeu()->getId()==$id) {
@@ -237,10 +241,19 @@ class IndexController extends AbstractController
             } 
         }
 
+        $contribList=array();
+        for ($i=0;$i<$countContrib;$i++) {
+            if ($contribAll[$i]->getJeu()==$jeu) {
+                $contribList[]=$contribAll[$i];
+            } 
+        }
+
         return $this->render('index/page_jeu.html.twig', [
             'jeu' => $jeu,
             'comments' => $comment,
             'images' => $images,
+            'listeblog' => $bloglink,
+            'listecontrib' => $contribList,
         ]);
     }
 
@@ -260,6 +273,10 @@ class IndexController extends AbstractController
         $AllBlogImage=$em3->findBy(array('type'=>'blog'));
         $countImg=count($AllBlogImage);
 
+        $em4=$this->getDoctrine()->getRepository(Listecontributeur::class);
+        $contribAll=$em4->findBy(array('type'=>'proto'));
+        $countContrib=count($contribAll);
+
         $comment=array();
         for ($i=0;$i<$countCom;$i++) {
             if ($AllProtoCom[$i]->getProto()->getId()==$id) {
@@ -274,10 +291,18 @@ class IndexController extends AbstractController
             } 
         }
 
+        $contribList=array();
+        for ($i=0;$i<$countContrib;$i++) {
+            if ($contribAll[$i]->getProto()==$proto) {
+                $contribList[]=$contribAll[$i];
+            } 
+        }
+
         return $this->render('index/page_proto.html.twig', [
             'proto' => $proto,
             'comments' => $comment,
             'images' => $images,
+            'listecontrib' => $contribList,
         ]);
     }
 
@@ -362,4 +387,35 @@ class IndexController extends AbstractController
         
         return $this->redirectToRoute('listeproto');
     }
+
+    /**
+     * @Route("/pageuser{id}", name="pageuser")
+     */
+    public function pageuser($id): Response
+    {
+        $em=$this->getDoctrine()->getRepository(User::class);
+        $theUser=$em->findOneby(array('id'=>$id));
+
+        $em2=$this->getDoctrine()->getRepository(Listecontributeur::class);
+        $contribUser=$em2->findBy(array('user'=>$theUser));
+        $countContrib=count($contribUser);
+
+        $em3=$this->getDoctrine()->getRepository(Blog::class);
+        $blogUser=$em3->findBy(array('auteur'=>$theUser));
+
+        $contribList=array();
+        for ($i=0;$i<$countContrib;$i++) {
+            if ($contribUser[$i]->getType()=="jeu") {
+                $contribList[]=$contribUser[$i];
+            } 
+        }
+
+
+        return $this->render('index/page_user.html.twig', [
+            'user' => $theUser,
+            'contribs' => $contribList,
+            'blogs' => $blogUser,
+        ]);
+    }
 }
+
