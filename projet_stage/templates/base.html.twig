@@ -23,7 +23,7 @@
         {% endif %}
 
         {% if app.user %}
-            <p>Bonjour {{ app.user. getName() }}</p>
+            <p>Bonjour <a href="pageuser{{ app.user.id }}">{{ app.user. getName() }}</a></p>
             <a href="logout">logout </a>
         {% else %}
             <a href="login">login</a>
