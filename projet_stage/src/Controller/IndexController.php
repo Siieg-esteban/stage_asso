@@ -138,6 +138,7 @@ class IndexController extends AbstractController
         }
 
         $proto = new Proto();
+        $contrib = new Listecontributeur();
         $form = $this->createForm(MakeprotoType::class, $proto);
         $form->handlerequest($request);
 
@@ -158,6 +159,14 @@ class IndexController extends AbstractController
 
             $em=$this->getDoctrine()->getManager();
             $em->persist($proto);
+            $em->flush();
+            
+            $contrib->setType('proto');
+            $contrib->setProto($proto);
+            $contrib->setUser($this->getUser());
+
+            $em=$this->getDoctrine()->getManager();
+            $em->persist($contrib);
             $em->flush();
 
             return $this->redirect($request->getUri());
@@ -361,36 +370,6 @@ class IndexController extends AbstractController
     }
 
     /**
-     * @Route("/newproto", name="newproto")
-     */
-    public function newproto(Request $request): Response
-    {
-        $Proto = new Proto();
-        $form=$this->createForm(MakeprotoType::class, $Proto);
-        $form->handlerequest($request);
-
-        if ($request->query->get("titre")){
-            $em=$this->getDoctrine()->getRepository(User::class);
-            $test=$this->getUser()->getId();
-            $userid=$em->findOneBy(array('id' => $test));
-
-            $datetime = new \DateTime('@'.strtotime('now'));
-
-            $Proto->setTitre($request->query->get("titre"));
-            $Proto->setContenue($request->query->get("contenue"));
-            
-            $Proto->setDatetime($datetime);
-            $Proto->setAuteur($userid);
-
-            $em=$this->getDoctrine()->getManager();
-            $em->persist($Proto);
-            $em->flush();
-        }
-        
-        return $this->redirectToRoute('listeproto');
-    }
-
-    /**
      * @Route("/pageuser{id}", name="pageuser")
      */
     public function pageuser(Request $request, $id): Response
@@ -494,6 +473,40 @@ class IndexController extends AbstractController
             'user' => $theUser,
             'messages' => $messageList,
         ]);
+    }
+
+    /**
+     * @Route("/newcontrib{id}", name="newcontrib")
+     */
+    public function newcontrib(Request $request, $id): Response
+    {
+        $em=$this->getDoctrine()->getRepository(Proto::class);
+        $proto=$em->findOneBy(array('id'=>$id));
+
+        $em2=$this->getDoctrine()->getRepository(Listecontributeur::class);
+        $listcontrib=$em2->findBy(array('proto'=>$proto));
+        $countlistcontrib=count($listcontrib);
+
+        $test=$this->getUser();
+
+        $contrib = new Listecontributeur();
+        $dejacontrib=false;
+        for ($i=0;$i<$countlistcontrib;$i++) {
+            if ($listcontrib[$i]->getUser()==$test) {
+                $dejacontrib=true;
+            } 
+        }
+        if ($dejacontrib==false) {
+            $contrib->setType('proto');
+            $contrib->setProto($proto);
+            $contrib->setUser($this->getUser());
+
+            $em=$this->getDoctrine()->getManager();
+            $em->persist($contrib);
+            $em->flush();  
+        }
+        
+        return $this->redirectToRoute('pageproto',['id' => $id]);        
     }
 }
 

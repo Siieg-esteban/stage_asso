@@ -30,6 +30,7 @@
         {% if listecontrib %}
         {# contributeur #}
             <h3>Liste des contributeurs :</h3>
+            {% set contributeurProjet = false %}
             {% for contrib in listecontrib %}
                 <a href="pageuser{{ contrib.user.id }}">{{ contrib.user.name }}</a>
 
@@ -40,7 +41,14 @@
                 {% endif %}
 
                 <br><br>
+                {# rejoindre le projet si pas deja dedant #}
+                {% if contrib.user == app.user %}
+                    {% set contributeurProjet = true %}
+                {% endif %}
             {% endfor %}
+            {% if contributeurProjet == false %}
+                devenir contributeur sur le projet : <a href="newcontrib{{ proto.id }}">{{ proto.titre| raw }}</a>
+            {% endif %}
         {% endif %}
 
         <br><br><br>
