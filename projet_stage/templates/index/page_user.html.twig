@@ -26,6 +26,45 @@
 
         <br><br>
 
+        {# liste des competence de user #}
+        {% if user.roles[0] == 'ROLE_ADMIN' or user.roles[0] == 'ROLE_CONTRIBUTOR' %}
+            {% if competences %}
+                liste des compétences :<br>
+                {% for competence in competences %} 
+                    {{ competence.competence.nom }}<br>
+                {% endfor %}
+            {% endif %}
+        
+            {# ajouter competence #}
+            {% if user == app.user %}
+            <button id="btnFormCom" class="btn btn-light" onclick="showFormCom()">ajouter une competence</button> 
+            
+            <form id="formCom" action="competence" style="display: none">
+                <select name="newCompetence">
+                    <option value="null" disabled selected>choisir une competence</option>
+                    {% for typecompetence in typeCompetences %} 
+
+                        {% set dejaCompetent = false %}
+
+                        {% for competence in competences %} 
+                            {% if typecompetence == competence.competence %}
+                                {% set dejaCompetent = true %}
+                            {% endif %}
+                        {% endfor %}
+
+                        {% if dejaCompetent == false %}
+                            <option value={{ typecompetence.id }}>{{ typecompetence.nom }}</option>
+                        {% endif %}
+
+                    {% endfor %}
+                </select>
+                <br><button class="btn btn-light">envoyer</button> 
+            </form>   
+            {% endif %}
+        {% endif %}
+
+        <br><br>
+
         {# messagerie#}
         {% if app.user %}
             {# user sur sa propre page #}
@@ -63,4 +102,18 @@
     </div>
 {% endblock %}
 
-
+{% block javascripts %}
+    <script>
+        var visible=false;
+        
+        function showFormCom(){
+            if (visible==false){
+                document.getElementById("formCom").style.display = "block";
+                visible=true;
+            }else{
+                document.getElementById("formCom").style.display = "none";
+                visible=false;
+            }
+        }
+    </script>
+{% endblock %}

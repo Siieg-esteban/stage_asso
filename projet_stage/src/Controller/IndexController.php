@@ -22,6 +22,8 @@ use App\Entity\Com;
 use App\Entity\User;
 use App\Entity\Imagejeuproto;
 use App\Entity\Listecontributeur;
+use App\Entity\Listecompetence;
+use App\Entity\Competence;
 use App\Entity\Messagerie;
 
 class IndexController extends AbstractController
@@ -388,6 +390,12 @@ class IndexController extends AbstractController
         $allMessage=$em4->findAll();
         $countAllMessage=count($allMessage);
 
+        $em5=$this->getDoctrine()->getRepository(Listecompetence::class);
+        $competence=$em5->findBy(array('user'=>$theUser));
+
+        $em6=$this->getDoctrine()->getRepository(Competence::class);
+        $typeCompetence=$em6->findAll();
+
         $contribList=array();
         for ($i=0;$i<$countContrib;$i++) {
             if ($contribUser[$i]->getType()=="jeu") {
@@ -414,6 +422,8 @@ class IndexController extends AbstractController
 
         return $this->render('index/page_user.html.twig', [
             'user' => $theUser,
+            'competences' => $competence,
+            'typeCompetences' => $typeCompetence,
             'contribs' => $contribList,
             'blogs' => $blogUser,
             'personnes' => $personneList,
@@ -507,6 +517,31 @@ class IndexController extends AbstractController
         }
         
         return $this->redirectToRoute('pageproto',['id' => $id]);        
+    }
+
+    /**
+     * @Route("/competence", name="competence")
+     */
+    public function competence(Request $request): Response
+    {
+        if ($request->query->get("newCompetence")){
+            $em=$this->getDoctrine()->getRepository(User::class);
+            $test=$this->getUser()->getId();
+            $userid=$em->findOneBy(array('id' => $test));
+
+            $competence = new Listecompetence();
+            $newCompId=$request->query->get("newCompetence");
+            $em2=$this->getDoctrine()->getRepository(Competence::class);
+            $CompaAjouter=$em2->findOneBy(array('id' => $newCompId));
+
+            $competence->setCompetence($CompaAjouter);  
+            $competence->setUser($userid);
+
+            $em=$this->getDoctrine()->getManager();
+            $em->persist($competence);
+            $em->flush();
+        }
+        return $this->redirectToRoute('pageuser',['id' => $test]);      
     }
 }
 
