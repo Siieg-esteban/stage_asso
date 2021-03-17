@@ -13,6 +13,7 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 use App\Form\MakeprotoType;
 use App\Form\MakejeuType;
 use App\Form\MakeblogType;
+use App\Form\NewMessageType;
 
 use App\Entity\Blog;
 use App\Entity\Jeu;
@@ -21,6 +22,7 @@ use App\Entity\Com;
 use App\Entity\User;
 use App\Entity\Imagejeuproto;
 use App\Entity\Listecontributeur;
+use App\Entity\Messagerie;
 
 class IndexController extends AbstractController
 {
@@ -391,7 +393,7 @@ class IndexController extends AbstractController
     /**
      * @Route("/pageuser{id}", name="pageuser")
      */
-    public function pageuser($id): Response
+    public function pageuser(Request $request, $id): Response
     {
         $em=$this->getDoctrine()->getRepository(User::class);
         $theUser=$em->findOneby(array('id'=>$id));
@@ -403,6 +405,10 @@ class IndexController extends AbstractController
         $em3=$this->getDoctrine()->getRepository(Blog::class);
         $blogUser=$em3->findBy(array('auteur'=>$theUser));
 
+        $em4=$this->getDoctrine()->getRepository(Messagerie::class);
+        $allMessage=$em4->findAll();
+        $countAllMessage=count($allMessage);
+
         $contribList=array();
         for ($i=0;$i<$countContrib;$i++) {
             if ($contribUser[$i]->getType()=="jeu") {
@@ -410,11 +416,83 @@ class IndexController extends AbstractController
             } 
         }
 
+        $messageList=array();
+        $personneList=array();
+        for ($i=0;$i<$countAllMessage;$i++) {
+            if ($allMessage[$i]->getEnvoyer()==$theUser or $allMessage[$i]->getReceveur()==$theUser) {
+                $messageList[]=$allMessage[$i];
+                if ($allMessage[$i]->getEnvoyer()==$theUser) {
+                    if (in_array($allMessage[$i]->getReceveur(), $personneList)){}else{
+                        $personneList[]=$allMessage[$i]->getReceveur();
+                    }
+                } elseif ($allMessage[$i]->getReceveur()==$theUser) {
+                    if (in_array($allMessage[$i]->getEnvoyer(), $personneList)){}else{
+                        $personneList[]=$allMessage[$i]->getEnvoyer();
+                    }
+                }
+            } 
+        }
 
         return $this->render('index/page_user.html.twig', [
             'user' => $theUser,
             'contribs' => $contribList,
             'blogs' => $blogUser,
+            'personnes' => $personneList,
+            'messages' => $messageList,
+        ]);
+    }
+
+    /**
+     * @Route("/pagemessagerie{id}", name="pagemessagerie")
+     */
+    public function pagemessagerie(Request $request, $id): Response
+    {
+        $em=$this->getDoctrine()->getRepository(User::class);
+        $theUser=$em->findOneby(array('id'=>$id));
+
+        $em2=$this->getDoctrine()->getRepository(Messagerie::class);
+        $allMessage=$em2->findAll();
+        $countAllMessage=count($allMessage);
+
+        $messageList=array();
+        for ($i=0;$i<$countAllMessage;$i++) {
+            if ($allMessage[$i]->getEnvoyer()==$theUser or $allMessage[$i]->getReceveur()==$theUser) {
+                if ($allMessage[$i]->getEnvoyer()==$this->getUser() or $allMessage[$i]->getReceveur()==$this->getUser()) {
+                    $messageList[]=$allMessage[$i];
+                } 
+            } 
+        }
+
+        $message = new Messagerie();
+        $form = $this->createForm(NewMessageType::class, $message);
+        $form->handlerequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $testdata = $form->getData();
+
+            $em=$this->getDoctrine()->getRepository(User::class);
+            $test=$this->getUser()->getId();
+            $userid=$em->findOneBy(array('id' => $test));
+
+            $datetime = new \DateTime('@'.strtotime('now'));
+
+            $message->setContenue($testdata->getContenue());
+
+            $message->setDatetime($datetime);
+            $message->setEnvoyer($userid);
+            $message->setReceveur($theUser);
+
+            $em=$this->getDoctrine()->getManager();
+            $em->persist($message);
+            $em->flush();
+
+            return $this->redirect($request->getUri());
+        }
+
+        return $this->render('index/page_messagerie.html.twig', [
+            'form' => $form->createView(),
+            'user' => $theUser,
+            'messages' => $messageList,
         ]);
     }
 }

@@ -26,11 +26,17 @@
 
         <br><br>
 
-        {# si user sur sa propre page #}
+        {# messagerie#}
         {% if app.user %}
+            {# user sur sa propre page #}
             {% if user.id == app.user.id %}
-                <h3>information privée :</h3>
-                email : {{ user.email }}
+                <h3>liste des conversation :</h3>
+                {% for personne in personnes %} 
+                    <a href="pagemessagerie{{ personne.id }}"><span> {{ personne.name }} </span></a><br>
+                {% endfor %}
+            {# user sur une autre page #}
+            {% else %}
+                <a href="pagemessagerie{{ user.id }}">envoyer un message privée a {{ user.name }}</a><br><br>
             {% endif %}
         {% endif %}
 
@@ -53,9 +59,8 @@
                 <br>
             {% endfor %}
         {% endif %}
-        
-
 
     </div>
 {% endblock %}
+
 

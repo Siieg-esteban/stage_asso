@@ -1,0 +1,68 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Hello IndexController!{% endblock %}
+
+{% block body %}
+{% if app.user %}
+    <style>
+        .example-wrapper { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; }
+        .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
+    </style>
+
+    <div class="example-wrapper">
+        <h3>PAGE MESSAGERIE</h3>
+
+        <h1>Vous : {{ app.user.name }}</h1>
+        <h1>Message avec : {{ user.name }}</h1>
+
+        {# messagerie #}
+        <h3> Conversation :</h3>
+        {% if messages %}
+        ceci est le début de votre conversation avec {{ user.name }} <br><br>  
+            {% for message in messages %}
+                {% if message.envoyer == user %}
+                    <span style="color:red";> {recu} {{ message.contenue|raw }} </span><br>
+                {% elseif message.receveur == user %}
+                    <span style="color:blue";> {envoyer} {{ message.contenue|raw }} </span><br>
+                {% endif %}
+            {% endfor %}
+        {% else %} 
+            vous n'avez pas encore envoyer de message a {{ user.name }} <br><br>    
+        {% endif %}
+
+            {# formulaire envoyer une message #}
+            <button id="btnFormJeu" class="btn btn-light" onclick="showFormJeu()">envoyer un message a {{ user.name }}</button> 
+            <div id="formJeu" style="display: none">
+                {{ form_start(form) }}
+                    {{ form_row(form.contenue, {
+                        label: 'message'
+                    }) }}
+                    <button type="submit" class="btn">Créer</button>
+                {{ form_end(form) }}
+            </div>
+        <br><br>
+
+    </div>
+{% else %}
+    <script>
+        window.location.href = 'listeblog';
+    </script>
+{% endif %}
+{% endblock %}
+
+{% block javascripts %}
+    <script>
+        var visible=false;
+        
+        function showFormJeu(){
+            if (visible==false){
+                document.getElementById("formJeu").style.display = "block";
+                visible=true;
+            }else{
+                document.getElementById("formJeu").style.display = "none";
+                visible=false;
+            }
+        }
+    </script>
+{% endblock %}
+
