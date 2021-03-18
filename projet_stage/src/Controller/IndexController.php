@@ -26,6 +26,9 @@ use App\Entity\Listecompetence;
 use App\Entity\Competence;
 use App\Entity\Messagerie;
 
+use Symfony\Component\Form\Extension\Core\Type\FileType;
+use Symfony\Component\Validator\Constraints\File;
+
 class IndexController extends AbstractController
 {
     /**
@@ -43,7 +46,10 @@ class IndexController extends AbstractController
         }
 
         $blog = new Blog();
+        
+
         $form = $this->createForm(MakeblogType::class, $blog);
+
         $form->handlerequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
@@ -63,9 +69,29 @@ class IndexController extends AbstractController
             $blog->setDatetime($datetime);
             $blog->setAuteur($userid);
 
+            $newImages=$form->get("image")->getData();
+
             $em=$this->getDoctrine()->getManager();
             $em->persist($blog);
             $em->flush();
+
+            $countnewImages=count($newImages);
+            
+            for ($i=0; $i < $countnewImages; $i++) { 
+                $image=$newImages[$i];
+
+                $encoded_data = base64_encode(file_get_contents($image)); 
+
+                $imagetest = new Imagejeuproto();
+
+                $imagetest->setType("blog");
+                $imagetest->setBlog($blog);
+                $imagetest->setImage($encoded_data);
+
+                $em=$this->getDoctrine()->getManager();
+                $em->persist($imagetest);
+                $em->flush();
+            }
 
             return $this->redirect($request->getUri());
         }
@@ -230,7 +256,7 @@ class IndexController extends AbstractController
         $countCom=count($AllJeuCom);
 
         $em3=$this->getDoctrine()->getRepository(Imagejeuproto::class);
-        $AllBlogImage=$em3->findBy(array('type'=>'blog'));
+        $AllBlogImage=$em3->findBy(array('type'=>'jeu'));
         $countImg=count($AllBlogImage);
 
         $em4=$this->getDoctrine()->getRepository(Blog::class);
@@ -283,7 +309,7 @@ class IndexController extends AbstractController
         $countCom=count($AllProtoCom);
 
         $em3=$this->getDoctrine()->getRepository(Imagejeuproto::class);
-        $AllBlogImage=$em3->findBy(array('type'=>'blog'));
+        $AllBlogImage=$em3->findBy(array('type'=>'proto'));
         $countImg=count($AllBlogImage);
 
         $em4=$this->getDoctrine()->getRepository(Listecontributeur::class);
