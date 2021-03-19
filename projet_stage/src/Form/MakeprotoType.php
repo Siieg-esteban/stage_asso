@@ -3,6 +3,8 @@
 namespace App\Form;
 
 use App\Entity\Proto;
+use App\Entity\Imagejeuproto;
+
 use FOS\CKEditorBundle\Form\Type\CKEditorType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
@@ -20,6 +22,7 @@ use Symfony\Component\Translation\Translator;
 use Symfony\Component\Translation\Loader\ArrayLoader;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Validator\Constraints\File;
+use Symfony\Component\Validator\Constraints\All;
 
 class MakeprotoType extends AbstractType
 {
@@ -32,6 +35,23 @@ class MakeprotoType extends AbstractType
             ])
             // ->add('datetime', DateType::class)
             // ->add('auteur', TextType::class)
+            ->add('image', FileType::class,  [
+                'mapped'=>false,
+                // 'data_class' => Imagejeuproto::class,
+                'required'=>false,
+                'multiple'=>true,
+                'constraints'=>[
+                    new All([
+                        new File([
+                            'maxSize'=>'1024k',
+                            'mimeTypes'=> [
+                                'image/png'
+                            ],
+                            'mimeTypesMessage'=> 'pas le bon mime type !'
+                        ])
+                    ])
+                ]
+            ])
         ;
     }
 

@@ -46,10 +46,7 @@ class IndexController extends AbstractController
         }
 
         $blog = new Blog();
-        
-
         $form = $this->createForm(MakeblogType::class, $blog);
-
         $form->handlerequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
@@ -138,9 +135,29 @@ class IndexController extends AbstractController
             $jeu->setDatetime($datetime);
             $jeu->setAuteur($userid);
 
+            $newImages=$form->get("image")->getData();
+
             $em=$this->getDoctrine()->getManager();
             $em->persist($jeu);
             $em->flush();
+
+            $countnewImages=count($newImages);
+
+            for ($i=0; $i < $countnewImages; $i++) { 
+                $image=$newImages[$i];
+
+                $encoded_data = base64_encode(file_get_contents($image)); 
+
+                $imagetest = new Imagejeuproto();
+
+                $imagetest->setType("jeu");
+                $imagetest->setJeu($jeu);
+                $imagetest->setImage($encoded_data);
+
+                $em=$this->getDoctrine()->getManager();
+                $em->persist($imagetest);
+                $em->flush();
+            }
 
             return $this->redirect($request->getUri());
         }
@@ -193,9 +210,29 @@ class IndexController extends AbstractController
             $contrib->setProto($proto);
             $contrib->setUser($this->getUser());
 
+            $newImages=$form->get("image")->getData();
+
             $em=$this->getDoctrine()->getManager();
             $em->persist($contrib);
             $em->flush();
+
+            $countnewImages=count($newImages);
+
+            for ($i=0; $i < $countnewImages; $i++) { 
+                $image=$newImages[$i];
+
+                $encoded_data = base64_encode(file_get_contents($image)); 
+
+                $imagetest = new Imagejeuproto();
+
+                $imagetest->setType("proto");
+                $imagetest->setProto($proto);
+                $imagetest->setImage($encoded_data);
+
+                $em=$this->getDoctrine()->getManager();
+                $em->persist($imagetest);
+                $em->flush();
+            }
 
             return $this->redirect($request->getUri());
         }
@@ -275,7 +312,7 @@ class IndexController extends AbstractController
 
         $images=array();
         for ($i=0;$i<$countImg;$i++) {
-            if ($AllBlogImage[$i]->getBlog()->getId()==$id) {
+            if ($AllBlogImage[$i]->getJeu()->getId()==$id) {
                 $images[]=$AllBlogImage[$i];
             } 
         }
@@ -325,7 +362,7 @@ class IndexController extends AbstractController
 
         $images=array();
         for ($i=0;$i<$countImg;$i++) {
-            if ($AllBlogImage[$i]->getBlog()->getId()==$id) {
+            if ($AllBlogImage[$i]->getProto()->getId()==$id) {
                 $images[]=$AllBlogImage[$i];
             } 
         }
