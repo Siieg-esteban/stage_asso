@@ -40,7 +40,7 @@ class Imagecommunication
      *
      * @ORM\ManyToOne(targetEntity="Com")
      * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="com", referencedColumnName="id")
+     *   @ORM\JoinColumn(name="com", referencedColumnName="id", onDelete="CASCADE")
      * })
      */
     private $com;
@@ -50,7 +50,7 @@ class Imagecommunication
      *
      * @ORM\ManyToOne(targetEntity="Tchat")
      * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="tchat", referencedColumnName="id")
+     *   @ORM\JoinColumn(name="tchat", referencedColumnName="id", onDelete="CASCADE")
      * })
      */
     private $tchat;
@@ -60,7 +60,7 @@ class Imagecommunication
      *
      * @ORM\ManyToOne(targetEntity="Messagerie")
      * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="messagerie", referencedColumnName="id")
+     *   @ORM\JoinColumn(name="messagerie", referencedColumnName="id", onDelete="CASCADE")
      * })
      */
     private $messagerie;

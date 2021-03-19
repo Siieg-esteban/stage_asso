@@ -14,6 +14,13 @@
 
     {% for blog in listeblog %} 
         <a href="pageblog{{ blog.id }}"><span>{{ blog.auteur.name }}</span> / <span>{{ blog.titre| raw}}</span> / <span>le {{ blog.datetime|date('d/m/Y H:i') }}</span></a>
+        
+        {% if app.user %}
+            {% if is_granted('ROLE_ADMIN') or blog.auteur == app.user %}
+                <a href="deletepage/blog/{{ blog.id }}" >delete</a>
+            {% endif %}
+        {% endif %}
+
         <br>
     {% endfor %}
 </div>

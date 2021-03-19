@@ -64,7 +64,7 @@ class Blog
      *
      * @ORM\ManyToOne(targetEntity="Jeu")
      * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="jeu", referencedColumnName="id")
+     *   @ORM\JoinColumn(name="jeu", referencedColumnName="id", onDelete="CASCADE")
      * })
      */
     private $jeu;

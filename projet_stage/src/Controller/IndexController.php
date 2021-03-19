@@ -606,5 +606,34 @@ class IndexController extends AbstractController
         }
         return $this->redirectToRoute('pageuser',['id' => $test]);      
     }
+
+    /**
+     * @Route("/deletepage/{type}/{id}", name="deletepage")
+     */
+    public function deletepage(Request $request,$id,$type): Response
+    {
+        if ($type=='blog') {
+            $em=$this->getDoctrine()->getRepository(Blog::class);
+            $page=$em->findOneby(array('id'=>$id));
+        }elseif ($type=='jeu') {
+            $em=$this->getDoctrine()->getRepository(Jeu::class);
+            $page=$em->findOneby(array('id'=>$id));
+        }elseif ($type=='proto'){
+            $em=$this->getDoctrine()->getRepository(Proto::class);
+            $page=$em->findOneby(array('id'=>$id));
+        }else {
+            return $this->redirectToRoute('listeblog');  
+        }
+        
+        if ($this->getUser()){
+            if ($this->getUser()==$page->getAuteur() or $this->getUser()->getRoles()[0]=="ROLE_ADMIN" ) {
+                
+                $em=$this->getDoctrine()->getManager();
+                $em->remove($page);
+                $em->flush();
+            }
+        }
+        return $this->redirectToRoute('liste'.$type);      
+    }
 }
 

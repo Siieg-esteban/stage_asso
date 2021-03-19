@@ -14,6 +14,13 @@
 
     {% for jeu in listejeu %} 
         <a href="pagejeu{{ jeu.id }}"><span>{{ jeu.titre| raw}}</span> : <span>{{ jeu.datetime|date('d/m/Y H:i') }}</span></a>
+        
+        {% if app.user %}
+            {% if is_granted('ROLE_ADMIN') or jeu.auteur == app.user %}
+                <a href="deletepage/jeu/{{ jeu.id }}" >delete</a>
+            {% endif %}
+        {% endif %}
+
         <br>
     {% endfor %}
 </div>

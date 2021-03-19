@@ -15,6 +15,13 @@
 
         {% for proto in listeproto %} 
             <a href="pageproto{{ proto.id}}"><span>{{ proto.titre| raw}}</span> : <span>{{ proto.datetime|date('d/m/Y H:i') }}</span></a>
+            
+            {% if app.user %}
+                {% if is_granted('ROLE_ADMIN') or proto.auteur == app.user %}
+                    <a href="deletepage/proto/{{ proto.id }}" >delete</a>
+                {% endif %}
+            {% endif %}
+            
             <br>
         {% endfor %}
     </div>

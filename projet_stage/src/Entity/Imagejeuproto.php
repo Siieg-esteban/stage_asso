@@ -40,7 +40,7 @@ class Imagejeuproto
      *
      * @ORM\ManyToOne(targetEntity="Jeu")
      * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="jeu", referencedColumnName="id")
+     *   @ORM\JoinColumn(name="jeu", referencedColumnName="id", onDelete="CASCADE")
      * })
      */
     private $jeu;
@@ -50,7 +50,7 @@ class Imagejeuproto
      *
      * @ORM\ManyToOne(targetEntity="Proto")
      * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="proto", referencedColumnName="id")
+     *   @ORM\JoinColumn(name="proto", referencedColumnName="id", onDelete="CASCADE")
      * })
      */
     private $proto;
@@ -60,7 +60,7 @@ class Imagejeuproto
      *
      * @ORM\ManyToOne(targetEntity="Blog")
      * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="blog", referencedColumnName="id")
+     *   @ORM\JoinColumn(name="blog", referencedColumnName="id", onDelete="CASCADE")
      * })
      */
     private $blog;
