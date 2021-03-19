@@ -114,6 +114,7 @@ class IndexController extends AbstractController
         }
 
         $jeu = new Jeu();
+        $contrib = new Listecontributeur();
         $form = $this->createForm(MakejeuType::class, $jeu);
         $form->handlerequest($request);
 
@@ -139,6 +140,14 @@ class IndexController extends AbstractController
 
             $em=$this->getDoctrine()->getManager();
             $em->persist($jeu);
+            $em->flush();
+
+            $contrib->setType('jeu');
+            $contrib->setJeu($jeu);
+            $contrib->setUser($this->getUser());
+
+            $em=$this->getDoctrine()->getManager();
+            $em->persist($contrib);
             $em->flush();
 
             $countnewImages=count($newImages);
