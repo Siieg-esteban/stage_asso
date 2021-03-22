@@ -19,6 +19,7 @@
         {{ form_row(form.contenue, {
             label: 'Contenue'
         }) }}
+
         {% if type == 'blog' %}
             {{ form_row(form.type, {
                 label: 'type'
@@ -27,6 +28,7 @@
                 label: 'jeu'
             }) }}
         {% endif %}
+
         {% if type == 'jeu' %}
             {{ form_row(form.lien, {
                 label: 'lien'
@@ -35,12 +37,24 @@
                 label: 'etat'
             }) }}
         {% endif %}
+
         {{ form_row(form.image, {
             label: 'images'
         }) }}
         
         <button type="submit" class="btn">Modifier</button>
     {{ form_end(form) }}
+
+    {% if images %}
+        <br>
+        image actuelle :
+        <br>
+        {% for img in images %}
+            <img src="data:image/png;base64, {{ img.image }}" style="max-width:600px;max-height:600px">
+            <a href="deleteimage_{{ type }}_{{ page.id }}_{{ img.id }}" >Supprimer</a>
+            <br><br>
+        {% endfor %}
+    {% endif %}
 
 </div>
 {% endblock %}

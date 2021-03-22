@@ -671,6 +671,27 @@ class IndexController extends AbstractController
         if ($this->getUser()){
             if ($this->getUser()==$page->getAuteur() or $this->getUser()->getRoles()[0]=="ROLE_ADMIN" ) {
                 
+                $em2=$this->getDoctrine()->getRepository(Imagejeuproto::class);
+                $AllBlogImage=$em2->findBy(array('type'=>$type));
+                $countImg=count($AllBlogImage);
+
+                $images=array();
+                for ($i=0;$i<$countImg;$i++) {
+                    if ($type=='blog') {
+                        if ($AllBlogImage[$i]->getBlog()->getId()==$id) {
+                            $images[]=$AllBlogImage[$i];
+                        }
+                    } elseif ($type=='jeu') {
+                        if ($AllBlogImage[$i]->getJeu()->getId()==$id) {
+                            $images[]=$AllBlogImage[$i];
+                        }
+                    } elseif ($type=='proto') {
+                        if ($AllBlogImage[$i]->getProto()->getId()==$id) {
+                            $images[]=$AllBlogImage[$i];
+                        }
+                    } 
+                }
+
                 if($form->isSubmitted() and $form->isValid()){
 
                     $testdata = $form->getData();
@@ -721,6 +742,7 @@ class IndexController extends AbstractController
                 }
                 
                 return $this->render('index/page_update.html.twig', [
+                    'images' => $images,
                     'type' => $type,
                     'page' => $page,
                     'form' => $form->createView(),
@@ -728,5 +750,39 @@ class IndexController extends AbstractController
             }     
         } return $this->redirectToRoute('listeblog');   
     }  
+
+    /**
+     * @Route("/deleteimage_{type}_{pageid}_{id}", name="deleteimage")
+     */
+    public function deleteimage(Request $request,$id,$pageid,$type): Response
+    {
+        $em=$this->getDoctrine()->getRepository(Imagejeuproto::class);
+        $image=$em->findOneby(array('id'=>$id));
+
+        if ($type=='blog') {
+            $em2=$this->getDoctrine()->getRepository(Blog::class);
+            $page=$em2->findOneby(array('id'=>$pageid));
+        }elseif ($type=='jeu') {
+            $em2=$this->getDoctrine()->getRepository(Jeu::class);
+            $page=$em2->findOneby(array('id'=>$pageid));
+        }elseif ($type=='proto') {
+            $em2=$this->getDoctrine()->getRepository(Proto::class);
+            $page=$em2->findOneby(array('id'=>$pageid));
+        }else {
+            return $this->redirectToRoute('listeblog'); 
+        }
+        
+        if ($this->getUser()){
+            if ($this->getUser()==$page->getAuteur() or $this->getUser()->getRoles()[0]=="ROLE_ADMIN" ) {
+                
+                $em=$this->getDoctrine()->getManager();
+                $em->remove($image);
+                $em->flush();
+
+                return $this->redirectToRoute('updatepage',['type' => $type,'id' => $pageid]);
+            }
+        }
+        return $this->redirectToRoute('listeblog');       
+    }
 }
 
