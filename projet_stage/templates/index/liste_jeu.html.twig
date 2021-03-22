@@ -17,7 +17,8 @@
         
         {% if app.user %}
             {% if is_granted('ROLE_ADMIN') or jeu.auteur == app.user %}
-                <a href="deletepage/jeu/{{ jeu.id }}" >delete</a>
+                <a href="deletepage/jeu/{{ jeu.id }}" >Supprimer</a>
+                <a href="updatepage_jeu_{{ jeu.id }}" >Modifier</a>
             {% endif %}
         {% endif %}
 

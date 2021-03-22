@@ -18,7 +18,8 @@
             
             {% if app.user %}
                 {% if is_granted('ROLE_ADMIN') or proto.auteur == app.user %}
-                    <a href="deletepage/proto/{{ proto.id }}" >delete</a>
+                    <a href="deletepage/proto/{{ proto.id }}" >Supprimer</a>
+                    <a href="updatepage_proto_{{ proto.id }}" >Modifier</a>
                 {% endif %}
             {% endif %}
             

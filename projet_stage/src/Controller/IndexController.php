@@ -644,5 +644,89 @@ class IndexController extends AbstractController
         }
         return $this->redirectToRoute('liste'.$type);      
     }
+
+    /**
+     * @Route("/updatepage_{type}_{id}", name="updatepage")
+     */
+    public function updatepage(Request $request,$id,$type): Response
+    {
+        if ($type=='blog') {
+            $em=$this->getDoctrine()->getRepository(Blog::class);
+            $page=$em->findOneby(array('id'=>$id));
+            $form = $this->createForm(MakeblogType::class, $page);
+        } elseif ($type=='jeu') {
+            $em=$this->getDoctrine()->getRepository(Jeu::class);
+            $page=$em->findOneby(array('id'=>$id));
+            $form = $this->createForm(MakejeuType::class, $page);
+        } elseif ($type=='proto') {
+            $em=$this->getDoctrine()->getRepository(Proto::class);
+            $page=$em->findOneby(array('id'=>$id));
+            $form = $this->createForm(MakeprotoType::class, $page);
+        } else {
+            return $this->redirectToRoute('listeblog');  
+        }
+
+        $form->handleRequest($request);
+
+        if ($this->getUser()){
+            if ($this->getUser()==$page->getAuteur() or $this->getUser()->getRoles()[0]=="ROLE_ADMIN" ) {
+                
+                if($form->isSubmitted() and $form->isValid()){
+
+                    $testdata = $form->getData();
+
+                    $page->setTitre($testdata->getTitre());
+                    $page->setContenue($testdata->getContenue());
+
+                    if ($type=='blog') {
+                        $page->setType($testdata->getType());
+                        $page->setJeu($testdata->getJeu());
+                    } elseif ($type=='jeu') {
+                        $page->setLien($testdata->getLien());
+                        $page->setEtat($testdata->getEtat());
+                    }
+
+                    $newImages=$form->get("image")->getData();
+
+                    $em=$this->getDoctrine()->getManager();
+                    $em->persist($page);
+                    $em->flush();
+
+                    $countnewImages=count($newImages);
+
+                    for ($i=0; $i < $countnewImages; $i++) { 
+                        $image=$newImages[$i];
+
+                        $encoded_data = base64_encode(file_get_contents($image)); 
+
+                        $imagetest = new Imagejeuproto();
+
+                        $imagetest->setType($type);
+                        if ($type=='blog') {
+                            $imagetest->setBlog($page);
+                        } elseif ($type=='jeu') {
+                            $imagetest->setJeu($page);
+                        } elseif ($type=='proto') {
+                            $imagetest->setProto($page);
+                        }
+                        
+                        $imagetest->setImage($encoded_data);
+
+                        $em=$this->getDoctrine()->getManager();
+                        $em->persist($imagetest);
+                        $em->flush();
+                    }
+                    
+                    return $this->redirectToRoute('liste'.$type); 
+                }
+                
+                return $this->render('index/page_update.html.twig', [
+                    'type' => $type,
+                    'page' => $page,
+                    'form' => $form->createView(),
+                ]);
+            }     
+        } return $this->redirectToRoute('listeblog');   
+    }  
 }
 

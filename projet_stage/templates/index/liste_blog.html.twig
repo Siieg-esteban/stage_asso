@@ -17,7 +17,8 @@
         
         {% if app.user %}
             {% if is_granted('ROLE_ADMIN') or blog.auteur == app.user %}
-                <a href="deletepage/blog/{{ blog.id }}" >delete</a>
+                <a href="deletepage/blog/{{ blog.id }}" >Supprimer</a>
+                <a href="updatepage_blog_{{ blog.id }}" >Modifier</a>
             {% endif %}
         {% endif %}
 
