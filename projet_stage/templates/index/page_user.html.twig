@@ -12,6 +12,13 @@
         <h3>PAGE USER</h3>
 
         <h1>{{ user.name }}</h1>
+        {% if user.roles[0] == 'ROLE_ADMIN'%}
+            <h3>Admin</h3>
+        {% elseif user.roles[0] == 'ROLE_CONTRIBUTOR'%} 
+            <h3>Contributeur</h3>
+        {% else %}
+            <h3>Utilisateur</h3>
+        {% endif %}
 
 
         {% set testimage = user.avatar %}

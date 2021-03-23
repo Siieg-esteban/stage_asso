@@ -784,5 +784,72 @@ class IndexController extends AbstractController
         }
         return $this->redirectToRoute('listeblog');       
     }
+
+    /**
+     * @Route("/deletecom{id}", name="deletecom")
+     */
+    public function deletecom(Request $request,$id): Response
+    {
+        $em=$this->getDoctrine()->getRepository(Com::class);
+        $com=$em->findOneby(array('id'=>$id));
+        
+        if ($this->getUser()) {
+            if ($this->getUser()==$com->getEnvoyer() or $this->getUser()->getRoles()[0]=="ROLE_ADMIN" ) {
+
+                $type=$com->getType();
+
+                if ($type=='blog') {
+                    $page=$com->getBlog();
+                } elseif ($type=='jeu') {
+                    $page=$com->getJeu();
+                } elseif ($type=='proto') {
+                    $page=$com->getProto();
+                } else {
+                    return $this->redirectToRoute('listeblog'); 
+                }
+
+                $em=$this->getDoctrine()->getManager();
+                $em->remove($com);
+                $em->flush();
+
+                return $this->redirectToRoute('page'.$type,['id' => $page->getId()]);
+            }
+        }
+        return $this->redirectToRoute('liste'.$com->getType());       
+    }
+
+    /**
+     * @Route("/updatecom{id}", name="updatecom")
+     */
+    public function updatecom(Request $request,$id): Response
+    {
+        $em=$this->getDoctrine()->getRepository(Com::class);
+        $com=$em->findOneby(array('id'=>$id));
+
+        if ($this->getUser()){
+            if ($this->getUser()==$com->getEnvoyer() or $this->getUser()->getRoles()[0]=="ROLE_ADMIN" ) {
+
+                $type=$com->getType();
+
+                if ($type=='blog') {
+                    $page=$com->getBlog();
+                } elseif ($type=='jeu') {
+                    $page=$com->getJeu();
+                } elseif ($type=='proto') {
+                    $page=$com->getProto();
+                } else {
+                    return $this->redirectToRoute('listeblog'); 
+                }
+
+                $com->setContenue($request->query->get("textComment"));
+
+                $em=$this->getDoctrine()->getManager();
+                $em->persist($com);
+                $em->flush();
+                
+                return $this->redirectToRoute('page'.$type,['id' => $page->getId()]);
+            }
+        } return $this->redirectToRoute('liste'.$com->getType());   
+    }  
 }
 

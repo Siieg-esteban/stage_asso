@@ -35,13 +35,35 @@
     {# Commentaire #}
     <h3>Commentaire :</h3>
     {% for com in comments %}
-        le {{ com.datetime|date('d/m/Y H:i') }} <a href="pageuser{{ com.envoyer.id }}">{{ com.envoyer.name }}</a> dit : {{ com.contenue }}
+        {% if com.envoyer.roles[0] == 'ROLE_ADMIN'%}
+            {% set role = 'Admin' %}
+        {% elseif com.envoyer.roles[0] == 'ROLE_CONTRIBUTOR'%} 
+            {% set role = 'Contributeur' %}
+        {% else %}
+            {% set role = 'Utilisateur' %}
+        {% endif %}
+
+        <div id="Com{{ com.id }}">
+            le {{ com.datetime|date('d/m/Y H:i') }} {{ role }} <a href="pageuser{{ com.envoyer.id }}">{{ com.envoyer.name }}</a> dit : {{ com.contenue }}
+        </div>
+
+        <form id="UpdateCom{{ com.id }}" action="updatecom{{ com.id }}" style="display: none">
+            <textarea name="textComment" class="form-control" rows="3" >{{ com.contenue }}</textarea>
+            
+            <br><button class="btn btn-light">Valider modification</button> 
+        </form>
+
+        {% if app.user %}
+            {% if is_granted('ROLE_ADMIN') or com.envoyer == app.user %}
+                <a href="deletecom">Supprimer</a>
+
+                <button id="btnUpdateCom{{ com.id }}" onclick="showUpdateCom({{ com.id }})">Modifier</button>          
+            {% endif %}
+        {% endif %}
         <br><br>
     {% endfor %}
 
-    {% if app.user %}
-        <button id="btnFormCom" class="btn btn-light" onclick="showFormCom()">laisser un commentaire</button> 
-
+    {% if app.user %} 
         <form id="formCom" action="commentaire" style="display: none">
             <textarea name="textComment" class="form-control" rows="3" placeholder="plouf"></textarea>
             
@@ -49,7 +71,9 @@
             <input type="hidden" name="pageid" value="{{ blog.id }}"> 
             
             <br><button class="btn btn-light">envoyer</button> 
-        </form>   
+        </form> 
+        
+        <button id="btnFormCom" class="btn btn-light" onclick="showFormCom()">laisser un commentaire</button> 
     {% endif %}   
  
 </div>
@@ -58,14 +82,31 @@
 {% block javascripts %}
     <script>
         var visible=false;
+        var visible2=false;
         
         function showFormCom(){
             if (visible==false){
                 document.getElementById("formCom").style.display = "block";
+                document.getElementById('btnFormCom').innerHTML = "Fermer";
                 visible=true;
             }else{
                 document.getElementById("formCom").style.display = "none";
+                document.getElementById("btnFormCom").innerHTML = "laisser un commentaire";
                 visible=false;
+            }
+        }
+
+        function showUpdateCom($id){
+            if (visible2==false){
+                document.getElementById("UpdateCom"+$id).style.display = "block";
+                document.getElementById("Com"+$id).style.display = "none";
+                document.getElementById('btnUpdateCom'+$id).innerHTML = "Fermer";
+                visible2=true;
+            }else{
+                document.getElementById("UpdateCom"+$id).style.display = "none";
+                document.getElementById("Com"+$id).style.display = "block";
+                document.getElementById('btnUpdateCom'+$id).innerHTML = "Modifier";
+                visible2=false;
             }
         }
     </script>
