@@ -6,6 +6,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\FileBag;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Contracts\Translation\TranslatorInterface;
@@ -920,7 +921,48 @@ class IndexController extends AbstractController
                     return $this->redirectToRoute('listeblog'); 
                 }
 
-                $com->setContenue($request->query->get("textComment"));
+                $com->setContenue($request->request->get("textComment"));
+
+                if ($request->getMethod() == "POST") {
+                    
+                    $files = $request->files->all();
+                    foreach ($files as $file) {
+                        // if ($file instanceof UploadedFile) {
+                            $encoded_data= base64_encode(file_get_contents($file));
+
+                            $imagetest = new Imagecommunication();
+        
+                            $imagetest->setType("com");
+                            $imagetest->setCom($com);
+                            $imagetest->setImage($encoded_data);
+            
+                            $em=$this->getDoctrine()->getManager();
+                            $em->persist($imagetest);
+                            $em->flush();
+                        // }
+                    }
+                }
+
+                // if ($request->files->all("images")) {
+                //     $newImages=$request->files->all("images");
+                //     $countnewImages=count($newImages);
+
+                //     for ($i=0; $i < $countnewImages; $i++) {
+                //         $image=$newImages[$i];
+        
+                //         $encoded_data = base64_encode(file_get_contents($image)); 
+        
+                //         $imagetest = new Imagecommunication();
+        
+                //         $imagetest->setType("com");
+                //         $imagetest->setCom($com);
+                //         $imagetest->setImage($encoded_data);
+        
+                //         $em=$this->getDoctrine()->getManager();
+                //         $em->persist($imagetest);
+                //         $em->flush();
+                //     }
+                // }
 
                 $em=$this->getDoctrine()->getManager();
                 $em->persist($com);

@@ -69,11 +69,11 @@
             </div>    
 
             {# form update com #}
-            <form id="UpdateCom{{ com.id }}" action="updatecom{{ com.id }}" style="display: none">
+            <form id="UpdateCom{{ com.id }}" action="updatecom{{ com.id }}" method="post" style="display: none" enctype="multipart/form-data">
                 <textarea name="textComment" class="form-control" rows="3" required>{{ com.contenue }}</textarea>
                 <br>
                 update image
-                <input type="file" id="images" name="images" accept="image/png" {# multiple #}>
+                <input type="file" id="images" name="images" accept="image/png" multiple>
                 
                 <br><button class="btn btn-light">Valider modification</button> 
             </form>
@@ -82,7 +82,11 @@
             {% for img in imagesCom %}
                 {% if img.com == com %}
                     <img src="data:image/png;base64, {{ img.image }}" style="max-width:600px;max-height:600px"> 
-                    <a class='btn_update{{ com.id }}' style="display: none" href="deleteimagecom_{{ img.id }}">delete</a>
+                    {% if app.user %}
+                        {% if is_granted('ROLE_ADMIN') or com.envoyer == app.user %}
+                            <a class='btn_update{{ com.id }}' style="display: none" href="deleteimagecom_{{ img.id }}">Supprimer</a>
+                        {% endif %}
+                    {% endif %}
                 <br><br>
                 {% endif %}
             {% endfor %}
@@ -96,6 +100,7 @@
                 {% endif %}
             {% endif %}
             <br><br><br>
+
         {% endfor %}
 
         {% if app.user %}
