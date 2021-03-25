@@ -13,6 +13,7 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 use App\Form\MakeprotoType;
 use App\Form\MakejeuType;
 use App\Form\MakeblogType;
+use App\Form\MakecomType;
 use App\Form\NewMessageType;
 
 use App\Entity\Blog;
@@ -21,6 +22,7 @@ use App\Entity\Proto;
 use App\Entity\Com;
 use App\Entity\User;
 use App\Entity\Imagejeuproto;
+use App\Entity\Imagecommunication;
 use App\Entity\Listecontributeur;
 use App\Entity\Listecompetence;
 use App\Entity\Competence;
@@ -345,7 +347,7 @@ class IndexController extends AbstractController
     /**
      * @Route("/pageproto{id}", name="pageproto")
      */
-    public function pageproto($id): Response
+    public function pageproto($id,Request $request): Response
     {
         $em=$this->getDoctrine()->getRepository(Proto::class);
         $proto=$em->findOneby(array('id'=>$id));
@@ -362,10 +364,20 @@ class IndexController extends AbstractController
         $contribAll=$em4->findBy(array('type'=>'proto'));
         $countContrib=count($contribAll);
 
+        $em5=$this->getDoctrine()->getRepository(Imagecommunication::class);
+        $allimagescom=$em5->findBy(array('type'=>'com'));;
+        $imagecomtest=array();
+
         $comment=array();
         for ($i=0;$i<$countCom;$i++) {
             if ($AllProtoCom[$i]->getProto()->getId()==$id) {
                 $comment[]=$AllProtoCom[$i];
+                $test=$em5->findBy(array('com'=>$AllProtoCom[$i]));
+                if ($test) {
+                    foreach ($test as $test2) {
+                        $imagecomtest[]=$test2;
+                    }
+                }
             } 
         }
 
@@ -383,10 +395,55 @@ class IndexController extends AbstractController
             } 
         }
 
+        $Comment = new Com();
+
+        $form = $this->createForm(MakecomType::class, $Comment);
+        $form->handlerequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $testdata = $form->getData();
+
+            $userid=$this->getUser();
+            $datetime = new \DateTime('@'.strtotime('now'));
+
+            $Comment->setProto($proto);
+            $Comment->setType('proto');
+            $Comment->setDatetime($datetime);
+            $Comment->setEnvoyer($userid);
+            $Comment->setContenue($testdata->getContenue());
+
+            $newImages=$form->get("image")->getData();
+
+            $em=$this->getDoctrine()->getManager();
+            $em->persist($Comment);
+            $em->flush();
+
+            $countnewImages=count($newImages);
+
+            for ($i=0; $i < $countnewImages; $i++) { 
+                $image=$newImages[$i];
+
+                $encoded_data = base64_encode(file_get_contents($image)); 
+
+                $imagetest = new Imagecommunication();
+
+                $imagetest->setType("com");
+                $imagetest->setCom($Comment);
+                $imagetest->setImage($encoded_data);
+
+                $em=$this->getDoctrine()->getManager();
+                $em->persist($imagetest);
+                $em->flush();
+            }
+
+            return $this->redirect($request->getUri());
+        }
         return $this->render('index/page_proto.html.twig', [
+            'form' => $form->createView(),
             'proto' => $proto,
             'comments' => $comment,
             'images' => $images,
+            'imagesCom' => $imagecomtest,
             'listecontrib' => $contribList,
         ]);
     }
@@ -432,7 +489,29 @@ class IndexController extends AbstractController
             $em=$this->getDoctrine()->getManager();
             $em->persist($Comment);
             $em->flush();
+
+            if ($request->query->get("imagesComment")){
+                $newImages=$request->query->get("imagesComment");
+                $countnewImages=count($newImages);
+
+                for ($i=0; $i < $countnewImages; $i++) {
+                    $image=$newImages[$i];
+    
+                    $encoded_data = base64_encode(file_get_contents($image)); 
+    
+                    $imagetest = new Imagecommunication();
+    
+                    $imagetest->setType("com");
+                    $imagetest->setCom($Comment);
+                    $imagetest->setImage($encoded_data);
+    
+                    $em=$this->getDoctrine()->getManager();
+                    $em->persist($imagetest);
+                    $em->flush();
+                }
+            }  
         }
+
         if ($request->query->get("type")=="blog") {
             return $this->redirectToRoute('pageblog', ['id' => $pageId]);
         }elseif ($request->query->get("type")=="jeu") {

@@ -72,7 +72,7 @@ class Imagecommunication
 
     public function getImage()
     {
-        return $this->image;
+        return stream_get_contents($this->image);
     }
 
     public function setImage($image): self
