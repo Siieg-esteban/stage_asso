@@ -930,5 +930,28 @@ class IndexController extends AbstractController
             }
         } return $this->redirectToRoute('liste'.$com->getType());   
     }  
+
+    /**
+     * @Route("/deleteimagecom_{id}", name="deleteimage")
+     */
+    public function deleteimagecom(Request $request,$id): Response
+    {
+        $em=$this->getDoctrine()->getRepository(Imagecommunication::class);
+        $image=$em->findOneby(array('id'=>$id));
+        $com=$image->getCom();
+        $proto=$com->getProto();
+        
+        if ($this->getUser()){
+            if ($this->getUser()==$com->getEnvoyer() or $this->getUser()->getRoles()[0]=="ROLE_ADMIN" ) {
+                
+                $em=$this->getDoctrine()->getManager();
+                $em->remove($image);
+                $em->flush();
+
+                return $this->redirectToRoute('pageproto',['id' => $proto->getId()]);
+            }
+        }
+        return $this->redirectToRoute('listeblog');       
+    }
 }
 

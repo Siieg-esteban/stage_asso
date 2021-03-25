@@ -66,23 +66,28 @@
 
             <div id="Com{{ com.id }}">
                 le {{ com.datetime|date('d/m/Y H:i') }} {{ role }} <a href="pageuser{{ com.envoyer.id }}">{{ com.envoyer.name }}</a> dit : {{ com.contenue| raw }}
-                {% for img in imagesCom %}
-                    {% if img.com == com %}
-                        <img src="data:image/png;base64, {{ img.image }}" style="max-width:600px;max-height:600px"> 
-                    <br><br>
-                    {% endif %}
-                {% endfor %}
-            </div>
+            </div>    
 
+            {# form update com #}
             <form id="UpdateCom{{ com.id }}" action="updatecom{{ com.id }}" style="display: none">
                 <textarea name="textComment" class="form-control" rows="3" required>{{ com.contenue }}</textarea>
                 <br>
                 update image
-                <input type="file" id="images" name="images" accept="image/png" multiple>
+                <input type="file" id="images" name="images" accept="image/png" {# multiple #}>
                 
                 <br><button class="btn btn-light">Valider modification</button> 
             </form>
+
+            {# afficgage image com #}    
+            {% for img in imagesCom %}
+                {% if img.com == com %}
+                    <img src="data:image/png;base64, {{ img.image }}" style="max-width:600px;max-height:600px"> 
+                    <a class='btn_update{{ com.id }}' style="display: none" href="deleteimagecom_{{ img.id }}">delete</a>
+                <br><br>
+                {% endif %}
+            {% endfor %}
             
+            {# update com #}
             {% if app.user %}
                 {% if is_granted('ROLE_ADMIN') or com.envoyer == app.user %}
                     <a href="deletecom{{ com.id }}">Supprimer</a>
@@ -122,6 +127,8 @@
     <script>
         var visible=false;
         var visible2=false;
+
+        //CKEDITOR.replace( 'textComment' );
         
         function showFormCom(){
             if (visible==false){
@@ -140,11 +147,25 @@
                 document.getElementById("UpdateCom"+$id).style.display = "block";
                 document.getElementById("Com"+$id).style.display = "none";
                 document.getElementById('btnUpdateCom'+$id).innerHTML = "Fermer";
+                var btn_update = document.getElementsByClassName("btn_update"+$id);
+
+                var lengthOfArray=btn_update.length;
+
+                for (var i=0; i<lengthOfArray;i++){
+                    btn_update[i].style.display='block';
+                }
                 visible2=true;
             }else{
                 document.getElementById("UpdateCom"+$id).style.display = "none";
                 document.getElementById("Com"+$id).style.display = "block";
                 document.getElementById('btnUpdateCom'+$id).innerHTML = "Modifier";
+                var btn_update = document.getElementsByClassName("btn_update"+$id);
+
+                var lengthOfArray=btn_update.length;
+
+                for (var i=0; i<lengthOfArray;i++){
+                    btn_update[i].style.display='none';
+                }
                 visible2=false;
             }
         }
