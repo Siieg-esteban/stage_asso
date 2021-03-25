@@ -18,29 +18,73 @@
         {# messagerie #}
         <h3> Conversation :</h3>
         {% if messages %}
-        ceci est le début de votre conversation avec {{ user.name }} <br><br>  
+            ceci est le début de votre conversation avec {{ user.name }} <br><br>  
             {% for message in messages %}
+                {# change couleur selon recu ou envoyer #}
                 {% if message.envoyer == user %}
-                    <span style="color:red";> {recu} {{ message.contenue|raw }} </span><br>
+                    <div id="Mes{{ message.id }}">
+                        <span style="color:red";> {recu} {{ message.contenue|raw }} </span><br>
+                    </div>
                 {% elseif message.receveur == user %}
-                    <span style="color:blue";> {envoyer} {{ message.contenue|raw }} </span><br>
+                    <div id="Mes{{ message.id }}">
+                        <span style="color:blue";> {envoyer} {{ message.contenue|raw }} </span><br>
+                    </div>
                 {% endif %}
+
+                {# form update messagerie #}
+                <form id="UpdateMes{{ message.id }}" action="updatecom_mes_{{ message.id }}" method="post" style="display: none" enctype="multipart/form-data">
+                    <textarea name="textComment" class="form-control" rows="3" required>{{ message.contenue }}</textarea>
+                    <br>
+                    update image
+                    <input type="file" id="images" name="images" accept="image/png" multiple>
+                    
+                    <br><button class="btn btn-light">Valider modification</button> 
+                </form>
+
+                {# afficgage image message #}    
+                {% for img in imagesmessagerie %}
+                    {% if img.messagerie == message %}
+                        <img src="data:image/png;base64, {{ img.image }}" style="max-width:600px;max-height:600px"> 
+                        {% if app.user %}
+                            {% if is_granted('ROLE_ADMIN') or message.envoyer == app.user %}
+                                <a class='btn_update{{ message.id }}' style="display: none" href="deleteimagecom_{{ img.id }}">Supprimer</a>
+                            {% endif %}
+                        {% endif %}
+                    <br><br>
+                    {% endif %}
+                {% endfor %}
+
+                {# update message #}
+                {% if app.user %}
+                    {% if is_granted('ROLE_ADMIN') or message.envoyer == app.user %}
+                        <a href="deletecom_mes_{{ message.id }}">Supprimer</a>
+
+                        <button id="btnUpdateMes{{ message.id }}" onclick="showUpdateMes({{ message.id }})">Modifier</button> 
+                    {% endif %}
+                {% endif %}
+                <br><br><br>
+
+
             {% endfor %}
         {% else %} 
             vous n'avez pas encore envoyer de message a {{ user.name }} <br><br>    
         {% endif %}
 
-            {# formulaire envoyer une message #}
-            <button id="btnFormJeu" class="btn btn-light" onclick="showFormJeu()">envoyer un message a {{ user.name }}</button> 
-            <div id="formJeu" style="display: none">
-                {{ form_start(form) }}
-                    {{ form_row(form.contenue, {
-                        label: 'message'
-                    }) }}
-                    <button type="submit" class="btn">Créer</button>
-                {{ form_end(form) }}
-            </div>
-        <br><br>
+        {# formulaire envoyer une message #}
+        <div id="formMes" style="display: none">
+            {{ form_start(form) }}
+                {{ form_row(form.contenue, {
+                    label: 'message'
+                }) }}
+                {{ form_row(form.image, {
+                    label: 'image'
+                }) }}
+                <button type="submit" class="btn">Créer</button>
+            {{ form_end(form) }}
+        </div>
+        <button id="btnFormMes" class="btn btn-light" onclick="showFormMes()">envoyer un message a {{ user.name }}</button> 
+        
+    <br><br>
 
     </div>
 {% else %}
@@ -53,14 +97,45 @@
 {% block javascripts %}
     <script>
         var visible=false;
+        var visible2=false;
         
-        function showFormJeu(){
+        function showFormMes(){
             if (visible==false){
-                document.getElementById("formJeu").style.display = "block";
+                document.getElementById("formMes").style.display = "block";
+                document.getElementById('btnFormMes').innerHTML = "Fermer";
                 visible=true;
             }else{
-                document.getElementById("formJeu").style.display = "none";
+                document.getElementById("formMes").style.display = "none";
+                document.getElementById("btnFormMes").innerHTML = "envoyer un message a {{ user.name }}";
                 visible=false;
+            }
+        }
+
+        function showUpdateMes($id){
+            if (visible2==false){
+                document.getElementById("UpdateMes"+$id).style.display = "block";
+                document.getElementById("Mes"+$id).style.display = "none";
+                document.getElementById('btnUpdateMes'+$id).innerHTML = "Fermer";
+                var btn_update = document.getElementsByClassName("btn_update"+$id);
+
+                var lengthOfArray=btn_update.length;
+
+                for (var i=0; i<lengthOfArray;i++){
+                    btn_update[i].style.display='block';
+                }
+                visible2=true;
+            }else{
+                document.getElementById("UpdateMes"+$id).style.display = "none";
+                document.getElementById("Mes"+$id).style.display = "block";
+                document.getElementById('btnUpdateMes'+$id).innerHTML = "Modifier";
+                var btn_update = document.getElementsByClassName("btn_update"+$id);
+
+                var lengthOfArray=btn_update.length;
+
+                for (var i=0; i<lengthOfArray;i++){
+                    btn_update[i].style.display='none';
+                }
+                visible2=false;
             }
         }
     </script>

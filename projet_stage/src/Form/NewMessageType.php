@@ -3,6 +3,7 @@
 namespace App\Form;
 
 use App\Entity\Messagerie;
+
 use FOS\CKEditorBundle\Form\Type\CKEditorType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
@@ -21,7 +22,9 @@ use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Translation\Translator;
 use Symfony\Component\Translation\Loader\ArrayLoader;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
+use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Validator\Constraints\File;
+use Symfony\Component\Validator\Constraints\All;
 
 class NewMessageType extends AbstractType
 {
@@ -31,6 +34,22 @@ class NewMessageType extends AbstractType
             // ->add('datetime')
             ->add('contenue', CKEditorType::class, [
                 'required'=>true,
+            ])
+            ->add('image', FileType::class,  [
+                'mapped'=>false,
+                'required'=>false,
+                'multiple'=>true,
+                'constraints'=>[
+                    new All([
+                        new File([
+                            'maxSize'=>'1024k',
+                            'mimeTypes'=> [
+                                'image/png'
+                            ],
+                            'mimeTypesMessage'=> 'pas le bon mime type !'
+                        ])
+                    ])
+                ]
             ])
             // ->add('envoyer')
             // ->add('receveur')

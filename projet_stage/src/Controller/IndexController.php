@@ -595,6 +595,9 @@ class IndexController extends AbstractController
         $allMessage=$em2->findAll();
         $countAllMessage=count($allMessage);
 
+        $em3=$this->getDoctrine()->getRepository(Imagecommunication::class);
+        $allMessageImg=$em3->findby(array('type'=>'messagerie'));
+
         $messageList=array();
         for ($i=0;$i<$countAllMessage;$i++) {
             if ($allMessage[$i]->getEnvoyer()==$theUser or $allMessage[$i]->getReceveur()==$theUser) {
@@ -623,14 +626,34 @@ class IndexController extends AbstractController
             $message->setEnvoyer($userid);
             $message->setReceveur($theUser);
 
+            $newImages=$form->get("image")->getData();            
+
             $em=$this->getDoctrine()->getManager();
             $em->persist($message);
             $em->flush();
 
+            $countnewImages=count($newImages);
+            
+            for ($i=0; $i < $countnewImages; $i++) { 
+                $image=$newImages[$i];
+
+                $encoded_data = base64_encode(file_get_contents($image)); 
+
+                $imagetest = new Imagecommunication();
+
+                $imagetest->setType("messagerie");
+                $imagetest->setMessagerie($message);
+                $imagetest->setImage($encoded_data);
+
+                $em=$this->getDoctrine()->getManager();
+                $em->persist($imagetest);
+                $em->flush();
+            }
             return $this->redirect($request->getUri());
         }
 
         return $this->render('index/page_messagerie.html.twig', [
+            'imagesmessagerie' => $allMessageImg,
             'form' => $form->createView(),
             'user' => $theUser,
             'messages' => $messageList,
@@ -866,109 +889,119 @@ class IndexController extends AbstractController
     }
 
     /**
-     * @Route("/deletecom{id}", name="deletecom")
+     * @Route("/deletecom_{type}_{id}", name="deletecom")
      */
-    public function deletecom(Request $request,$id): Response
+    public function deletecom(Request $request,$id,$type): Response
     {
-        $em=$this->getDoctrine()->getRepository(Com::class);
-        $com=$em->findOneby(array('id'=>$id));
+        if ($type=='com') {
+            $em=$this->getDoctrine()->getRepository(Com::class);
+            $com=$em->findOneby(array('id'=>$id));
+        } elseif ($type=='mes') {
+            $em=$this->getDoctrine()->getRepository(Messagerie::class);
+            $com=$em->findOneby(array('id'=>$id));
+        }
+        
         
         if ($this->getUser()) {
             if ($this->getUser()==$com->getEnvoyer() or $this->getUser()->getRoles()[0]=="ROLE_ADMIN" ) {
 
-                $type=$com->getType();
+                if ($type=='com') {
+                    $typepage=$com->getType();
 
-                if ($type=='blog') {
-                    $page=$com->getBlog();
-                } elseif ($type=='jeu') {
-                    $page=$com->getJeu();
-                } elseif ($type=='proto') {
-                    $page=$com->getProto();
-                } else {
-                    return $this->redirectToRoute('listeblog'); 
+                    if ($typepage=='blog') {
+                        $page=$com->getBlog();
+                    } elseif ($typepage=='jeu') {
+                        $page=$com->getJeu();
+                    } elseif ($typepage=='proto') {
+                        $page=$com->getProto();
+                    } else {
+                        return $this->redirectToRoute('listeblog'); 
+                    }
+                } elseif ($type=='mes') {
+                    $typepage='messagerie';
+                    $page=$com->getReceveur();
                 }
 
                 $em=$this->getDoctrine()->getManager();
                 $em->remove($com);
                 $em->flush();
 
-                return $this->redirectToRoute('page'.$type,['id' => $page->getId()]);
+                return $this->redirectToRoute('page'.$typepage,['id' => $page->getId()]);
             }
         }
         return $this->redirectToRoute('liste'.$com->getType());       
     }
 
     /**
-     * @Route("/updatecom{id}", name="updatecom")
+     * @Route("/updatecom_{type}_{id}", name="updatecom")
      */
-    public function updatecom(Request $request,$id): Response
+    public function updatecom(Request $request,$id,$type): Response
     {
-        $em=$this->getDoctrine()->getRepository(Com::class);
-        $com=$em->findOneby(array('id'=>$id));
+        if ($type=='com') {
+            $em=$this->getDoctrine()->getRepository(Com::class);
+            $com=$em->findOneby(array('id'=>$id));
+        } elseif ($type=='mes') {
+            $em=$this->getDoctrine()->getRepository(Messagerie::class);
+            $com=$em->findOneby(array('id'=>$id));
+        } else{
+            return $this->redirectToRoute('listeblog');   
+        }
+        
 
         if ($this->getUser()){
             if ($this->getUser()==$com->getEnvoyer() or $this->getUser()->getRoles()[0]=="ROLE_ADMIN" ) {
+               
+                if ($type=='com') {
+                    $typepage=$com->getType();
 
-                $type=$com->getType();
-
-                if ($type=='blog') {
-                    $page=$com->getBlog();
-                } elseif ($type=='jeu') {
-                    $page=$com->getJeu();
-                } elseif ($type=='proto') {
-                    $page=$com->getProto();
-                } else {
-                    return $this->redirectToRoute('listeblog'); 
+                    if ($typepage=='blog') {
+                        $page=$com->getBlog();
+                    } elseif ($typepage=='jeu') {
+                        $page=$com->getJeu();
+                    } elseif ($typepage=='proto') {
+                        $page=$com->getProto();
+                    } else {
+                        return $this->redirectToRoute('listeblog'); 
+                    }
+                } elseif ($type='mes') {
+                    $typepage='messagerie';
+                    $page=$com->getReceveur();
                 }
+                
 
                 $com->setContenue($request->request->get("textComment"));
 
+                $files = $request->files->all();
                 if ($request->getMethod() == "POST") {
-                    
-                    $files = $request->files->all();
+    
                     foreach ($files as $file) {
-                        // if ($file instanceof UploadedFile) {
+                         if ($file instanceof UploadedFile) {
                             $encoded_data= base64_encode(file_get_contents($file));
 
                             $imagetest = new Imagecommunication();
         
-                            $imagetest->setType("com");
-                            $imagetest->setCom($com);
+                            if ($type=='com') {
+                                $imagetest->setType("com");
+                                $imagetest->setCom($com);
+                            }elseif ($type='mes') {
+                                $imagetest->setType("messagerie");
+                                $imagetest->setMessagerie($com);
+                            }
+                            
                             $imagetest->setImage($encoded_data);
             
                             $em=$this->getDoctrine()->getManager();
                             $em->persist($imagetest);
                             $em->flush();
-                        // }
+                        }
                     }
                 }
-
-                // if ($request->files->all("images")) {
-                //     $newImages=$request->files->all("images");
-                //     $countnewImages=count($newImages);
-
-                //     for ($i=0; $i < $countnewImages; $i++) {
-                //         $image=$newImages[$i];
-        
-                //         $encoded_data = base64_encode(file_get_contents($image)); 
-        
-                //         $imagetest = new Imagecommunication();
-        
-                //         $imagetest->setType("com");
-                //         $imagetest->setCom($com);
-                //         $imagetest->setImage($encoded_data);
-        
-                //         $em=$this->getDoctrine()->getManager();
-                //         $em->persist($imagetest);
-                //         $em->flush();
-                //     }
-                // }
 
                 $em=$this->getDoctrine()->getManager();
                 $em->persist($com);
                 $em->flush();
                 
-                return $this->redirectToRoute('page'.$type,['id' => $page->getId()]);
+                return $this->redirectToRoute('page'.$typepage,['id' => $page->getId()]);
             }
         } return $this->redirectToRoute('liste'.$com->getType());   
     }  
@@ -980,8 +1013,16 @@ class IndexController extends AbstractController
     {
         $em=$this->getDoctrine()->getRepository(Imagecommunication::class);
         $image=$em->findOneby(array('id'=>$id));
-        $com=$image->getCom();
-        $proto=$com->getProto();
+        $type=$image->getType();
+        if ($type=='com') {
+            $com=$image->getCom();
+            $proto=$com->getProto();
+            $page='proto';
+        }elseif ($type=='messagerie') {
+            $com=$image->getMessagerie();
+            $proto=$com->getReceveur();
+            $page='messagerie';
+        }
         
         if ($this->getUser()){
             if ($this->getUser()==$com->getEnvoyer() or $this->getUser()->getRoles()[0]=="ROLE_ADMIN" ) {
@@ -990,7 +1031,7 @@ class IndexController extends AbstractController
                 $em->remove($image);
                 $em->flush();
 
-                return $this->redirectToRoute('pageproto',['id' => $proto->getId()]);
+                return $this->redirectToRoute('page'.$page,['id' => $proto->getId()]);
             }
         }
         return $this->redirectToRoute('listeblog');       

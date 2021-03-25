@@ -69,7 +69,7 @@
             </div>    
 
             {# form update com #}
-            <form id="UpdateCom{{ com.id }}" action="updatecom{{ com.id }}" method="post" style="display: none" enctype="multipart/form-data">
+            <form id="UpdateCom{{ com.id }}" action="updatecom_com_{{ com.id }}" method="post" style="display: none" enctype="multipart/form-data">
                 <textarea name="textComment" class="form-control" rows="3" required>{{ com.contenue }}</textarea>
                 <br>
                 update image
@@ -94,7 +94,7 @@
             {# update com #}
             {% if app.user %}
                 {% if is_granted('ROLE_ADMIN') or com.envoyer == app.user %}
-                    <a href="deletecom{{ com.id }}">Supprimer</a>
+                    <a href="deletecom_com_{{ com.id }}">Supprimer</a>
 
                     <button id="btnUpdateCom{{ com.id }}" onclick="showUpdateCom({{ com.id }})">Modifier</button> 
                 {% endif %}

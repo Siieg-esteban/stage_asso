@@ -72,7 +72,7 @@
             le {{ com.datetime|date('d/m/Y H:i') }} {{ role }} <a href="pageuser{{ com.envoyer.id }}">{{ com.envoyer.name }}</a> dit : {{ com.contenue }}
         </div>
 
-        <form id="UpdateCom{{ com.id }}" action="updatecom{{ com.id }}" style="display: none">
+        <form id="UpdateCom{{ com.id }}" action="updatecom_com_{{ com.id }}" style="display: none">
             <textarea name="textComment" class="form-control" rows="3" >{{ com.contenue }}</textarea>
             
             <br><button class="btn btn-light">Valider modification</button> 
@@ -80,7 +80,7 @@
         
         {% if app.user %}
             {% if is_granted('ROLE_ADMIN') or com.envoyer == app.user %}
-                <a href="deletecom{{ com.id }}">Supprimer</a>
+                <a href="deletecom_com_{{ com.id }}">Supprimer</a>
 
                 <button id="btnUpdateCom{{ com.id }}" onclick="showUpdateCom({{ com.id }})">Modifier</button> 
             {% endif %}
