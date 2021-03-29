@@ -10,6 +10,7 @@ use Symfony\Component\HttpFoundation\FileBag;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Contracts\Translation\TranslatorInterface;
+use Symfony\Component\String\Slugger\SluggerInterface;
 
 use App\Form\MakeprotoType;
 use App\Form\MakejeuType;
@@ -24,6 +25,7 @@ use App\Entity\Com;
 use App\Entity\User;
 use App\Entity\Imagejeuproto;
 use App\Entity\Imagecommunication;
+use App\Entity\Fichiercommunication;
 use App\Entity\Listecontributeur;
 use App\Entity\Listecompetence;
 use App\Entity\Competence;
@@ -348,7 +350,7 @@ class IndexController extends AbstractController
     /**
      * @Route("/pageproto{id}", name="pageproto")
      */
-    public function pageproto($id,Request $request): Response
+    public function pageproto($id,Request $request,SluggerInterface $slugger): Response
     {
         $em=$this->getDoctrine()->getRepository(Proto::class);
         $proto=$em->findOneby(array('id'=>$id));
@@ -436,6 +438,48 @@ class IndexController extends AbstractController
                 $em->persist($imagetest);
                 $em->flush();
             }
+
+
+
+
+            $uploadFile = $form->get('upload')->getData();
+
+            $countnewUpload=count($uploadFile);
+
+            if ($uploadFile) {
+                for ($i=0; $i < $countnewUpload; $i++) { 
+                
+                    $originalFilename = pathinfo($uploadFile[$i]->getClientOriginalName(), PATHINFO_FILENAME);
+                    // this is needed to safely include the file name as part of the URL
+                    $safeFilename = $slugger->slug($originalFilename);
+                    $newFilename = $safeFilename.'-'.uniqid().'.'.$uploadFile[$i]->guessExtension();
+
+                    // Move the file to the directory where uploads are stored
+                    try {
+                        $uploadFile[$i]->move(
+                            $this->getParameter('upload_directory'),
+                            $newFilename
+                        );
+                    } catch (FileException $e) {
+                        // ... handle exception if something happens during file upload
+                    }
+
+                    // updates the 'uploadFilename' property to store the PDF file name
+                    // instead of its contents
+                    $uploadDB = new Fichiercommunication();
+                    $uploadDB->setLien($newFilename);
+                    $uploadDB->setType('com');
+                    $uploadDB->setCom($Comment);
+
+                    $em=$this->getDoctrine()->getManager();
+                    $em->persist($uploadDB);
+                    $em->flush();
+                }
+            }
+
+
+
+
 
             return $this->redirect($request->getUri());
         }
