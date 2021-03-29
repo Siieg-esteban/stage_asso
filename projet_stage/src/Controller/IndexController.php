@@ -16,6 +16,7 @@ use App\Form\MakeprotoType;
 use App\Form\MakejeuType;
 use App\Form\MakeblogType;
 use App\Form\MakecomType;
+use App\Form\UpdatecomType;
 use App\Form\NewMessageType;
 
 use App\Entity\Blog;
@@ -413,7 +414,10 @@ class IndexController extends AbstractController
 
         $form = $this->createForm(MakecomType::class, $Comment);
         $form->handlerequest($request);
+        $form2 = $this->createForm(UpdatecomType::class, $Comment);
+        $form2->handlerequest($request);
 
+        // form create com page proto
         if ($form->isSubmitted() && $form->isValid()) {
             $testdata = $form->getData();
 
@@ -484,11 +488,83 @@ class IndexController extends AbstractController
                     $em->flush();
                 }
             }
-
             return $this->redirect($request->getUri());
         }
+
+        // form update com page proto
+        if ($form2->isSubmitted() && $form2->isValid()) {
+            $testdata = $form2->getData();
+            $id = $form2->get("comid")->getData();
+
+            $em=$this->getDoctrine()->getRepository(Com::class);
+            $Comment=$em->findOneby(array('id'=>$id));
+
+            $Comment->setContenue($form2->get("contenue2")->getData());
+            
+            $newImages=$form2->get("image2")->getData();
+
+            $em=$this->getDoctrine()->getManager();
+            $em->persist($Comment);
+            $em->flush();
+
+            $countnewImages=count($newImages);
+
+            for ($i=0; $i < $countnewImages; $i++) { 
+                $image=$newImages[$i];
+
+                $encoded_data = base64_encode(file_get_contents($image)); 
+
+                $imagetest = new Imagecommunication();
+
+                $imagetest->setType("com");
+                $imagetest->setCom($Comment);
+                $imagetest->setImage($encoded_data);
+
+                $em=$this->getDoctrine()->getManager();
+                $em->persist($imagetest);
+                $em->flush();
+            }
+
+            $uploadFile = $form2->get('upload2')->getData();
+
+            $countnewUpload=count($uploadFile);
+
+            if ($uploadFile) {
+                for ($i=0; $i < $countnewUpload; $i++) { 
+                
+                    $originalFilename = pathinfo($uploadFile[$i]->getClientOriginalName(), PATHINFO_FILENAME);
+                    // this is needed to safely include the file name as part of the URL
+                    $safeFilename = $slugger->slug($originalFilename);
+                    $newFilename = $safeFilename.'-'.uniqid().'.'.$uploadFile[$i]->guessExtension();
+
+                    // Move the file to the directory where uploads are stored
+                    try {
+                        $uploadFile[$i]->move(
+                            $this->getParameter('upload_directory'),
+                            $newFilename
+                        );
+                    } catch (FileException $e) {
+                        // ... handle exception if something happens during file upload
+                    }
+
+                    // updates the 'uploadFilename' property to store the PDF file name
+                    // instead of its contents
+                    $uploadDB = new Fichiercommunication();
+                    $uploadDB->setLien($newFilename);
+                    $uploadDB->setType('com');
+                    $uploadDB->setCom($Comment);
+
+                    $em=$this->getDoctrine()->getManager();
+                    $em->persist($uploadDB);
+                    $em->flush();
+                }
+            }
+            return $this->redirect($request->getUri());
+        }
+
         return $this->render('index/page_proto.html.twig', [
             'form' => $form->createView(),
+            'upform' => $form2->createView(),
             'proto' => $proto,
             'comments' => $comment,
             'images' => $images,
@@ -568,7 +644,6 @@ class IndexController extends AbstractController
             return $this->redirectToRoute('pagejeu', ['id' => $pageId]);
         }else{
             return $this->redirectToRoute('pageproto', ['id' => $pageId]);
-            // return $this->redirectToRoute('person_in_need_view', ['id' => $yourEntity->getId()]);
         }
     }
 
@@ -995,7 +1070,6 @@ class IndexController extends AbstractController
         } else{
             return $this->redirectToRoute('listeblog');   
         }
-        
 
         if ($this->getUser()){
             if ($this->getUser()==$com->getEnvoyer() or $this->getUser()->getRoles()[0]=="ROLE_ADMIN" ) {

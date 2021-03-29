@@ -65,18 +65,21 @@
             {% endif %}
 
             <div id="Com{{ com.id }}">
-                le {{ com.datetime|date('d/m/Y H:i') }} {{ role }} <a href="pageuser{{ com.envoyer.id }}">{{ com.envoyer.name }}</a> dit : {{ com.contenue| raw }}
+                le {{ com.datetime|date('d/m/Y H:i') }} {{ role }} <a href="pageuser{{ com.envoyer.id }}">{{ com.envoyer.name }}</a> dit : 
+                <span id='com_contenue_{{ com.id }}'>{{ com.contenue| raw }}</span>
             </div>    
 
             {# form update com #}
-            <form id="UpdateCom{{ com.id }}" action="updatecom_com_{{ com.id }}" method="post" style="display: none" enctype="multipart/form-data">
+            {# <form id="UpdateCom{{ com.id }}" action="updatecom_com_{{ com.id }}" method="post" style="display: none" enctype="multipart/form-data">
                 <textarea name="textComment" class="form-control" rows="3" required>{{ com.contenue }}</textarea>
                 <br>
-                update image
-                <input type="file" id="images" name="images" accept="image/png" multiple>
+                ajouter une image
+                <input type="file" id="images" name="images" accept="image/png" multiple><br>
+                ajouter un fichier
+                <input type="file" id="files" name="images" accept="audio/*,text/*,video/*,application/*" multiple>
                 
                 <br><button class="btn btn-light">Valider modification</button> 
-            </form>
+            </form> #}
 
             {# afficgage image com #}    
             {% for img in imagesCom %}
@@ -116,7 +119,25 @@
 
         {% endfor %}
 
+        {# form update com #}
+        <div id="UpdateCom" style="display: none">
+                {{ form_start(upform) }}
+                    {{ form_row(upform.contenue2, {
+                        label: 'contenue'
+                    }) }}
+                    {{ form_row(upform.image2, {
+                        label: 'images'
+                    }) }}
+                    {{ form_row(upform.upload2, {
+                        label: 'fichier'
+                    }) }}
+
+                    <button type="submit" class="btn">Créer</button>
+                {{ form_end(upform) }} 
+            </div>
+
         {% if app.user %}
+
             <div id="formCom" style="display: none">
                 {{ form_start(form) }}
                     {{ form_row(form.contenue, {
@@ -165,11 +186,13 @@
 
         function showUpdateCom($id){
             if (visible2==false){
-                document.getElementById("UpdateCom"+$id).style.display = "block";
-                document.getElementById("Com"+$id).style.display = "none";
-                document.getElementById('btnUpdateCom'+$id).innerHTML = "Fermer";
-                var btn_update = document.getElementsByClassName("btn_update"+$id);
+                document.getElementById('UpdateCom').style.display = 'block';
 
+                document.getElementById('btnUpdateCom'+$id).innerHTML = "Fermer";
+                document.getElementById("updatecom_comid").value = $id;
+                var testdata = document.getElementById("com_contenue_"+$id).innerHTML;
+                CKEDITOR.instances['updatecom_contenue2'].setData(testdata);
+                var btn_update = document.getElementsByClassName("btn_update"+$id);
                 var lengthOfArray=btn_update.length;
 
                 for (var i=0; i<lengthOfArray;i++){
@@ -177,11 +200,12 @@
                 }
                 visible2=true;
             }else{
-                document.getElementById("UpdateCom"+$id).style.display = "none";
-                document.getElementById("Com"+$id).style.display = "block";
-                document.getElementById('btnUpdateCom'+$id).innerHTML = "Modifier";
-                var btn_update = document.getElementsByClassName("btn_update"+$id);
+                document.getElementById('UpdateCom').style.display = 'none';
 
+                document.getElementById('btnUpdateCom'+$id).innerHTML = "Modifier";
+                document.getElementById("updatecom_comid").value = $id;
+                CKEDITOR.instances['updatecom_contenue2'].setData('');
+                var btn_update = document.getElementsByClassName("btn_update"+$id);
                 var lengthOfArray=btn_update.length;
 
                 for (var i=0; i<lengthOfArray;i++){

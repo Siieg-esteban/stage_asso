@@ -1,0 +1,42 @@
+- fonction de tri
+- fonction de recherche
+
+- demande pour devenir contributeur
+- accepter et changer role pour new contributeur
+
+- update fichier a télécharger
+- delete fichier a télécharger
+- fonction de téléchargement
+
+- add jeu
+- update jeu
+-? delete jeu 
+- affichage et jouabiliter du jeu
+
+-" modifier image pour com dans contrib "une seul image a la fois ...
+-" modifier image message privée "une seul image a la fois ...
+
+-? les update et maj de jeu 
+
+-? inviter une personne a contrib sur un projet
+
+-? jeu suivi
+-? alert quand news sur jeu suivie
+
+-? tchat instantanner
+
+-? upvote
+
+-? publier jeu depuis un proto
+
+- CSS 
+
+
+Fait ! :
+- add image pour com dans contrib
+- delete image pour com dans contrib
+- add image pour message privée
+- delete message privée
+- modifier message privée 
+- add fichier a télécharger
+
