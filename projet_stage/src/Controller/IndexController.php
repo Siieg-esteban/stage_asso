@@ -710,7 +710,7 @@ class IndexController extends AbstractController
     /**
      * @Route("/pagemessagerie{id}", name="pagemessagerie")
      */
-    public function pagemessagerie(Request $request, $id): Response
+    public function pagemessagerie(Request $request, $id,SluggerInterface $slugger): Response
     {
         $em=$this->getDoctrine()->getRepository(User::class);
         $theUser=$em->findOneby(array('id'=>$id));
@@ -721,6 +721,9 @@ class IndexController extends AbstractController
 
         $em3=$this->getDoctrine()->getRepository(Imagecommunication::class);
         $allMessageImg=$em3->findby(array('type'=>'messagerie'));
+
+        $em4=$this->getDoctrine()->getRepository(Fichiercommunication::class);
+        $allfichiercom=$em4->findBy(array('type'=>'messagerie'));;
 
         $messageList=array();
         for ($i=0;$i<$countAllMessage;$i++) {
@@ -773,11 +776,47 @@ class IndexController extends AbstractController
                 $em->persist($imagetest);
                 $em->flush();
             }
+
+            $uploadFile = $form->get('upload')->getData();
+
+            $countnewUpload=count($uploadFile);
+
+            if ($uploadFile) {
+                for ($i=0; $i < $countnewUpload; $i++) { 
+                
+                    $originalFilename = pathinfo($uploadFile[$i]->getClientOriginalName(), PATHINFO_FILENAME);
+                    // this is needed to safely include the file name as part of the URL
+                    $safeFilename = $slugger->slug($originalFilename);
+                    $newFilename = $safeFilename.'-'.uniqid().'.'.$uploadFile[$i]->guessExtension();
+
+                    // Move the file to the directory where uploads are stored
+                    try {
+                        $uploadFile[$i]->move(
+                            $this->getParameter('upload_directory'),
+                            $newFilename
+                        );
+                    } catch (FileException $e) {
+                        // ... handle exception if something happens during file upload
+                    }
+
+                    // updates the 'uploadFilename' property to store the PDF file name
+                    // instead of its contents
+                    $uploadDB = new Fichiercommunication();
+                    $uploadDB->setLien($newFilename);
+                    $uploadDB->setType('messagerie');
+                    $uploadDB->setMessagerie($message);
+
+                    $em=$this->getDoctrine()->getManager();
+                    $em->persist($uploadDB);
+                    $em->flush();
+                }
+            }
             return $this->redirect($request->getUri());
         }
 
         return $this->render('index/page_messagerie.html.twig', [
             'imagesmessagerie' => $allMessageImg,
+            'fichiersmessagerie' => $allfichiercom,
             'form' => $form->createView(),
             'user' => $theUser,
             'messages' => $messageList,
@@ -1167,15 +1206,15 @@ class IndexController extends AbstractController
         $em=$this->getDoctrine()->getRepository(Fichiercommunication::class);
         $file=$em->findOneby(array('lien'=>$filename));
         $type=$file->getType();
-        // if ($type=='com') {
+        if ($type=='com') {
             $com=$file->getCom();
             $proto=$com->getProto();
             $page='proto';
-        // }elseif ($type=='messagerie') {
-        //     $com=$image->getMessagerie();
-        //     $proto=$com->getReceveur();
-        //     $page='messagerie';
-        // }
+        }elseif ($type=='messagerie') {
+            $com=$file->getMessagerie();
+            $proto=$com->getReceveur();
+            $page='messagerie';
+        }
         
         if ($this->getUser()){
             if ($this->getUser()==$com->getEnvoyer() or $this->getUser()->getRoles()[0]=="ROLE_ADMIN" ) {

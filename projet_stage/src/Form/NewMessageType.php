@@ -51,6 +51,26 @@ class NewMessageType extends AbstractType
                     ])
                 ]
             ])
+            ->add('upload', FileType::class, [
+                'label' => 'Fichier',
+                'mapped' => false,
+                'required' => false,
+                'multiple'=>true,
+                'constraints' => [
+                    new All([
+                        new File([
+                            'maxSize'=>'10000k',
+                            'mimeTypes'=> [
+                                'audio/*',
+                                'text/*',
+                                'video/*',
+                                'application/*',
+                            ],
+                            'mimeTypesMessage'=> 'pas le bon mime type !'
+                        ])
+                    ])
+                ],
+            ])
             // ->add('envoyer')
             // ->add('receveur')
         ;

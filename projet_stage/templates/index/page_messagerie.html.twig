@@ -54,6 +54,19 @@
                     {% endif %}
                 {% endfor %}
 
+                {# afficgage fichier message #}   
+                {% for file in fichiersmessagerie %}
+                    {% if file.messagerie == message %}
+                        {{ file.lien }} : <a href="upload/{{ file.lien }}" download='{{ file.lien }}'>télécharger</a>
+                        {% if app.user %}
+                            {% if is_granted('ROLE_ADMIN') or message.envoyer == app.user %}
+                                <a class='btn_update{{ message.id }}' style="display: none" href="deletefichiercom_{{ file.lien }}" >Supprimer</a>
+                            {% endif %}
+                        {% endif %} 
+                    <br>
+                    {% endif %}
+                {% endfor %}
+
                 {# update message #}
                 {% if app.user %}
                     {% if is_granted('ROLE_ADMIN') or message.envoyer == app.user %}
@@ -78,6 +91,9 @@
                 }) }}
                 {{ form_row(form.image, {
                     label: 'image'
+                }) }}
+                {{ form_row(form.upload, {
+                    label: 'fichier'
                 }) }}
                 <button type="submit" class="btn">Créer</button>
             {{ form_end(form) }}
