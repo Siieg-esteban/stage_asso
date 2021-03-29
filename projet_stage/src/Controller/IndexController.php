@@ -371,16 +371,27 @@ class IndexController extends AbstractController
         $allimagescom=$em5->findBy(array('type'=>'com'));;
         $imagecomtest=array();
 
+        $em6=$this->getDoctrine()->getRepository(Fichiercommunication::class);
+        $allimagescom=$em6->findBy(array('type'=>'com'));;
+        $fichiercomtest=array();
+
         $comment=array();
         for ($i=0;$i<$countCom;$i++) {
             if ($AllProtoCom[$i]->getProto()->getId()==$id) {
                 $comment[]=$AllProtoCom[$i];
                 $test=$em5->findBy(array('com'=>$AllProtoCom[$i]));
+                $test3=$em6->findBy(array('com'=>$AllProtoCom[$i]));
                 if ($test) {
                     foreach ($test as $test2) {
                         $imagecomtest[]=$test2;
                     }
                 }
+                if ($test3) {
+                    foreach ($test3 as $test4) {
+                        $fichiercomtest[]=$test4;
+                    }
+                }
+
             } 
         }
 
@@ -439,9 +450,6 @@ class IndexController extends AbstractController
                 $em->flush();
             }
 
-
-
-
             $uploadFile = $form->get('upload')->getData();
 
             $countnewUpload=count($uploadFile);
@@ -477,10 +485,6 @@ class IndexController extends AbstractController
                 }
             }
 
-
-
-
-
             return $this->redirect($request->getUri());
         }
         return $this->render('index/page_proto.html.twig', [
@@ -489,6 +493,7 @@ class IndexController extends AbstractController
             'comments' => $comment,
             'images' => $images,
             'imagesCom' => $imagecomtest,
+            'fichierCom' => $fichiercomtest,
             'listecontrib' => $contribList,
         ]);
     }
@@ -1011,7 +1016,6 @@ class IndexController extends AbstractController
                     $typepage='messagerie';
                     $page=$com->getReceveur();
                 }
-                
 
                 $com->setContenue($request->request->get("textComment"));
 
@@ -1073,6 +1077,38 @@ class IndexController extends AbstractController
                 
                 $em=$this->getDoctrine()->getManager();
                 $em->remove($image);
+                $em->flush();
+
+                return $this->redirectToRoute('page'.$page,['id' => $proto->getId()]);
+            }
+        }
+        return $this->redirectToRoute('listeblog');       
+    }
+
+    /**
+     * @Route("/deletefichiercom_{filename}", name="deletefichiercom")
+     */
+    public function deletefichiercom(Request $request,$filename): Response
+    {
+        $em=$this->getDoctrine()->getRepository(Fichiercommunication::class);
+        $file=$em->findOneby(array('lien'=>$filename));
+        $type=$file->getType();
+        // if ($type=='com') {
+            $com=$file->getCom();
+            $proto=$com->getProto();
+            $page='proto';
+        // }elseif ($type=='messagerie') {
+        //     $com=$image->getMessagerie();
+        //     $proto=$com->getReceveur();
+        //     $page='messagerie';
+        // }
+        
+        if ($this->getUser()){
+            if ($this->getUser()==$com->getEnvoyer() or $this->getUser()->getRoles()[0]=="ROLE_ADMIN" ) {
+                unlink('upload/'.$filename);
+                
+                $em=$this->getDoctrine()->getManager();
+                $em->remove($file);
                 $em->flush();
 
                 return $this->redirectToRoute('page'.$page,['id' => $proto->getId()]);

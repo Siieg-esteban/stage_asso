@@ -60,7 +60,7 @@ class MakeprotoType extends AbstractType
                 'constraints' => [
                     new All([
                         new File([
-                            'maxSize'=>'1024k',
+                            'maxSize'=>'10000k',
                             'mimeTypes'=> [
                                 'audio/*',
                                 'text/*',
