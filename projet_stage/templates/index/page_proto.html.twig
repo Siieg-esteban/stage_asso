@@ -13,6 +13,7 @@
     <div class="example-wrapper">
         <h3>PAGE PROTO</h3>
 
+        {# proto contenue #}
         le {{ proto.datetime|date('d/m/Y H:i') }}
         <br>
         <h1>{{ proto.titre| raw }}</h1>
@@ -20,6 +21,7 @@
         {{ proto.contenue| raw }}
         <br>
 
+        {# image proto #}
         {% for img in images %}
             <img src="data:image/png;base64, {{ img.image }}" style="max-width:600px;max-height:600px">
             <br><br>
@@ -69,19 +71,7 @@
                 <span id='com_contenue_{{ com.id }}'>{{ com.contenue| raw }}</span>
             </div>    
 
-            {# form update com #}
-            {# <form id="UpdateCom{{ com.id }}" action="updatecom_com_{{ com.id }}" method="post" style="display: none" enctype="multipart/form-data">
-                <textarea name="textComment" class="form-control" rows="3" required>{{ com.contenue }}</textarea>
-                <br>
-                ajouter une image
-                <input type="file" id="images" name="images" accept="image/png" multiple><br>
-                ajouter un fichier
-                <input type="file" id="files" name="images" accept="audio/*,text/*,video/*,application/*" multiple>
-                
-                <br><button class="btn btn-light">Valider modification</button> 
-            </form> #}
-
-            {# afficgage image com #}    
+            {# affichage image com #}    
             {% for img in imagesCom %}
                 {% if img.com == com %}
                     <img src="data:image/png;base64, {{ img.image }}" style="max-width:600px;max-height:600px"> 
@@ -121,23 +111,24 @@
 
         {# form update com #}
         <div id="UpdateCom" style="display: none">
-                {{ form_start(upform) }}
-                    {{ form_row(upform.contenue2, {
-                        label: 'contenue'
-                    }) }}
-                    {{ form_row(upform.image2, {
-                        label: 'images'
-                    }) }}
-                    {{ form_row(upform.upload2, {
-                        label: 'fichier'
-                    }) }}
+            {{ form_start(upform) }}
+                {{ form_row(upform.contenue2, {
+                    label: 'contenue'
+                }) }}
+                {{ form_row(upform.image2, {
+                    label: 'images'
+                }) }}
+                {{ form_row(upform.upload2, {
+                    label: 'fichier'
+                }) }}
+                {{ form_row(upform.comid) }}
 
-                    <button type="submit" class="btn">Créer</button>
-                {{ form_end(upform) }} 
-            </div>
+                <button type="submit" class="btn">Créer</button>
+            {{ form_end(upform) }} 
+        </div>
 
         {% if app.user %}
-
+            {# form com #}
             <div id="formCom" style="display: none">
                 {{ form_start(form) }}
                     {{ form_row(form.contenue, {
@@ -203,7 +194,7 @@
                 document.getElementById('UpdateCom').style.display = 'none';
 
                 document.getElementById('btnUpdateCom'+$id).innerHTML = "Modifier";
-                document.getElementById("updatecom_comid").value = $id;
+                document.getElementById("updatecom_comid").value = "";
                 CKEDITOR.instances['updatecom_contenue2'].setData('');
                 var btn_update = document.getElementsByClassName("btn_update"+$id);
                 var lengthOfArray=btn_update.length;

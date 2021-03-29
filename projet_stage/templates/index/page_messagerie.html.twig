@@ -23,25 +23,27 @@
                 {# change couleur selon recu ou envoyer #}
                 {% if message.envoyer == user %}
                     <div id="Mes{{ message.id }}">
-                        <span style="color:red";> {recu} {{ message.contenue|raw }} </span><br>
+                        <div style="color:red";> {recu} 
+                        <span id='com_contenue_{{ message.id }}'>{{ message.contenue|raw }}</span></div><br>
                     </div>
                 {% elseif message.receveur == user %}
                     <div id="Mes{{ message.id }}">
-                        <span style="color:blue";> {envoyer} {{ message.contenue|raw }} </span><br>
+                        <div style="color:blue";> {envoyer} 
+                        <span id='com_contenue_{{ message.id }}'>{{ message.contenue|raw }}</span></div><br>
                     </div>
                 {% endif %}
 
                 {# form update messagerie #}
-                <form id="UpdateMes{{ message.id }}" action="updatecom_mes_{{ message.id }}" method="post" style="display: none" enctype="multipart/form-data">
+                {# <form id="UpdateMes{{ message.id }}" action="updatecom_mes_{{ message.id }}" method="post" style="display: none" enctype="multipart/form-data">
                     <textarea name="textComment" class="form-control" rows="3" required>{{ message.contenue }}</textarea>
                     <br>
                     update image
                     <input type="file" id="images" name="images" accept="image/png" multiple>
                     
                     <br><button class="btn btn-light">Valider modification</button> 
-                </form>
+                </form> #}
 
-                {# afficgage image message #}    
+                {# affichage image message #}    
                 {% for img in imagesmessagerie %}
                     {% if img.messagerie == message %}
                         <img src="data:image/png;base64, {{ img.image }}" style="max-width:600px;max-height:600px"> 
@@ -83,6 +85,24 @@
             vous n'avez pas encore envoyer de message a {{ user.name }} <br><br>    
         {% endif %}
 
+        {# form update message #}
+        <div id="UpdateMes" style="display: none">
+            {{ form_start(upform) }}
+                {{ form_row(upform.contenue2, {
+                    label: 'contenue'
+                }) }}
+                {{ form_row(upform.image2, {
+                    label: 'images'
+                }) }}
+                {{ form_row(upform.upload2, {
+                    label: 'fichier'
+                }) }}
+                {{ form_row(upform.comid) }}
+
+                <button type="submit" class="btn">Créer</button>
+            {{ form_end(upform) }} 
+        </div>
+
         {# formulaire envoyer une message #}
         <div id="formMes" style="display: none">
             {{ form_start(form) }}
@@ -95,6 +115,7 @@
                 {{ form_row(form.upload, {
                     label: 'fichier'
                 }) }}
+                
                 <button type="submit" class="btn">Créer</button>
             {{ form_end(form) }}
         </div>
@@ -129,11 +150,13 @@
 
         function showUpdateMes($id){
             if (visible2==false){
-                document.getElementById("UpdateMes"+$id).style.display = "block";
-                document.getElementById("Mes"+$id).style.display = "none";
+                document.getElementById("UpdateMes").style.display = "block";
+                
                 document.getElementById('btnUpdateMes'+$id).innerHTML = "Fermer";
+                document.getElementById("update_message_comid").value = $id;
+                var testdata = document.getElementById("com_contenue_"+$id).innerHTML;
+                CKEDITOR.instances['update_message_contenue2'].setData(testdata);
                 var btn_update = document.getElementsByClassName("btn_update"+$id);
-
                 var lengthOfArray=btn_update.length;
 
                 for (var i=0; i<lengthOfArray;i++){
@@ -141,11 +164,12 @@
                 }
                 visible2=true;
             }else{
-                document.getElementById("UpdateMes"+$id).style.display = "none";
-                document.getElementById("Mes"+$id).style.display = "block";
+                document.getElementById("UpdateMes").style.display = "none";
+                
                 document.getElementById('btnUpdateMes'+$id).innerHTML = "Modifier";
+                document.getElementById("update_message_comid").value = $id;
+                CKEDITOR.instances['update_message_contenue2'].setData('');
                 var btn_update = document.getElementsByClassName("btn_update"+$id);
-
                 var lengthOfArray=btn_update.length;
 
                 for (var i=0; i<lengthOfArray;i++){

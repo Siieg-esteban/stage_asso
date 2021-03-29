@@ -18,6 +18,7 @@ use App\Form\MakeblogType;
 use App\Form\MakecomType;
 use App\Form\UpdatecomType;
 use App\Form\NewMessageType;
+use App\Form\UpdateMessageType;
 
 use App\Entity\Blog;
 use App\Entity\Jeu;
@@ -735,9 +736,13 @@ class IndexController extends AbstractController
         }
 
         $message = new Messagerie();
+
         $form = $this->createForm(NewMessageType::class, $message);
         $form->handlerequest($request);
+        $form2 = $this->createForm(UpdateMessageType::class, $message);
+        $form2->handlerequest($request);
 
+        // form create message page messagerie
         if ($form->isSubmitted() && $form->isValid()) {
             $testdata = $form->getData();
 
@@ -814,10 +819,82 @@ class IndexController extends AbstractController
             return $this->redirect($request->getUri());
         }
 
+        // form update message page messagerie
+        if ($form2->isSubmitted() && $form2->isValid()) {
+            $testdata = $form2->getData();
+            $id = $form2->get("comid")->getData();
+
+            $em=$this->getDoctrine()->getRepository(Messagerie::class);
+            $message=$em->findOneby(array('id'=>$id));
+
+            $message->setContenue($form2->get("contenue2")->getData());
+            
+            $newImages=$form2->get("image2")->getData();
+
+            $em=$this->getDoctrine()->getManager();
+            $em->persist($message);
+            $em->flush();
+
+            $countnewImages=count($newImages);
+
+            for ($i=0; $i < $countnewImages; $i++) { 
+                $image=$newImages[$i];
+
+                $encoded_data = base64_encode(file_get_contents($image)); 
+
+                $imagetest = new Imagecommunication();
+
+                $imagetest->setType("messagerie");
+                $imagetest->setMessagerie($message);
+                $imagetest->setImage($encoded_data);
+
+                $em=$this->getDoctrine()->getManager();
+                $em->persist($imagetest);
+                $em->flush();
+            }
+
+            $uploadFile = $form2->get('upload2')->getData();
+
+            $countnewUpload=count($uploadFile);
+
+            if ($uploadFile) {
+                for ($i=0; $i < $countnewUpload; $i++) { 
+                
+                    $originalFilename = pathinfo($uploadFile[$i]->getClientOriginalName(), PATHINFO_FILENAME);
+                    // this is needed to safely include the file name as part of the URL
+                    $safeFilename = $slugger->slug($originalFilename);
+                    $newFilename = $safeFilename.'-'.uniqid().'.'.$uploadFile[$i]->guessExtension();
+
+                    // Move the file to the directory where uploads are stored
+                    try {
+                        $uploadFile[$i]->move(
+                            $this->getParameter('upload_directory'),
+                            $newFilename
+                        );
+                    } catch (FileException $e) {
+                        // ... handle exception if something happens during file upload
+                    }
+
+                    // updates the 'uploadFilename' property to store the PDF file name
+                    // instead of its contents
+                    $uploadDB = new Fichiercommunication();
+                    $uploadDB->setLien($newFilename);
+                    $uploadDB->setType('messagerie');
+                    $uploadDB->setMessagerie($message);
+
+                    $em=$this->getDoctrine()->getManager();
+                    $em->persist($uploadDB);
+                    $em->flush();
+                }
+            }
+            return $this->redirect($request->getUri());
+        }
+
         return $this->render('index/page_messagerie.html.twig', [
             'imagesmessagerie' => $allMessageImg,
             'fichiersmessagerie' => $allfichiercom,
             'form' => $form->createView(),
+            'upform' => $form2->createView(),
             'user' => $theUser,
             'messages' => $messageList,
         ]);
