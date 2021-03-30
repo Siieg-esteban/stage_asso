@@ -47,7 +47,7 @@ class Com
      *
      * @ORM\ManyToOne(targetEntity="User")
      * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="envoyer", referencedColumnName="id")
+     *   @ORM\JoinColumn(name="envoyer", referencedColumnName="id", onDelete="CASCADE")
      * })
      */
     private $envoyer;

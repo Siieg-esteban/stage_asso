@@ -19,6 +19,7 @@ use App\Form\MakecomType;
 use App\Form\UpdatecomType;
 use App\Form\NewMessageType;
 use App\Form\UpdateMessageType;
+use App\Form\MakerequeteType;
 
 use App\Entity\Blog;
 use App\Entity\Jeu;
@@ -32,6 +33,8 @@ use App\Entity\Listecontributeur;
 use App\Entity\Listecompetence;
 use App\Entity\Competence;
 use App\Entity\Messagerie;
+use App\Entity\RequeteContributeur;
+use App\Entity\Imagefichierrequete;
 
 use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Validator\Constraints\File;
@@ -1305,6 +1308,91 @@ class IndexController extends AbstractController
             }
         }
         return $this->redirectToRoute('listeblog');       
+    }
+
+    /**
+     * @Route("/pagerequetecontrib", name="pagerequetecontrib")
+     */
+    public function pagerequetecontrib(Request $request,SluggerInterface $slugger): Response
+    {
+        $requete = new RequeteContributeur();
+        $form = $this->createForm(MakerequeteType::class, $requete);
+        $form->handlerequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $testdata = $form->getData();
+
+            $userid=$this->getUser();
+            $datetime = new \DateTime('@'.strtotime('now'));
+
+            $requete->setDatetime($datetime);
+            $requete->setUser($userid);
+            $requete->setDemande($testdata->getDemande());
+
+            $newImages=$form->get("image")->getData();
+
+            $em=$this->getDoctrine()->getManager();
+            $em->persist($requete);
+            $em->flush();
+
+            $countnewImages=count($newImages);
+
+            for ($i=0; $i < $countnewImages; $i++) { 
+                $image=$newImages[$i];
+
+                $encoded_data = base64_encode(file_get_contents($image)); 
+
+                $imagetest = new Imagefichierrequete();
+
+                $imagetest->setType("image");
+                $imagetest->setImage($encoded_data);
+                $imagetest->setRequete($requete);
+
+                $em=$this->getDoctrine()->getManager();
+                $em->persist($imagetest);
+                $em->flush();
+            }
+
+            $uploadFile = $form->get('upload')->getData();
+
+            $countnewUpload=count($uploadFile);
+
+            if ($uploadFile) {
+                for ($i=0; $i < $countnewUpload; $i++) { 
+                
+                    $originalFilename = pathinfo($uploadFile[$i]->getClientOriginalName(), PATHINFO_FILENAME);
+                    // this is needed to safely include the file name as part of the URL
+                    $safeFilename = $slugger->slug($originalFilename);
+                    $newFilename = $safeFilename.'-'.uniqid().'.'.$uploadFile[$i]->guessExtension();
+
+                    // Move the file to the directory where uploads are stored
+                    try {
+                        $uploadFile[$i]->move(
+                            $this->getParameter('demande_directory'),
+                            $newFilename
+                        );
+                    } catch (FileException $e) {
+                        // ... handle exception if something happens during file upload
+                    }
+
+                    // updates the 'uploadFilename' property to store the PDF file name
+                    // instead of its contents
+                    $uploadDB = new Imagefichierrequete();
+                    $uploadDB->setLien($newFilename);
+                    $uploadDB->setType('fichier');
+                    $uploadDB->setRequete($requete);
+                    
+                    $em=$this->getDoctrine()->getManager();
+                    $em->persist($uploadDB);
+                    $em->flush();
+                }
+            }
+            return $this->redirect($request->getUri());
+        }
+
+        return $this->render('index/page_requete_contrib.html.twig', [
+            'form' => $form->createView(),
+        ]);
     }
 }
 

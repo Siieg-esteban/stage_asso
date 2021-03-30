@@ -26,7 +26,7 @@ class Listecompetence
      *
      * @ORM\ManyToOne(targetEntity="User")
      * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="user", referencedColumnName="id")
+     *   @ORM\JoinColumn(name="user", referencedColumnName="id", onDelete="CASCADE")
      * })
      */
     private $user;
@@ -36,7 +36,7 @@ class Listecompetence
      *
      * @ORM\ManyToOne(targetEntity="Competence")
      * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="competence", referencedColumnName="id")
+     *   @ORM\JoinColumn(name="competence", referencedColumnName="id", onDelete="CASCADE")
      * })
      */
     private $competence;

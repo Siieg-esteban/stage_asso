@@ -19,6 +19,8 @@
         {% if app.user %}
             {% if is_granted('ROLE_ADMIN') or is_granted('ROLE_CONTRIBUTOR') %}
                 <a href="listeproto">proto</a>
+            {% elseif is_granted('ROLE_USER') %}
+                <a href="pagerequetecontrib">devenir contributeur</a>    
             {% endif %}
         {% endif %}
 

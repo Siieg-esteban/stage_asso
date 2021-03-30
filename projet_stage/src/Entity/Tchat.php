@@ -40,7 +40,7 @@ class Tchat
      *
      * @ORM\ManyToOne(targetEntity="User")
      * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="user", referencedColumnName="id")
+     *   @ORM\JoinColumn(name="user", referencedColumnName="id", onDelete="CASCADE")
      * })
      */
     private $user;

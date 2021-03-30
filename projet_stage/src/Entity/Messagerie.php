@@ -40,7 +40,7 @@ class Messagerie
      *
      * @ORM\ManyToOne(targetEntity="User")
      * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="envoyer", referencedColumnName="id")
+     *   @ORM\JoinColumn(name="envoyer", referencedColumnName="id", onDelete="CASCADE")
      * })
      */
     private $envoyer;
@@ -50,7 +50,7 @@ class Messagerie
      *
      * @ORM\ManyToOne(targetEntity="User")
      * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="receveur", referencedColumnName="id")
+     *   @ORM\JoinColumn(name="receveur", referencedColumnName="id", onDelete="CASCADE")
      * })
      */
     private $receveur;

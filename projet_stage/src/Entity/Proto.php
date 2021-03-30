@@ -47,7 +47,7 @@ class Proto
      *
      * @ORM\ManyToOne(targetEntity="User")
      * @ORM\JoinColumns({
-     *   @ORM\JoinColumn(name="auteur", referencedColumnName="id")
+     *   @ORM\JoinColumn(name="auteur", referencedColumnName="id", onDelete="CASCADE")
      * })
      */
     private $auteur;
