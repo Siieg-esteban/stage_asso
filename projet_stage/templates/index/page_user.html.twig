@@ -106,12 +106,56 @@
             {% endfor %}
         {% endif %}
 
+        <br>
+
+        {# liste demande devenir contrib #}
+        {% if user == app.user and user.roles[0] == 'ROLE_ADMIN' %}
+            Liste des demandes pour devenir contributeur :<br><br>
+            {% for demande in demandeContrib %}
+                {# div qui contien les info #}
+                <div id='infoDemande{{ demande.id }}' style="display: none">
+
+                    {{ demande.demande|raw }} <br>
+
+                    {# affichage image #}
+                    Images : <br>
+                    {% for fichier in FichierDemande %}
+                        {% if fichier.type == 'image' and fichier.requete == demande %}
+                            <img src="data:image/png;base64, {{ fichier.image }}" style="max-width:600px;max-height:600px"> <br>
+                        {% endif %}
+                    {% endfor %}
+
+                    {# affichage fichier #}
+                    Fichiers : <br>
+                    {% for fichier in FichierDemande %}
+                        {% if fichier.type == 'fichier' and fichier.requete == demande %}
+                            {{ fichier.lien }} : <a href="demande/{{ fichier.lien }}" download='{{ fichier.lien }}'>télécharger</a> <br>
+                        {% endif %}
+                    {% endfor %}
+
+                    <br>
+                    <a href="reponce_demande_1_{{ demande.id }}">Accepter la demande</a><br>
+                    <a href="reponce_demande_2_{{ demande.id }}">Refuser la demande</a>
+
+
+                </div>
+
+                {{ demande.user.name }} : 
+                {# btn pour montrer les infos d'une div/personne #}
+                <button id='btnShowDemande{{ demande.id }}' onclick="showDemande({{ demande.id }})">
+                    Info
+                </button><br>
+            
+            {% endfor %}
+        {% endif %}
+
     </div>
 {% endblock %}
 
 {% block javascripts %}
     <script>
         var visible=false;
+        var visible2=false;
         
         function showFormCom(){
             if (visible==false){
@@ -120,6 +164,20 @@
             }else{
                 document.getElementById("formCom").style.display = "none";
                 visible=false;
+            }
+        }
+
+        function showDemande($id){
+            if (visible2==false){
+                document.getElementById('infoDemande'+$id).style.display = 'block';
+                document.getElementById('btnShowDemande'+$id).innerHTML = "Fermer";
+
+                visible2=true;
+            }else{
+                document.getElementById('infoDemande'+$id).style.display = 'none';
+                document.getElementById('btnShowDemande'+$id).innerHTML = "Info";
+                
+                visible2=false;
             }
         }
     </script>

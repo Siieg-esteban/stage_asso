@@ -676,6 +676,12 @@ class IndexController extends AbstractController
         $em6=$this->getDoctrine()->getRepository(Competence::class);
         $typeCompetence=$em6->findAll();
 
+        $em7=$this->getDoctrine()->getRepository(RequeteContributeur::class);
+        $demandeContrib=$em7->findAll();
+
+        $em8=$this->getDoctrine()->getRepository(Imagefichierrequete::class);
+        $AllFichierDemande=$em8->findAll();
+
         $contribList=array();
         for ($i=0;$i<$countContrib;$i++) {
             if ($contribUser[$i]->getType()=="jeu") {
@@ -708,6 +714,9 @@ class IndexController extends AbstractController
             'blogs' => $blogUser,
             'personnes' => $personneList,
             'messages' => $messageList,
+            'demandeContrib' => $demandeContrib,
+            'FichierDemande' => $AllFichierDemande,
+            
         ]);
     }
 
@@ -1393,6 +1402,51 @@ class IndexController extends AbstractController
         return $this->render('index/page_requete_contrib.html.twig', [
             'form' => $form->createView(),
         ]);
+    }
+
+    /**
+     * @Route("/reponce_demande_{rep}_{id}", name="reponce_demande")
+     */
+    public function reponce_demande(Request $request,$id,$rep): Response
+    {
+        $em=$this->getDoctrine()->getRepository(RequeteContributeur::class);
+        $demande=$em->findOneby(array('id'=>$id));
+        $idpage= $demande->getUser()->getId();
+        
+        if ($this->getUser()){
+            if ( $this->getUser()->getRoles()[0]=="ROLE_ADMIN" ) {
+                
+                $message = new Messagerie();
+                $datetime = new \DateTime('@'.strtotime('now'));
+                
+                $message->setDatetime($datetime);
+                $message->setEnvoyer($this->getUser());
+                $message->setReceveur($demande->getUser());
+
+                // si accepter : mp auto d acceptation + change role
+                if ($rep=='1') {
+                    $message->setContenue('Votre demande pour devenir contributeur a été accepter !');
+                    $role = array('ROLE_CONTRIBUTOR');
+                    $demande->getUser()->setRoles($role);
+                // si refu : mp auto de refu 
+                }elseif ($rep=='2') {
+                    $message->setContenue("Votre demande pour devenir contributeur n'a pas pu être acceptée. Un admin va vous envoyer un message pour vous expliquer les raisons de ce refus");
+                    $role = array('ROLE_USER');
+                    $demande->getUser()->setRoles($role);
+                }
+                
+                $em=$this->getDoctrine()->getManager();
+                $em->persist($message);
+                $em->remove($demande);
+                $em->flush();
+
+                //delete demande
+
+                // redirect to messagerie de la personne pour lui dire
+                return $this->redirectToRoute('pagemessagerie',['id' => $idpage]);
+            }
+        }
+        return $this->redirectToRoute('listeblog');       
     }
 }
 

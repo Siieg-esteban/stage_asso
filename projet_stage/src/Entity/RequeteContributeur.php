@@ -28,7 +28,7 @@ class RequeteContributeur
     private $datetime;
 
     /**
-     * @ORM\ManyToOne(targetEntity=user::class)
+     * @ORM\ManyToOne(targetEntity=User::class)
      * @ORM\JoinColumn(nullable=false, onDelete="CASCADE")
      */
     private $user;
