@@ -16,6 +16,7 @@ use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Contracts\Translation\TranslatorInterface;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
@@ -41,13 +42,8 @@ class MakejeuType extends AbstractType
                     'release' => 'release',
                 ],
             ])
-            ->add('lien', TextType::class)
-            // ->add('datetime')
-            // ->add('upvote')
-            // ->add('auteur')
             ->add('image', FileType::class,  [
                 'mapped'=>false,
-                // 'data_class' => Imagejeuproto::class,
                 'required'=>false,
                 'multiple'=>true,
                 'constraints'=>[
@@ -62,6 +58,41 @@ class MakejeuType extends AbstractType
                     ])
                 ]
             ])
+            ->add('fileWeb', FileType::class, [
+                'label' => 'fileWeb',
+                'mapped' => false,
+                'required' => false,
+                'constraints' => [
+                    // new All([
+                        new File([
+                            'maxSize'=>'10000k',
+                            'mimeTypes'=> [
+                                'application/zip',
+                            ],
+                            'mimeTypesMessage'=> 'pas le bon mime type !'
+                        ])
+                    // ])
+                ],
+            ])
+            ->add('fileDl', FileType::class, [
+                'label' => 'fileDl',
+                'mapped' => false,
+                'required' => false,
+                'constraints' => [
+                    // new All([
+                        new File([
+                            'maxSize'=>'10000k',
+                            'mimeTypes'=> [
+                                'application/zip',
+                            ],
+                            'mimeTypesMessage'=> 'pas le bon mime type !'
+                        ])
+                    // ])
+                ],
+            ])
+            ->add('nomdossier', TextType::class,['required' => false,])
+            ->add('longueur', NumberType::class,['required' => false,])
+            ->add('largeur', NumberType::class,['required' => false,])
         ;
     }
 

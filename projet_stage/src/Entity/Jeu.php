@@ -73,6 +73,36 @@ class Jeu
      */
     private $auteur;
 
+    /**
+     * @ORM\Column(type="text", nullable=true)
+     */
+    private $lienWeb;
+
+    /**
+     * @ORM\Column(type="text", nullable=true)
+     */
+    private $lienDl;
+
+    /**
+     * @ORM\Column(type="text", nullable=true)
+     */
+    private $nomdossier;
+
+    /**
+     * @ORM\Column(type="text", nullable=false)
+     */
+    private $type;
+
+    /**
+     * @ORM\Column(type="integer", nullable=true)
+     */
+    private $longueur;
+
+    /**
+     * @ORM\Column(type="integer", nullable=true)
+     */
+    private $largeur;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -158,6 +188,78 @@ class Jeu
     public function setAuteur(?User $auteur): self
     {
         $this->auteur = $auteur;
+
+        return $this;
+    }
+
+    public function getLienWeb(): ?string
+    {
+        return $this->lienWeb;
+    }
+
+    public function setLienWeb(?string $lienWeb): self
+    {
+        $this->lienWeb = $lienWeb;
+
+        return $this;
+    }
+
+    public function getLienDl(): ?string
+    {
+        return $this->lienDl;
+    }
+
+    public function setLienDl(?string $lienDl): self
+    {
+        $this->lienDl = $lienDl;
+
+        return $this;
+    }
+
+    public function getNomdossier(): ?string
+    {
+        return $this->nomdossier;
+    }
+
+    public function setNomdossier(?string $nomdossier): self
+    {
+        $this->nomdossier = $nomdossier;
+
+        return $this;
+    }
+
+    public function getType(): ?string
+    {
+        return $this->type;
+    }
+
+    public function setType(?string $type): self
+    {
+        $this->type = $type;
+
+        return $this;
+    }
+
+    public function getLongueur(): ?int
+    {
+        return $this->longueur;
+    }
+
+    public function setLongueur(?int $longueur): self
+    {
+        $this->longueur = $longueur;
+
+        return $this;
+    }
+
+    public function getLargeur(): ?int
+    {
+        return $this->largeur;
+    }
+
+    public function setLargeur(?int $largeur): self
+    {
+        $this->largeur = $largeur;
 
         return $this;
     }

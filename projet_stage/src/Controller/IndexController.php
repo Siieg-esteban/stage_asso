@@ -139,12 +139,24 @@ class IndexController extends AbstractController
 
             $jeu->setTitre($testdata->getTitre());
             $jeu->setContenue($testdata->getContenue());
-            $jeu->setLien($testdata->getLien());
             $jeu->setEtat($testdata->getEtat());
+            $jeu->setNomdossier($testdata->getNomdossier());
+            $jeu->setLongueur($testdata->getLongueur());
+            $jeu->setLargeur($testdata->getLargeur());
 
             $jeu->setUpvote('0');
             $jeu->setDatetime($datetime);
             $jeu->setAuteur($userid);
+
+            if ($form->get("fileWeb")->getData() and $form->get("fileDl")->getData()) {
+                $jeu->setType('all');
+            } elseif ($form->get("fileWeb")->getData()) {
+                $jeu->setType('web');
+            } elseif ($form->get("fileDl")->getData()) {
+                $jeu->setType('dl');
+            } else {
+                $jeu->setType('null');
+            }
 
             $newImages=$form->get("image")->getData();
 
@@ -1058,8 +1070,10 @@ class IndexController extends AbstractController
                         $page->setType($testdata->getType());
                         $page->setJeu($testdata->getJeu());
                     } elseif ($type=='jeu') {
-                        $page->setLien($testdata->getLien());
                         $page->setEtat($testdata->getEtat());
+                        $page->setNomdossier($testdata->getNomdossier());
+                        $page->setLongueur($testdata->getLongueur());
+                        $page->setLargeur($testdata->getLargeur());
                     }
 
                     $newImages=$form->get("image")->getData();
@@ -1257,7 +1271,7 @@ class IndexController extends AbstractController
     }  
 
     /**
-     * @Route("/deleteimagecom_{id}", name="deleteimage")
+     * @Route("/deleteimagecom_{id}", name="deleteimagecom")
      */
     public function deleteimagecom(Request $request,$id): Response
     {

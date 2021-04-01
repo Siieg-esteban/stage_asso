@@ -17,7 +17,7 @@
             label: 'titre'
         }) }}
         {{ form_row(form.contenue, {
-            label: 'Contenue'
+            label: 'Contenue de la page'
         }) }}
 
         {% if type == 'blog' %}
@@ -30,11 +30,23 @@
         {% endif %}
 
         {% if type == 'jeu' %}
-            {{ form_row(form.lien, {
-                label: 'lien'
-            }) }}
             {{ form_row(form.etat, {
-                label: 'etat'
+                label: 'etat actuelle'
+            }) }}
+            {{ form_row(form.fileWeb, {
+                label: 'zip du jeu pour le web'
+            }) }}
+            {{ form_row(form.fileDl, {
+                    label: 'zip du jeu téléchargement'
+            }) }}
+            {{ form_row(form.nomdossier, {
+                    label: 'nom du dossier dans le zip'
+            }) }}
+            {{ form_row(form.longueur, {
+                    label: 'longueur de la fenetre du jeu (en pixel)'
+            }) }}
+            {{ form_row(form.largeur, {
+                    label: 'largeur de la fenetre du jeu (en pixel)'
             }) }}
         {% endif %}
 
