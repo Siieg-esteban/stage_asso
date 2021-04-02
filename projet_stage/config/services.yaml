@@ -6,7 +6,8 @@
 parameters:
     upload_directory: '%kernel.project_dir%/public/upload'
     demande_directory: '%kernel.project_dir%/public/demande'
-    jeu_directory: '%kernel.project_dir%/public/jeu'
+    jeuWeb_directory: '%kernel.project_dir%/public/jeuWeb'
+    jeuDl_directory: '%kernel.project_dir%/public/jeuDl'
 
 services:
     # default configuration for services in *this* file

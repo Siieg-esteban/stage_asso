@@ -12,6 +12,8 @@ use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Contracts\Translation\TranslatorInterface;
 use Symfony\Component\String\Slugger\SluggerInterface;
 
+use App\Service\unziper;
+
 use App\Form\MakeprotoType;
 use App\Form\MakejeuType;
 use App\Form\MakeblogType;
@@ -112,7 +114,7 @@ class IndexController extends AbstractController
     /**
      * @Route("/listejeu", name="listejeu")
      */
-    public function listejeu(Request $request): Response
+    public function listejeu(Request $request,SluggerInterface $slugger,unziper $unziper): Response
     {
         $em=$this->getDoctrine()->getRepository(Jeu::class);
         $Alljeu=$em->findAll();
@@ -158,6 +160,51 @@ class IndexController extends AbstractController
                 $jeu->setType('null');
             }
 
+            if ($form->get("fileWeb")->getData()) {
+                $uploadFileWeb = $form->get('fileWeb')->getData();
+                $originalFilename = pathinfo($uploadFileWeb->getClientOriginalName(), PATHINFO_FILENAME);
+                // this is needed to safely include the file name as part of the URL
+                $safeFilename = $slugger->slug($originalFilename);
+                $newFilename = $safeFilename.'-'.uniqid().'.'.$uploadFileWeb->guessExtension();
+                $newReponame = $safeFilename.'-'.uniqid();
+
+                mkdir('jeuWeb/'.$newReponame, 0777, true);
+                chmod('jeuWeb/'.$newReponame, 0777);
+
+                // Move the file to the directory where uploads are stored
+                try {
+                    $uploadFileWeb->move(
+                        'jeuWeb',
+                        $newFilename
+                    );
+                } catch (FileException $e) {
+                    // ... handle exception if something happens during file upload
+                }
+
+                $jeu->setLienWeb($newReponame);
+                $unziper->unzip($newFilename,$newReponame);
+            }            
+
+            if ($form->get("fileDl")->getData()) {
+                $uploadFileDl = $form->get('fileDl')->getData();
+                $originalFilename = pathinfo($uploadFileDl->getClientOriginalName(), PATHINFO_FILENAME);
+                // this is needed to safely include the file name as part of the URL
+                $safeFilename = $slugger->slug($originalFilename);
+                $newFilename = $safeFilename.'-'.uniqid().'.'.$uploadFileDl->guessExtension();
+
+                // Move the file to the directory where uploads are stored
+                try {
+                    $uploadFileDl->move(
+                        $this->getParameter('jeuDl_directory'),
+                        $newFilename
+                    );
+                } catch (FileException $e) {
+                    // ... handle exception if something happens during file upload
+                }
+
+                $jeu->setLienDl($newFilename);
+            }
+
             $newImages=$form->get("image")->getData();
 
             $em=$this->getDoctrine()->getManager();
@@ -188,6 +235,7 @@ class IndexController extends AbstractController
                 $em=$this->getDoctrine()->getManager();
                 $em->persist($imagetest);
                 $em->flush();
+                
             }
 
             return $this->redirect($request->getUri());
@@ -1015,7 +1063,7 @@ class IndexController extends AbstractController
     /**
      * @Route("/updatepage_{type}_{id}", name="updatepage")
      */
-    public function updatepage(Request $request,$id,$type): Response
+    public function updatepage(Request $request,SluggerInterface $slugger,unziper $unziper,$id,$type): Response
     {
         if ($type=='blog') {
             $em=$this->getDoctrine()->getRepository(Blog::class);
@@ -1025,6 +1073,7 @@ class IndexController extends AbstractController
             $em=$this->getDoctrine()->getRepository(Jeu::class);
             $page=$em->findOneby(array('id'=>$id));
             $form = $this->createForm(MakejeuType::class, $page);
+            $oldReponame = $page->getNomdossier();
         } elseif ($type=='proto') {
             $em=$this->getDoctrine()->getRepository(Proto::class);
             $page=$em->findOneby(array('id'=>$id));
@@ -1071,9 +1120,67 @@ class IndexController extends AbstractController
                         $page->setJeu($testdata->getJeu());
                     } elseif ($type=='jeu') {
                         $page->setEtat($testdata->getEtat());
-                        $page->setNomdossier($testdata->getNomdossier());
                         $page->setLongueur($testdata->getLongueur());
                         $page->setLargeur($testdata->getLargeur());
+                        $page->setNomdossier($testdata->getNomdossier());
+                
+                        if ($form->get("fileWeb")->getData()) {
+                            $uploadFileWeb = $form->get('fileWeb')->getData();
+                            // $newFilename = $safeFilename.'-'.uniqid().'.'.$uploadFileWeb->guessExtension();
+                            $newFilename = $page->getLienWeb().'rar';
+                            $newReponame = $page->getLienWeb();
+                                                           
+                            $dir=$this->getParameter('jeuWeb_directory').'/'.$newReponame.'/'.$oldReponame;
+                            $dirinside=scandir($dir);
+                            $countdirinside=count($dirinside);
+                            for ($i=2; $i < $countdirinside; $i++) { 
+                                unlink($dir.'/'.$dirinside[$i]);
+                            }
+                            rmdir($dir);
+
+                            // Move the file to the directory where uploads are stored
+                            try {
+                                $uploadFileWeb->move(
+                                    'jeuWeb',
+                                    $newFilename
+                                );
+                            } catch (FileException $e) {
+                                // ... handle exception if something happens during file upload
+                            }
+            
+                            $unziper->unzip($newFilename,$newReponame);
+                        }
+
+                        if ($form->get("fileDl")->getData()) {
+                            $oldFilename = $page->getLienDl();
+                            $dir=$this->getParameter('jeuDl_directory');
+                            unlink($dir.'/'.$oldFilename);
+
+                            $uploadFileDl = $form->get('fileDl')->getData();
+            
+                            // Move the file to the directory where uploads are stored
+                            try {
+                                $uploadFileDl->move(
+                                    $this->getParameter('jeuDl_directory'),
+                                    $oldFilename
+                                );
+                            } catch (FileException $e) {
+                                // ... handle exception if something happens during file upload
+                            }
+                        }
+                    if ($form->get("fileWeb")->getData() or $page->getLienWeb()) {
+                        $testWeb=true;
+                        $page->setType('web');
+                    } 
+                    if ($form->get("fileDl")->getData() or $page->getLienDl()) {
+                        $testDl=true;
+                        $page->setType('dl');
+                    }
+                    if ($testWeb == true and $testDl == true) {
+                        $page->setType('all');
+                    }
+
+                        
                     }
 
                     $newImages=$form->get("image")->getData();

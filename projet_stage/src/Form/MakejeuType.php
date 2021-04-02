@@ -65,7 +65,7 @@ class MakejeuType extends AbstractType
                 'constraints' => [
                     // new All([
                         new File([
-                            'maxSize'=>'10000k',
+                            'maxSize'=>'4000000k',
                             'mimeTypes'=> [
                                 'application/zip',
                             ],
@@ -81,7 +81,7 @@ class MakejeuType extends AbstractType
                 'constraints' => [
                     // new All([
                         new File([
-                            'maxSize'=>'10000k',
+                            'maxSize'=>'4000000k',
                             'mimeTypes'=> [
                                 'application/zip',
                             ],
