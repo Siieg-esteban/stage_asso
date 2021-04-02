@@ -1126,17 +1126,29 @@ class IndexController extends AbstractController
                 
                         if ($form->get("fileWeb")->getData()) {
                             $uploadFileWeb = $form->get('fileWeb')->getData();
-                            // $newFilename = $safeFilename.'-'.uniqid().'.'.$uploadFileWeb->guessExtension();
-                            $newFilename = $page->getLienWeb().'rar';
-                            $newReponame = $page->getLienWeb();
-                                                           
-                            $dir=$this->getParameter('jeuWeb_directory').'/'.$newReponame.'/'.$oldReponame;
-                            $dirinside=scandir($dir);
-                            $countdirinside=count($dirinside);
-                            for ($i=2; $i < $countdirinside; $i++) { 
-                                unlink($dir.'/'.$dirinside[$i]);
+                            if ($page->getLienWeb()) {
+                                // $newFilename = $safeFilename.'-'.uniqid().'.'.$uploadFileWeb->guessExtension();
+                                $newFilename = $page->getLienWeb().'rar';
+                                $newReponame = $page->getLienWeb();
+                                                            
+                                $dir=$this->getParameter('jeuWeb_directory').'/'.$newReponame.'/'.$oldReponame;
+                                $dirinside=scandir($dir);
+                                $countdirinside=count($dirinside);
+                                for ($i=2; $i < $countdirinside; $i++) { 
+                                    unlink($dir.'/'.$dirinside[$i]);
+                                }
+                                rmdir($dir);
+                            }else {
+                                $originalFilename = pathinfo($uploadFileWeb->getClientOriginalName(), PATHINFO_FILENAME);
+                                // this is needed to safely include the file name as part of the URL
+                                $safeFilename = $slugger->slug($originalFilename);
+                                $newFilename = $safeFilename.'-'.uniqid().'.'.$uploadFileWeb->guessExtension();
+                                $newReponame = $safeFilename.'-'.uniqid();
+
+                                mkdir('jeuWeb/'.$newReponame, 0777, true);
+                                chmod('jeuWeb/'.$newReponame, 0777);
+                                $page->setLienWeb($newReponame);
                             }
-                            rmdir($dir);
 
                             // Move the file to the directory where uploads are stored
                             try {
@@ -1152,35 +1164,53 @@ class IndexController extends AbstractController
                         }
 
                         if ($form->get("fileDl")->getData()) {
-                            $oldFilename = $page->getLienDl();
-                            $dir=$this->getParameter('jeuDl_directory');
-                            unlink($dir.'/'.$oldFilename);
+                            if ($page->getLienDl()) {
+                                $oldFilename = $page->getLienDl();
+                                $dir=$this->getParameter('jeuDl_directory');
+                                unlink($dir.'/'.$oldFilename);
 
-                            $uploadFileDl = $form->get('fileDl')->getData();
-            
-                            // Move the file to the directory where uploads are stored
-                            try {
-                                $uploadFileDl->move(
-                                    $this->getParameter('jeuDl_directory'),
-                                    $oldFilename
-                                );
-                            } catch (FileException $e) {
-                                // ... handle exception if something happens during file upload
+                                $uploadFileDl = $form->get('fileDl')->getData();
+                
+                                // Move the file to the directory where uploads are stored
+                                try {
+                                    $uploadFileDl->move(
+                                        $this->getParameter('jeuDl_directory'),
+                                        $oldFilename
+                                    );
+                                } catch (FileException $e) {
+                                    // ... handle exception if something happens during file upload
+                                }
+                            } else {
+                                $uploadFileDl = $form->get('fileDl')->getData();
+                                $originalFilename = pathinfo($uploadFileDl->getClientOriginalName(), PATHINFO_FILENAME);
+                                // this is needed to safely include the file name as part of the URL
+                                $safeFilename = $slugger->slug($originalFilename);
+                                $newFilename = $safeFilename.'-'.uniqid().'.'.$uploadFileDl->guessExtension();
+                                $page->setLienDl($newFilename);
+                                // Move the file to the directory where uploads are stored
+                                try {
+                                    $uploadFileDl->move(
+                                        $this->getParameter('jeuDl_directory'),
+                                        $newFilename
+                                    );
+                                } catch (FileException $e) {
+                                    // ... handle exception if something happens during file upload
+                                }
                             }
                         }
-                    if ($form->get("fileWeb")->getData() or $page->getLienWeb()) {
-                        $testWeb=true;
-                        $page->setType('web');
-                    } 
-                    if ($form->get("fileDl")->getData() or $page->getLienDl()) {
-                        $testDl=true;
-                        $page->setType('dl');
-                    }
-                    if ($testWeb == true and $testDl == true) {
-                        $page->setType('all');
-                    }
-
-                        
+                        $testWeb=false;
+                        $testDl=false;
+                        if ($form->get("fileWeb")->getData() or $page->getLienWeb()) {
+                            $testWeb=true;
+                            $page->setType('web');
+                        } 
+                        if ($form->get("fileDl")->getData() or $page->getLienDl()) {
+                            $testDl=true;
+                            $page->setType('dl');
+                        }
+                        if ($testWeb == true and $testDl == true) {
+                            $page->setType('all');
+                        }
                     }
 
                     $newImages=$form->get("image")->getData();
