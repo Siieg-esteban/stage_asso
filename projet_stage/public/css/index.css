@@ -1,0 +1,143 @@
+html, body {
+	margin: 0;
+	padding: 0;
+	height: 100%;
+	width: 100%;
+}
+
+#conteneur_all {
+	padding: 20px ;
+	background-color: #ECECEC;
+}
+
+#formBlog {
+	z-index: 10;
+	padding: 20px;
+    position: fixed;   
+	background-color: aliceblue;
+}
+
+#background_form {
+	position: fixed;
+	z-index: 9;
+	background-color: black;
+	opacity: 50%;
+	margin-left: -10px;
+	height: 100%;
+	width: 100%;
+}
+
+.lien_liste {
+	text-decoration: none;
+	color: black;
+}
+.lien_liste:hover {
+	text-decoration: none;
+	color: black;
+	
+}
+.card_article_list:hover{
+	border-left: 8px solid;
+	border-left-color: #FA8218;
+}
+
+#btnFormBlog {
+	position: fixed;
+}
+
+.naviga_btn {
+	position: -webkit-sticky;
+	position: sticky;
+	top: 20px;
+	z-index: 8;
+	padding: 25px 20px 25px 20px;
+}
+#backgroung_navbar {
+	position: -webkit-sticky;
+	position: sticky;
+	top: 0px;
+	z-index: 8;
+	background-color: #2C2C2C;
+	margin: -20px ;
+}
+
+.btn_navbar_test {
+	color: white;
+	padding: 20px;
+	text-decoration: none;
+	font-size: 1.2em;
+	font-weight: 600;
+}
+
+.btn_navbar_test:hover {
+	color: #FA8218;
+	border-bottom: 6px solid;
+	border-color: #FA8218;
+}
+
+#conteneur_page {
+	background-color: blanchedalmond;
+	padding: 10px;
+}
+
+.image_dans_com {
+	background-color: gray;
+}
+
+.white {
+	color: white;
+	font-size: 1.2em;
+	font-weight: 300;
+	margin-right: -10px;
+}
+
+.card_colo{
+	/* color: #FA8218; */
+	color: white;
+	background-color: #FA8218;
+	padding: 10px;
+	font-size: 1em;
+	font-weight: 300;
+}
+
+.card_all{
+	padding: 0px 0px 5px 5px;
+	margin: 0px;
+	overflow: hidden;
+}
+
+.card-title{
+	padding: 15px 0px 5px 0px;
+	width: 90%;
+}
+.contenue{
+	width: 90%;
+}
+
+#titre_page{
+	margin: 20px 0px 20px 0px;
+	color: white;
+	background-color: #FA8218;
+	padding: 10px;
+	width: 37%;
+}
+
+.ligne{
+	border-top: 7px solid;
+	border-color: #FA8218;
+	margin: -20px 0px 20px 0px;
+}
+
+.div_btn_article{
+	margin: -8px 0px 25px 0px;
+}
+.btn_article{
+	padding: 5px;
+	text-decoration: none;
+	color: black;
+}
+.btn_article:hover{
+	color: black;
+	border: 2px solid;
+	border-color: black;
+}

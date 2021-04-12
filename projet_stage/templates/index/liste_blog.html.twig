@@ -3,54 +3,94 @@
 {% block title %}Hello IndexController!{% endblock %}
 
 {% block body %}
-<style>
+{# <style>
     .example-wrapper { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; }
     .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
-</style>
+</style> #}
 
-{# listing #}
-<div class="example-wrapper">
-    <h1>LISTE BLOG</h1>
+<br>
 
-    {% for blog in listeblog %} 
-        <a href="pageblog{{ blog.id }}"><span>{{ blog.auteur.name }}</span> / <span>{{ blog.titre| raw}}</span> / <span>le {{ blog.datetime|date('d/m/Y H:i') }}</span></a>
-        
-        {% if app.user %}
-            {% if is_granted('ROLE_ADMIN') or blog.auteur == app.user %}
-                <a href="deletepage/blog/{{ blog.id }}" >Supprimer</a>
-                <a href="updatepage_blog_{{ blog.id }}" >Modifier</a>
-            {% endif %}
+<div class="row">
+
+    <div class="col">
+        {% if is_granted('ROLE_ADMIN') or is_granted('ROLE_CONTRIBUTOR') %}
+            {# btn show form add blog #}
+            <button id="btnFormBlog" class="btn btn-success" onclick="showFormBlog()">Créer un nouvel article !</button>
         {% endif %}
+    </div>
 
-        <br>
-    {% endfor %}
+    {# listing #}
+    <div class="col-8">
+        <h3 id="titre_page">Liste des articles de blog :</h3>
+        <div class="ligne"></div>
+
+        {# form add blog #}
+        <div id="formBlog" style="display: none">
+            {{ form_start(form) }}
+                {{ form_row(form.titre, {
+                    label: 'Titre : '
+                }) }}
+                {{ form_row(form.contenue, {
+                    label: 'Contenue :'
+                }) }}
+                {{ form_row(form.type, {
+                    label: 'Type : '
+                }) }}
+                {{ form_row(form.jeu, {
+                    label: 'Jeu : '
+                }) }}
+                {{ form_row(form.image, {
+                    label: 'Images : '
+                }) }}
+                
+                <button type="submit" class="btn btn-primary">Créer</button>
+                <button id="btnFormBlog2" class="btn btn-primary" onclick="showFormBlog()" type="button">Fermer</button> 
+            {{ form_end(form) }}
+        </div>
+
+        {# liste blog #}
+        {% for blog in listeblog %} 
+            {# card #}
+            <a href="pageblog{{ blog.id }}" class='lien_liste'>
+                <div class="card mb-3 card_article_list" style="max-width: 1000px;">
+                    <div class="row g-0">
+                        <div class="col-md-3">
+                            <img src="..." alt="sans image">
+                        </div>
+                        <div class="col-md-9 card_all">
+                            <div class="card-body card_all">
+                                <div class="row card_colo">
+                                    <div class="col">
+                                        <p class="card-text">par {{ blog.auteur.name }}</p>
+                                    </div>
+                                    <div class="col text-end">
+                                        <p class="card-text">le {{ blog.datetime|date('d/m/Y H:i') }}</p>
+                                    </div>
+                                </div>
+                                <h4 class="card-title">{{ blog.titre }}</h4>
+                                <p class="card-text contenue">{{ blog.contenue|slice(0, 50)|replace({"<p>":'', "</p>":''})|raw }} [...]</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </a>
+            {% if app.user %}
+                {% if is_granted('ROLE_ADMIN') or blog.auteur == app.user %}
+                    <div class="div_btn_article" >
+                        <a class="btn_article" href="updatepage_blog_{{ blog.id }}">Modifier</a>
+                        <a class="btn_article" href="deletepage/blog/{{ blog.id }}">Supprimer</a>
+                    </div>
+                {% endif %}
+            {% endif %}
+
+        {% endfor %}
+    </div>
+
+    <div class="col">
+    </div>
+
 </div>
 
-{% if is_granted('ROLE_ADMIN') or is_granted('ROLE_CONTRIBUTOR') %}
-{# form add blog #}
-    <button id="btnFormBlog" class="btn btn-light" onclick="showFormBlog()">Créer un nouveau Blog !</button> 
-    <div id="formBlog" style="display: none">
-        {{ form_start(form) }}
-            {{ form_row(form.titre, {
-                label: 'titre'
-            }) }}
-            {{ form_row(form.contenue, {
-                label: 'Contenue'
-            }) }}
-            {{ form_row(form.type, {
-                label: 'type'
-            }) }}
-            {{ form_row(form.jeu, {
-                label: 'jeu'
-            }) }}
-            {{ form_row(form.image, {
-                label: 'images'
-            }) }}
-            
-            <button type="submit" class="btn">Créer</button>
-        {{ form_end(form) }}
-    </div>
-{% endif %}
 {% endblock %}
 
 {% block javascripts %}
@@ -60,9 +100,13 @@
         function showFormBlog(){
             if (visible==false){
                 document.getElementById("formBlog").style.display = "block";
+                document.getElementById("background_form").style.display = "block";
+                document.getElementById("btnFormBlog").innerHTML = "Fermer";
                 visible=true;
             }else{
                 document.getElementById("formBlog").style.display = "none";
+                document.getElementById("background_form").style.display = "none";
+                document.getElementById("btnFormBlog").innerHTML = "Créer un nouvel article !";
                 visible=false;
             }
         }

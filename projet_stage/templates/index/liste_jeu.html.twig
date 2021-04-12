@@ -28,7 +28,7 @@
 
 {% if is_granted('ROLE_ADMIN') or is_granted('ROLE_CONTRIBUTOR') %}
 {# form add jeu #}
-<button id="btnFormJeu" class="btn btn-light" onclick="showFormJeu()">Créer un nouveau Jeu !</button> 
+<button id="btnFormJeu" class="btn btn-primary" onclick="showFormJeu()">Créer un nouveau Jeu !</button> 
 <div id="formJeu" style="display: none">
     {{ form_start(form) }}
         {{ form_row(form.titre, {
@@ -73,9 +73,11 @@
         function showFormJeu(){
             if (visible==false){
                 document.getElementById("formJeu").style.display = "block";
+                document.getElementById("btnFormJeu").innerHTML = "Fermer";
                 visible=true;
             }else{
                 document.getElementById("formJeu").style.display = "none";
+                document.getElementById("btnFormJeu").innerHTML = "Créer un nouveau Jeu !";
                 visible=false;
             }
         }

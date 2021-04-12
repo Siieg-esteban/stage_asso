@@ -1591,8 +1591,6 @@ class IndexController extends AbstractController
                 $em->remove($demande);
                 $em->flush();
 
-                //delete demande
-
                 // redirect to messagerie de la personne pour lui dire
                 return $this->redirectToRoute('pagemessagerie',['id' => $idpage]);
             }

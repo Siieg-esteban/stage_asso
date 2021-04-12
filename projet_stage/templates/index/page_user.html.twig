@@ -13,11 +13,11 @@
 
         <h1>{{ user.name }}</h1>
         {% if user.roles[0] == 'ROLE_ADMIN'%}
-            <h3>Admin</h3>
+            <h4>Roles : Admin</h4>
         {% elseif user.roles[0] == 'ROLE_CONTRIBUTOR'%} 
-            <h3>Contributeur</h3>
+            <h4>Roles : Contributeur</h4>
         {% else %}
-            <h3>Utilisateur</h3>
+            <h4>Roles : Utilisateur</h4>
         {% endif %}
 
 
@@ -44,7 +44,7 @@
         
             {# ajouter competence #}
             {% if user == app.user %}
-            <button id="btnFormCom" class="btn btn-light" onclick="showFormCom()">ajouter une competence</button> 
+            <button id="btnFormCom" class="btn btn-primary" onclick="showFormCom()">ajouter une competence</button> 
             
             <form id="formCom" action="competence" style="display: none">
                 <select name="newCompetence">
@@ -65,7 +65,7 @@
 
                     {% endfor %}
                 </select>
-                <br><button class="btn btn-light">envoyer</button> 
+                <br><button class="btn btn-primary">envoyer</button> 
             </form>   
             {% endif %}
         {% endif %}
@@ -142,8 +142,8 @@
 
                 {{ demande.user.name }} : 
                 {# btn pour montrer les infos d'une div/personne #}
-                <button id='btnShowDemande{{ demande.id }}' onclick="showDemande({{ demande.id }})">
-                    Info
+                <button id='btnShowDemande{{ demande.id }}' onclick="showDemande({{ demande.id }})" class="btn btn-primary">
+                    Voire la demande
                 </button><br>
             
             {% endfor %}
@@ -175,7 +175,7 @@
                 visible2=true;
             }else{
                 document.getElementById('infoDemande'+$id).style.display = 'none';
-                document.getElementById('btnShowDemande'+$id).innerHTML = "Info";
+                document.getElementById('btnShowDemande'+$id).innerHTML = "Voire la demande";
                 
                 visible2=false;
             }

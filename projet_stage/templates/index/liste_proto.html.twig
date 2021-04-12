@@ -28,7 +28,7 @@
     </div>
 
     {# form add proto #}
-    <button id="btnFormProto" class="btn btn-light" onclick="showFormProto()">Créer un nouveau proto !</button> 
+    <button id="btnFormProto" class="btn btn-primary" onclick="showFormProto()">Créer un nouveau proto !</button> 
     <div id="formProto" style="display: none">
         {{ form_start(form) }}
             {{ form_row(form.titre, {
@@ -59,9 +59,11 @@
         function showFormProto(){
             if (visible==false){
                 document.getElementById("formProto").style.display = "block";
+                document.getElementById("btnFormProto").innerHTML = "Fermer";
                 visible=true;
             }else{
                 document.getElementById("formProto").style.display = "none";
+                document.getElementById("btnFormProto").innerHTML = "Créer un nouveau proto !";
                 visible=false;
             }
         }
