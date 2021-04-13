@@ -52,6 +52,11 @@ class Proto
      */
     private $auteur;
 
+    /**
+     * @ORM\Column(type="blob", nullable=true)
+     */
+    private $image;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -101,6 +106,18 @@ class Proto
     public function setAuteur(?User $auteur): self
     {
         $this->auteur = $auteur;
+
+        return $this;
+    }
+
+    public function getImage()
+    {
+        return stream_get_contents($this->image);
+    }
+
+    public function setImage($image): self
+    {
+        $this->image = $image;
 
         return $this;
     }

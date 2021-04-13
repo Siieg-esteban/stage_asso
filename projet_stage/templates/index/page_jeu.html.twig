@@ -8,30 +8,34 @@
     .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
 </style>
 
-{% if jeu.type == 'all' or jeu.type == 'web' %}
-    <div>
-        <iframe id="inlineFrameExample"
-            title="Inline Frame Example"
-            width="{{ jeu.largeur }}"
-            height="{{ jeu.longueur }}"
-            {# src="jeuWeb/{{ jeu.lienweb }}/{{ jeu.nomdossier }}/{{ jeu.nomdossier }}.html"> #}
-            src="jeuWeb/{{ jeu.lienweb }}/{{ jeu.nomdossier }}/Pomodoro.html">
-        </iframe>
-    </div>
-{% endif %}
-
-{% if jeu.type == 'all' or jeu.type == 'dl' %}
-    <div>
-        {{ jeu.liendl }} : <a href="jeuDl/{{ jeu.liendl }}" download='{{ jeu.liendl }}'>télécharger</a>
-    </div>
-{% endif %}
-
 <div class="example-wrapper">
     <h3>PAGE JEU</h3>
 
     le {{ jeu.datetime|date('d/m/Y H:i') }}
     <br>
     <h1>{{ jeu.titre| raw }}</h1>
+    <br>
+
+    {# affichage du jeu #}
+    {% if jeu.type == 'all' or jeu.type == 'web' %}
+        <div>
+            <iframe id="inlineFrameExample"
+                title="Inline Frame Example"
+                width="{{ jeu.largeur }}"
+                height="{{ jeu.longueur }}"
+                {# src="jeuWeb/{{ jeu.lienweb }}/{{ jeu.nomdossier }}/{{ jeu.nomdossier }}.html"> #}
+                src="jeuWeb/{{ jeu.lienweb }}/{{ jeu.nomdossier }}/Pomodoro.html">
+            </iframe>
+        </div>
+    {% endif %}
+
+    {# téléchargement du jeu #}
+    {% if jeu.type == 'all' or jeu.type == 'dl' %}
+        <div>
+            {{ jeu.liendl }} : <a href="jeuDl/{{ jeu.liendl }}" download='{{ jeu.liendl }}'>télécharger</a>
+        </div>
+    {% endif %}
+
     <br>
     {{ jeu.contenue| raw }}
     <br>

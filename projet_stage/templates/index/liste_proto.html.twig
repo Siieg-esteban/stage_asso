@@ -32,13 +32,16 @@
     <div id="formProto" style="display: none">
         {{ form_start(form) }}
             {{ form_row(form.titre, {
-                label: 'titre'
+                label: 'Titre du Prototype'
             }) }}
             {{ form_row(form.contenue, {
-                label: 'Contenue'
+                label: 'Contenue de la page : '
+            }) }}
+            {{ form_row(form.mainimage, {
+                label: 'Image principal : '
             }) }}
             {{ form_row(form.image, {
-                label: 'images'
+                label: 'Images : '
             }) }}
             <button type="submit" class="btn">Créer</button>
         {{ form_end(form) }}

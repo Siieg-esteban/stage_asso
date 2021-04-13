@@ -75,6 +75,10 @@ class IndexController extends AbstractController
             $blog->setType($testdata->getType());
             $blog->setJeu($testdata->getJeu());
 
+            $mainImage=$form->get("mainimage")->getData();
+            $base64=base64_encode(file_get_contents($mainImage)); 
+            $blog->setImage($base64);
+            
             $blog->setDatetime($datetime);
             $blog->setAuteur($userid);
 
@@ -145,6 +149,10 @@ class IndexController extends AbstractController
             $jeu->setNomdossier($testdata->getNomdossier());
             $jeu->setLongueur($testdata->getLongueur());
             $jeu->setLargeur($testdata->getLargeur());
+
+            $mainImage=$form->get("mainimage")->getData();
+            $base64=base64_encode(file_get_contents($mainImage)); 
+            $jeu->setImage($base64);
 
             $jeu->setUpvote('0');
             $jeu->setDatetime($datetime);
@@ -280,6 +288,10 @@ class IndexController extends AbstractController
             
             $proto->setDatetime($datetime);
             $proto->setAuteur($userid);
+
+            $mainImage=$form->get("mainimage")->getData();
+            $base64=base64_encode(file_get_contents($mainImage)); 
+            $proto->setImage($base64);
 
             $em=$this->getDoctrine()->getManager();
             $em->persist($proto);
@@ -1114,6 +1126,12 @@ class IndexController extends AbstractController
 
                     $page->setTitre($testdata->getTitre());
                     $page->setContenue($testdata->getContenue());
+
+                    if ($form->get("mainimage")) {
+                        $mainImage=$form->get("mainimage")->getData();
+                        $base64=base64_encode(file_get_contents($mainImage)); 
+                        $page->setImage($base64);
+                    }
 
                     if ($type=='blog') {
                         $page->setType($testdata->getType());

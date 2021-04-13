@@ -3,10 +3,37 @@
 {% block title %}Hello IndexController!{% endblock %}
 
 {% block body %}
-{# <style>
-    .example-wrapper { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; }
-    .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
-</style> #}
+
+
+
+
+{# form add blog #}
+<div id="formBlog" style="display: none">
+    {{ form_start(form) }}
+        {{ form_row(form.titre, {
+            label: 'Titre du Blog : '
+        }) }}
+        {{ form_row(form.contenue, {
+            label: 'Contenue de la page : '
+        }) }}
+        {{ form_row(form.mainimage, {
+            label: 'Image principal : '
+        }) }}
+        {{ form_row(form.type, {
+            label: 'Type : '
+        }) }}
+        {{ form_row(form.jeu, {
+            label: 'Jeu liée a ce blog : '
+        }) }}
+        {{ form_row(form.image, {
+            label: 'Images : '
+        }) }}
+        
+        <button type="submit" class="btn btn-primary">Créer</button>
+        <button id="btnFormBlog2" class="btn btn-primary" onclick="showFormBlog()" type="button">Fermer</button> 
+    {{ form_end(form) }}
+</div>
+
 
 <br>
 
@@ -24,30 +51,6 @@
         <h3 id="titre_page">Liste des articles de blog :</h3>
         <div class="ligne"></div>
 
-        {# form add blog #}
-        <div id="formBlog" style="display: none">
-            {{ form_start(form) }}
-                {{ form_row(form.titre, {
-                    label: 'Titre : '
-                }) }}
-                {{ form_row(form.contenue, {
-                    label: 'Contenue :'
-                }) }}
-                {{ form_row(form.type, {
-                    label: 'Type : '
-                }) }}
-                {{ form_row(form.jeu, {
-                    label: 'Jeu : '
-                }) }}
-                {{ form_row(form.image, {
-                    label: 'Images : '
-                }) }}
-                
-                <button type="submit" class="btn btn-primary">Créer</button>
-                <button id="btnFormBlog2" class="btn btn-primary" onclick="showFormBlog()" type="button">Fermer</button> 
-            {{ form_end(form) }}
-        </div>
-
         {# liste blog #}
         {% for blog in listeblog %} 
             {# card #}
@@ -55,7 +58,11 @@
                 <div class="card mb-3 card_article_list" style="max-width: 1000px;">
                     <div class="row g-0">
                         <div class="col-md-3">
-                            <img src="..." alt="sans image">
+                            {% set base64 = blog.image %}
+                            {% if base64 %}
+                                {# <img src="data:image/png;base64, {{ base64 }}" style="max-width:100%;max-height:100%"> #}
+                                <img src="data:image/png;base64, {{ base64 }}" style="width:100%;height:100%">
+                            {% endif %}
                         </div>
                         <div class="col-md-9 card_all">
                             <div class="card-body card_all">
@@ -68,7 +75,8 @@
                                     </div>
                                 </div>
                                 <h4 class="card-title">{{ blog.titre }}</h4>
-                                <p class="card-text contenue">{{ blog.contenue|slice(0, 50)|replace({"<p>":'', "</p>":''})|raw }} [...]</p>
+                                <p class="card-text contenue">{{ blog.contenue|slice(0, 50) }} [...]</p> 
+                                {# |replace({"<p>":'', "</p>":''})|raw #}
                             </div>
                         </div>
                     </div>
@@ -82,7 +90,6 @@
                     </div>
                 {% endif %}
             {% endif %}
-
         {% endfor %}
     </div>
 

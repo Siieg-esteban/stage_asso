@@ -32,31 +32,34 @@
 <div id="formJeu" style="display: none">
     {{ form_start(form) }}
         {{ form_row(form.titre, {
-            label: 'titre du jeu'
+            label: 'Titre du Jeu : '
         }) }}
         {{ form_row(form.contenue, {
-            label: 'Contenue de la page'
+            label: 'Contenue de la page : '
+        }) }}
+        {{ form_row(form.mainimage, {
+            label: 'Image principal : '
         }) }}
         {{ form_row(form.etat, {
-            label: 'etat actuelle'
+            label: 'Etat actuelle : '
         }) }}
         {{ form_row(form.image, {
-                label: 'images pour page jeu'
+            label: 'Images : '
         }) }}
         {{ form_row(form.fileWeb, {
-                label: 'zip du jeu pour le web'
+            label: 'Zip du jeu pour le web : '
         }) }}
         {{ form_row(form.fileDl, {
-                label: 'zip du jeu téléchargement'
+            label: 'Zip du jeu téléchargement : '
         }) }}
         {{ form_row(form.nomdossier, {
-                label: 'nom du dossier dans le zip'
+            label: 'Nom du dossier dans le zip : '
         }) }}
         {{ form_row(form.longueur, {
-                label: 'longueur de la fenetre du jeu (en pixel)'
+            label: 'Longueur de la fenetre du jeu (en pixel) : '
         }) }}
         {{ form_row(form.largeur, {
-                label: 'largeur de la fenetre du jeu (en pixel)'
+            label: 'Largeur de la fenetre du jeu (en pixel) : '
         }) }}
         
         <button type="submit" class="btn">Créer</button>

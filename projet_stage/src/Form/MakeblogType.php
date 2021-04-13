@@ -69,6 +69,19 @@ class MakeblogType extends AbstractType
                     ])
                 ]
             ])
+            ->add('mainimage', FileType::class,  [
+                'mapped'=>false,
+                'required'=>true,
+                'constraints'=>[
+                    new File([
+                        'maxSize'=>'1024k',
+                        'mimeTypes'=> [
+                            'image/png'
+                        ],
+                        'mimeTypesMessage'=> 'pas le bon mime type !'
+                    ])
+                ]
+            ])
         ;}
 
     public function configureOptions(OptionsResolver $resolver)

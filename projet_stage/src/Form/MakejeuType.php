@@ -58,6 +58,19 @@ class MakejeuType extends AbstractType
                     ])
                 ]
             ])
+            ->add('mainimage', FileType::class,  [
+                'mapped'=>false,
+                'required'=>true,
+                'constraints'=>[
+                    new File([
+                        'maxSize'=>'1024k',
+                        'mimeTypes'=> [
+                            'image/png'
+                        ],
+                        'mimeTypesMessage'=> 'pas le bon mime type !'
+                    ])
+                ]
+            ])
             ->add('fileWeb', FileType::class, [
                 'label' => 'fileWeb',
                 'mapped' => false,

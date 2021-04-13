@@ -14,44 +14,47 @@
 
     {{ form_start(form) }}
         {{ form_row(form.titre, {
-            label: 'titre'
+            label: 'Titre de la page : '
         }) }}
         {{ form_row(form.contenue, {
-            label: 'Contenue de la page'
+            label: 'Contenue de la page : '
+        }) }}
+        {{ form_row(form.mainimage, {
+            label: 'Image principal : '
         }) }}
 
         {% if type == 'blog' %}
             {{ form_row(form.type, {
-                label: 'type'
+                label: 'Type : '
             }) }}
             {{ form_row(form.jeu, {
-                label: 'jeu'
+                label: 'Jeu liée a ce blog : '
             }) }}
         {% endif %}
 
         {% if type == 'jeu' %}
             {{ form_row(form.etat, {
-                label: 'etat actuelle'
+                label: 'Etat actuelle : '
             }) }}
             {{ form_row(form.fileWeb, {
-                label: 'zip du jeu pour le web'
+                label: 'Zip du jeu pour le web : '
             }) }}
             {{ form_row(form.fileDl, {
-                    label: 'zip du jeu téléchargement'
+                label: 'Zip du jeu téléchargement : '
             }) }}
             {{ form_row(form.nomdossier, {
-                    label: 'nom du dossier dans le zip'
+                label: 'Nom du dossier dans le zip : '
             }) }}
             {{ form_row(form.longueur, {
-                    label: 'longueur de la fenetre du jeu (en pixel)'
+                label: 'Longueur de la fenetre du jeu (en pixel) : '
             }) }}
             {{ form_row(form.largeur, {
-                    label: 'largeur de la fenetre du jeu (en pixel)'
+                label: 'Largeur de la fenetre du jeu (en pixel) : '
             }) }}
         {% endif %}
 
         {{ form_row(form.image, {
-            label: 'images'
+            label: 'Images : '
         }) }}
         
         <button type="submit" class="btn">Modifier</button>

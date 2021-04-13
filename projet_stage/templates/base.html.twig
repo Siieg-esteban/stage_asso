@@ -39,6 +39,10 @@
                         <div class="col text-end">
                             {% if app.user %}
                                 <span class="white">Bonjour</span><a href="pageuser{{ app.user.id }}" class="btn_navbar_test">{{app.user.getName()}}</a>
+                                {% set base64 = app.user.avatar %}
+                                {% if base64 %}
+                                    <img src="data:image/png;base64, {{ base64 }}" style="max-width:40px;max-height:40px">
+                                {% endif %}
                                 <a href="logout" class="btn_navbar_test">Déconnexion</a>
                             {% else %}
                                 <a href="login" class="btn_navbar_test">Connexion</a>

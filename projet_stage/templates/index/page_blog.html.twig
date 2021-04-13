@@ -3,95 +3,103 @@
 {% block title %}Hello IndexController!{% endblock %}
 
 {% block body %}
-<style>
-    .example-wrapper { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; }
-    .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
-</style>
-<div class="example-wrapper">
-    <h3>Article</h3>
-    <br>
 
-    <div id='conteneur_page'> 
-        <div class="text-muted">posté par <a href="pageuser{{ blog.auteur.id }}">{{ blog.auteur.name }}</a> 
-        le {{ blog.datetime|date('d/m/Y H:i') }}</div>
-        <h1>{{ blog.titre|raw }}</h1>
-        <br>
-        {{ blog.contenue|raw }}
-        <br>
+<div class="row">
 
-        {% for img in images %}
-            <img src="data:image/png;base64, {{ img.image }}" style="max-width:600px;max-height:600px">
-            <br><br>
-        {% endfor %}
-
-        <br><br>
-        {# lien vers ce jeu #}
-        {% if blog.jeu %}
-            Lien du jeu :
-            <a href="pagejeu{{ blog.jeu.id }}">{{ blog.jeu.titre }}</a>
-        {% endif %}
+    <div class="col">
     </div>
 
-    <br><br>
+    <div class="col-8">
 
-    {# Commentaire #}
-    <h3>Commentaire :</h3>
-    {% for com in comments %}
-        {% if com.envoyer.roles[0] == 'ROLE_ADMIN'%}
-            {% set role = "Admin" %}
-        {% elseif com.envoyer.roles[0] == 'ROLE_CONTRIBUTOR'%} 
-            {% set role = "Contributeur" %}
-        {% else %}
-            {% set role = "Utilisateur" %}
-        {% endif %}
+        <h3 id="titre_page_article">Article de blog</h3>
+        <div class="ligne"></div>
 
-        {# <div id="Com{{ com.id }}">
-            le {{ com.datetime|date('d/m/Y H:i') }} {{ role }} <a href="pageuser{{ com.envoyer.id }}">{{ com.envoyer.name }}</a> dit : {{ com.contenue }}
-        </div> #}
+        <div id='conteneur_page'> 
+            <div class="text-muted">posté par <a href="pageuser{{ blog.auteur.id }}" class='name_user'>{{ blog.auteur.name }}</a> 
+            le {{ blog.datetime|date('d/m/Y H:i') }}</div>
+            <h1>{{ blog.titre|raw }}</h1>
+            <br>
+            {{ blog.contenue|raw }}
+            <br>
 
-        <form id="UpdateCom{{ com.id }}" action="updatecom_com_{{ com.id }}" style="display: none">
-            <textarea name="textComment" class="form-control" rows="3" >{{ com.contenue }}</textarea>
-            
-            <br><button class="btn btn-primary">Valider modification</button> 
-        </form>
+            {% for img in images %}
+                <img src="data:image/png;base64, {{ img.image }}" style="max-width:600px;max-height:600px">
+                <br><br>
+            {% endfor %}
 
-        <div class="card mb-3" style="max-width: 1000px;" id="Com{{ com.id }}">
-            <div class="row g-0">
-                <div class="col-md-3 d-flex {# align-items-center #} justify-content-center image_dans_com">
-                    <img class="rounded" src="data:image/png;base64,{{ com.envoyer.avatar }}" width='200px' height='200px' />
-                </div>
-                <div class="col-md-9">
-                    <div class="card-body">
-                        <p class="card-text"><small class="text-muted">le {{ com.datetime|date('d/m/Y H:i') }} <a href="pageuser{{ com.envoyer.id }}">{{ com.envoyer.name }}</a> ({{ role }}) dit : </small></p>
-                        <h5 class="card-title">{{ com.contenue }}</h5>
+            <br><br>
+            {# lien vers ce jeu #}
+            {% if blog.jeu %}
+                Lien du jeu :
+                <a href="pagejeu{{ blog.jeu.id }}">{{ blog.jeu.titre }}</a>
+            {% endif %}
+        </div>
+
+        <br><br>
+
+        {# Commentaire #}
+        <h3>Commentaire :</h3>
+        {% for com in comments %}
+            {% if com.envoyer.roles[0] == 'ROLE_ADMIN'%}
+                {% set role = "Admin" %}
+            {% elseif com.envoyer.roles[0] == 'ROLE_CONTRIBUTOR'%} 
+                {% set role = "Contributeur" %}
+            {% else %}
+                {% set role = "Utilisateur" %}
+            {% endif %}
+
+            {# <div id="Com{{ com.id }}">
+                le {{ com.datetime|date('d/m/Y H:i') }} {{ role }} <a href="pageuser{{ com.envoyer.id }}">{{ com.envoyer.name }}</a> dit : {{ com.contenue }}
+            </div> #}
+
+            <form id="UpdateCom{{ com.id }}" action="updatecom_com_{{ com.id }}" style="display: none">
+                <textarea name="textComment" class="form-control" rows="3" >{{ com.contenue }}</textarea>
+                
+                <br><button class="btn btn-primary">Valider modification</button> 
+            </form>
+
+            <div class="card mb-3" style="max-width: 1000px;" id="Com{{ com.id }}">
+                <div class="row g-0">
+                    <div class="col-md-3 d-flex {# align-items-center #} justify-content-center image_dans_com">
+                        <img class="rounded" src="data:image/png;base64,{{ com.envoyer.avatar }}" width='200px' height='200px' />
+                    </div>
+                    <div class="col-md-9">
+                        <div class="card-body">
+                            <p class="card-text"><small class="text-muted">le {{ com.datetime|date('d/m/Y H:i') }} <a href="pageuser{{ com.envoyer.id }}">{{ com.envoyer.name }}</a> ({{ role }}) dit : </small></p>
+                            <h5 class="card-title">{{ com.contenue }}</h5>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
 
-        {% if app.user %}
-            {% if is_granted('ROLE_ADMIN') or com.envoyer == app.user %}
-                <a href="deletecom_com_{{ com.id }}">Supprimer</a>
+            {% if app.user %}
+                {% if is_granted('ROLE_ADMIN') or com.envoyer == app.user %}
+                    <a href="deletecom_com_{{ com.id }}">Supprimer</a>
 
-                <button id="btnUpdateCom{{ com.id }}" onclick="showUpdateCom({{ com.id }})" class="btn btn-primary">Modifier</button>          
+                    <button id="btnUpdateCom{{ com.id }}" onclick="showUpdateCom({{ com.id }})" class="btn btn-primary">Modifier</button>          
+                {% endif %}
             {% endif %}
-        {% endif %}
-        <br><br>
-    {% endfor %}
+            <br><br>
+        {% endfor %}
 
-    {% if app.user %} 
-        <form id="formCom" action="commentaire" style="display: none">
-            <textarea name="textComment" class="form-control" rows="3" placeholder="plouf"></textarea>
+        {% if app.user %} 
+            <form id="formCom" action="commentaire" style="display: none">
+                <textarea name="textComment" class="form-control" rows="3" placeholder="plouf"></textarea>
+                
+                <input type="hidden" name="type" value="blog"> 
+                <input type="hidden" name="pageid" value="{{ blog.id }}"> 
+                
+                <br><button class="btn btn-primary">envoyer</button> 
+            </form> 
             
-            <input type="hidden" name="type" value="blog"> 
-            <input type="hidden" name="pageid" value="{{ blog.id }}"> 
-            
-            <br><button class="btn btn-primary">envoyer</button> 
-        </form> 
-        
-        <button id="btnFormCom" class="btn btn-primary" onclick="showFormCom()">laisser un commentaire</button> 
-    {% endif %}   
- 
+            <button id="btnFormCom" class="btn btn-primary" onclick="showFormCom()">laisser un commentaire</button> 
+        {% endif %}   
+    
+    </div>
+
+    <div class="col">
+    </div>
+
 </div>
 {% endblock %}
 

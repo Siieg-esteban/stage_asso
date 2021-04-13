@@ -33,11 +33,8 @@ class MakeprotoType extends AbstractType
             ->add('contenue', CKEditorType::class, [
                 'required'=>true,
             ])
-            // ->add('datetime', DateType::class)
-            // ->add('auteur', TextType::class)
             ->add('image', FileType::class,  [
                 'mapped'=>false,
-                // 'data_class' => Imagejeuproto::class,
                 'required'=>false,
                 'multiple'=>true,
                 'constraints'=>[
@@ -49,6 +46,19 @@ class MakeprotoType extends AbstractType
                             ],
                             'mimeTypesMessage'=> 'pas le bon mime type !'
                         ])
+                    ])
+                ]
+            ])
+            ->add('mainimage', FileType::class,  [
+                'mapped'=>false,
+                'required'=>true,
+                'constraints'=>[
+                    new File([
+                        'maxSize'=>'1024k',
+                        'mimeTypes'=> [
+                            'image/png'
+                        ],
+                        'mimeTypesMessage'=> 'pas le bon mime type !'
                     ])
                 ]
             ])

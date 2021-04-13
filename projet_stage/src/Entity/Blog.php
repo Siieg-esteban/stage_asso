@@ -69,6 +69,11 @@ class Blog
      */
     private $jeu;
 
+    /**
+     * @ORM\Column(type="blob", nullable=true)
+     */
+    private $image;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -142,6 +147,18 @@ class Blog
     public function setJeu(?Jeu $jeu): self
     {
         $this->jeu = $jeu;
+
+        return $this;
+    }
+
+    public function getImage()
+    {
+        return stream_get_contents($this->image);
+    }
+
+    public function setImage($image): self
+    {
+        $this->image = $image;
 
         return $this;
     }

@@ -103,6 +103,11 @@ class Jeu
      */
     private $largeur;
 
+    /**
+     * @ORM\Column(type="blob", nullable=true)
+     */
+    private $image;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -260,6 +265,18 @@ class Jeu
     public function setLargeur(?int $largeur): self
     {
         $this->largeur = $largeur;
+
+        return $this;
+    }
+
+    public function getImage()
+    {
+        return stream_get_contents($this->image);
+    }
+
+    public function setImage($image): self
+    {
+        $this->image = $image;
 
         return $this;
     }

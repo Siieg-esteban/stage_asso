@@ -11,9 +11,13 @@ html, body {
 }
 
 #formBlog {
+	position: fixed; 
 	z-index: 10;
 	padding: 20px;
-    position: fixed;   
+	top: 50%;
+  	left: 50%;
+	width: 80%;
+  	transform: translate(-50%, -50%);
 	background-color: aliceblue;
 }
 
@@ -76,7 +80,8 @@ html, body {
 }
 
 #conteneur_page {
-	background-color: blanchedalmond;
+	background-color: white;
+	margin-top: -10px;
 	padding: 10px;
 }
 
@@ -121,11 +126,18 @@ html, body {
 	padding: 10px;
 	width: 37%;
 }
+#titre_page_article{
+	margin: 50px 0px 20px 0px;
+	color: white;
+	background-color: #FA8218;
+	padding: 10px;
+	width: 37%;
+}
 
 .ligne{
 	border-top: 7px solid;
 	border-color: #FA8218;
-	margin: -20px 0px 20px 0px;
+	margin: -20px 0px 40px 0px;
 }
 
 .div_btn_article{
@@ -140,4 +152,12 @@ html, body {
 	color: black;
 	border: 2px solid;
 	border-color: black;
+}
+.name_user{
+	text-decoration: none;
+	color: #FA8218;
+}
+.name_user:hover{
+	text-decoration: none;
+	color: black;
 }
