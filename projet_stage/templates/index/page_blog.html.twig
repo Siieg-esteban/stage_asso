@@ -20,25 +20,30 @@
             <h1>{{ blog.titre|raw }}</h1>
             <br>
             {{ blog.contenue|raw }}
-            <br>
 
+            <div class="ligne2 conteneur_image"></div><br>
+
+            {# affichage image #}
+            <div class="row ">
             {% for img in images %}
-                <img src="data:image/png;base64, {{ img.image }}" style="max-width:600px;max-height:600px">
-                <br><br>
+                <div class="col-4 text-center display_image">
+                    <img src="data:image/png;base64, {{ img.image }}" style="max-width:100%;max-height:100%">
+                </div>
             {% endfor %}
+            </div>
 
-            <br><br>
             {# lien vers ce jeu #}
             {% if blog.jeu %}
+                <br><div class="ligne2 conteneur_image"></div><br>
                 Lien du jeu :
-                <a href="pagejeu{{ blog.jeu.id }}">{{ blog.jeu.titre }}</a>
+                <a href="pagejeu{{ blog.jeu.id }}" class="name_user">{{ blog.jeu.titre }}</a>
             {% endif %}
         </div>
 
         <br><br>
 
         {# Commentaire #}
-        <h3>Commentaire :</h3>
+        <h3>Commentaire :</h3><br>
         {% for com in comments %}
             {% if com.envoyer.roles[0] == 'ROLE_ADMIN'%}
                 {% set role = "Admin" %}
@@ -61,12 +66,16 @@
             <div class="card mb-3" style="max-width: 1000px;" id="Com{{ com.id }}">
                 <div class="row g-0">
                     <div class="col-md-3 d-flex {# align-items-center #} justify-content-center image_dans_com">
-                        <img class="rounded" src="data:image/png;base64,{{ com.envoyer.avatar }}" width='200px' height='200px' />
+                        {% if com.envoyer == app.user %}
+                            <img src="data:image/png;base64,{{ base64 }}" style="max-width:100%;max-height:100%;object-fit: contain;" />
+                        {% else %}
+                            <img src="data:image/png;base64,{{ com.envoyer.avatar }}" style="max-width:100%;max-height:100%;object-fit: contain;" />
+                        {% endif %}
                     </div>
                     <div class="col-md-9">
                         <div class="card-body">
-                            <p class="card-text"><small class="text-muted">le {{ com.datetime|date('d/m/Y H:i') }} <a href="pageuser{{ com.envoyer.id }}">{{ com.envoyer.name }}</a> ({{ role }}) dit : </small></p>
-                            <h5 class="card-title">{{ com.contenue }}</h5>
+                            <p class="card-text"><small class="text-muted">le {{ com.datetime|date('d/m/Y H:i') }} <a href="pageuser{{ com.envoyer.id }}" class='name_user'>{{ com.envoyer.name }}</a> ({{ role }}) dit : </small></p>
+                            <div class="card-title">{{ com.contenue }}</div>
                         </div>
                     </div>
                 </div>
@@ -79,8 +88,9 @@
                     <button id="btnUpdateCom{{ com.id }}" onclick="showUpdateCom({{ com.id }})" class="btn btn-primary">Modifier</button>          
                 {% endif %}
             {% endif %}
-            <br><br>
         {% endfor %}
+
+        <br>
 
         {% if app.user %} 
             <form id="formCom" action="commentaire" style="display: none">

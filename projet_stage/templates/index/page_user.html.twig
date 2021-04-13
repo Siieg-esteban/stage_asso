@@ -12,6 +12,13 @@
         <h3>PAGE USER</h3>
 
         <h1>{{ user.name }}</h1>
+
+        {% if user == app.user %}
+            <img src="data:image/png;base64,{{ base64 }}" style="max-width:100%;max-height:100%;object-fit: contain;" />
+        {% else %}
+            <img src="data:image/png;base64,{{ user.avatar }}" style="max-width:100%;max-height:100%;object-fit: contain;" />
+        {% endif %}
+
         {% if user.roles[0] == 'ROLE_ADMIN'%}
             <h4>Roles : Admin</h4>
         {% elseif user.roles[0] == 'ROLE_CONTRIBUTOR'%} 
