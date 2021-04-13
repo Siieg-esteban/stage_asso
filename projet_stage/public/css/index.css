@@ -84,9 +84,6 @@ html, body {
 	margin-top: -10px;
 	padding: 10px;
 }
-/* .conteneur_image {
-	margin-top: -40px;
-} */
 
 .image_dans_com {
 	background-color: gray;
@@ -140,14 +137,14 @@ html, body {
 	color: white;
 	background-color: #FA8218;
 	padding: 10px;
-	width: 37%;
+	width: 40%;
 }
 #titre_page_article{
 	margin: 50px 0px 20px 0px;
 	color: white;
 	background-color: #FA8218;
 	padding: 10px;
-	width: 37%;
+	width: 24%;
 }
 
 .ligne{

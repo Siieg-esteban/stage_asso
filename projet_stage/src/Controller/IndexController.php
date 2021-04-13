@@ -1048,15 +1048,17 @@ class IndexController extends AbstractController
      */
     public function deletepage(Request $request,$id,$type): Response
     {
-        if ($type=='blog') {
+        $test=$type;
+        if ($test=='blog') {
             $em=$this->getDoctrine()->getRepository(Blog::class);
             $page=$em->findOneby(array('id'=>$id));
-        }elseif ($type=='jeu') {
+        }elseif ($test=='jeu') {
             $em=$this->getDoctrine()->getRepository(Jeu::class);
             $page=$em->findOneby(array('id'=>$id));
-        }elseif ($type=='proto'){
+        }elseif ($test=='proto'){
             $em=$this->getDoctrine()->getRepository(Proto::class);
             $page=$em->findOneby(array('id'=>$id));
+            
         }else {
             return $this->redirectToRoute('listeblog');  
         }
@@ -1064,6 +1066,40 @@ class IndexController extends AbstractController
         if ($this->getUser()){
             if ($this->getUser()==$page->getAuteur() or $this->getUser()->getRoles()[0]=="ROLE_ADMIN" ) {
                 
+                if ($test=='jeu') {
+                    if ($page->getType()=="all") {
+                        // delete file dl
+                        $dirdl=$this->getParameter('jeuDl_directory').'/'.$page->getLienDl();
+                        unlink($dirdl);
+
+                        // delete file web
+                        $dirweb=$this->getParameter('jeuWeb_directory').'/'.$page->getLienWeb().'/'.$page->getNomdossier();
+                        $dirweb2=$this->getParameter('jeuWeb_directory').'/'.$page->getLienWeb();
+                        $dirinside=scandir($dirweb);
+                        $countdirinside=count($dirinside);
+                        for ($i=2; $i < $countdirinside; $i++) { 
+                            unlink($dirweb.'/'.$dirinside[$i]);
+                        }
+                        rmdir($dirweb);
+                        rmdir($dirweb2);
+                    } elseif ($page->getType()=="web") {
+                        // delete file web
+                        $dirweb=$this->getParameter('jeuWeb_directory').'/'.$page->getLienWeb().'/'.$page->getNomdossier();
+                        $dirweb2=$this->getParameter('jeuWeb_directory').'/'.$page->getLienWeb();
+                        $dirinside=scandir($dirweb);
+                        $countdirinside=count($dirinside);
+                        for ($i=2; $i < $countdirinside; $i++) { 
+                            unlink($dirweb.'/'.$dirinside[$i]);
+                        }
+                        rmdir($dirweb);
+                        rmdir($dirweb2);
+                    } elseif ($page->getType()=="dl") {
+                        // delete file dl
+                        $dir=$this->getParameter('jeuDl_directory').'/'.$page->getLienDl();
+                        unlink($dir);
+                    }
+                }
+
                 $em=$this->getDoctrine()->getManager();
                 $em->remove($page);
                 $em->flush();
@@ -1317,11 +1353,14 @@ class IndexController extends AbstractController
         if ($type=='com') {
             $em=$this->getDoctrine()->getRepository(Com::class);
             $com=$em->findOneby(array('id'=>$id));
+            $em2=$this->getDoctrine()->getRepository(Fichiercommunication::class);
+            $fichierCommunication=$em2->findby(array('com'=>$com));
         } elseif ($type=='mes') {
             $em=$this->getDoctrine()->getRepository(Messagerie::class);
             $com=$em->findOneby(array('id'=>$id));
+            $em2=$this->getDoctrine()->getRepository(Fichiercommunication::class);
+            $fichierCommunication=$em2->findby(array('messagerie'=>$com));
         }
-        
         
         if ($this->getUser()) {
             if ($this->getUser()==$com->getEnvoyer() or $this->getUser()->getRoles()[0]=="ROLE_ADMIN" ) {
@@ -1341,6 +1380,10 @@ class IndexController extends AbstractController
                 } elseif ($type=='mes') {
                     $typepage='messagerie';
                     $page=$com->getReceveur();
+                }
+
+                foreach ($fichierCommunication as $file) {
+                    unlink('upload/'.$file->getLien());
                 }
 
                 $em=$this->getDoctrine()->getManager();
@@ -1581,6 +1624,8 @@ class IndexController extends AbstractController
         $em=$this->getDoctrine()->getRepository(RequeteContributeur::class);
         $demande=$em->findOneby(array('id'=>$id));
         $idpage= $demande->getUser()->getId();
+        $em2=$this->getDoctrine()->getRepository(Imagefichierrequete::class);
+        $fichierRequete=$em2->findby(array('requete'=>$demande));
         
         if ($this->getUser()){
             if ( $this->getUser()->getRoles()[0]=="ROLE_ADMIN" ) {
@@ -1595,13 +1640,19 @@ class IndexController extends AbstractController
                 // si accepter : mp auto d acceptation + change role
                 if ($rep=='1') {
                     $message->setContenue('Votre demande pour devenir contributeur a été accepter !');
-                    $role = array('ROLE_CONTRIBUTOR');
+                    $role = ('ROLE_CONTRIBUTOR');
                     $demande->getUser()->setRoles($role);
                 // si refu : mp auto de refu 
                 }elseif ($rep=='2') {
                     $message->setContenue("Votre demande pour devenir contributeur n'a pas pu être acceptée. Un admin va vous envoyer un message pour vous expliquer les raisons de ce refus");
                     $role = array('ROLE_USER');
                     $demande->getUser()->setRoles($role);
+                }
+
+                foreach ($fichierRequete as $file) {
+                    if ($file->getType()=="fichier") {
+                        unlink('demande/'.$file->getLien());
+                    }
                 }
                 
                 $em=$this->getDoctrine()->getManager();
