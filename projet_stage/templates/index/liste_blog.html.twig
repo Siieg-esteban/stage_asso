@@ -47,6 +47,8 @@
         <h3 id="titre_page">Liste des articles de blog :</h3>
         <div class="ligne"></div>
 
+
+        <div class="background_sombre">
         {# liste blog #}
         {% for blog in listeblog %} 
             {# card #}
@@ -64,15 +66,14 @@
                             <div class="card-body card_all">
                                 <div class="row card_colo">
                                     <div class="col">
-                                        <p class="card-text">par {{ blog.auteur.name }}</p>
+                                        <p class="card-text contenue">par {{ blog.auteur.name }}</p>
                                     </div>
                                     <div class="col text-end">
-                                        <p class="card-text">le {{ blog.datetime|date('d/m/Y H:i') }}</p>
+                                        <p class="card-text contenue">le {{ blog.datetime|date('d/m/Y H:i') }}</p>
                                     </div>
                                 </div>
                                 <h4 class="card-title">{{ blog.titre }}</h4>
-                                <p class="card-text contenue">{{ blog.contenue|slice(0, 50) }} [...]</p> 
-                                {# |replace({"<p>":'', "</p>":''})|raw #}
+                                <p class="card-text contenue">{{ blog.contenue|slice(0, 200)|striptags }} [...]</p> 
                             </div>
                         </div>
                     </div>
@@ -87,6 +88,7 @@
                 {% endif %}
             {% endif %}
         {% endfor %}
+    </div>
     </div>
 
     <div class="col">

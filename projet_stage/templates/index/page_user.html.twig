@@ -45,7 +45,7 @@
             {% if competences %}
                 liste des compétences :<br>
                 {% for competence in competences %} 
-                    {{ competence.competence.nom }}<br>
+                    {{ competence.competence.nom|replace({"_":' '}) }}<br>
                 {% endfor %}
             {% endif %}
         
@@ -67,7 +67,7 @@
                         {% endfor %}
 
                         {% if dejaCompetent == false %}
-                            <option value={{ typecompetence.id }}>{{ typecompetence.nom }}</option>
+                            <option value={{ typecompetence.id }}>{{ typecompetence.nom|replace({"_":' '}) }}</option>
                         {% endif %}
 
                     {% endfor %}

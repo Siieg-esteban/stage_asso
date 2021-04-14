@@ -1663,8 +1663,50 @@ class IndexController extends AbstractController
                 // redirect to messagerie de la personne pour lui dire
                 return $this->redirectToRoute('pagemessagerie',['id' => $idpage]);
             }
-        }
-        return $this->redirectToRoute('listeblog');       
+        } return $this->redirectToRoute('listeblog');       
+    }
+
+    /**
+     * @Route("/listecontributeur_{type}", name="listecontributeur")
+     */
+    public function listecontributeur(Request $request,$type): Response
+    {
+        if ($this->getUser()){
+            if ($this->getUser()->getRoles()[0]=="ROLE_CONTRIBUTOR" or $this->getUser()->getRoles()[0]=="ROLE_ADMIN" ) {
+                
+                $em=$this->getDoctrine()->getRepository(User::class);
+                $AllUser=$em->findAll();
+
+                $em2=$this->getDoctrine()->getRepository(Listecompetence::class);
+                $AllListecompetence=$em2->findAll();
+
+                $em3=$this->getDoctrine()->getRepository(Competence::class);
+                $CompetenceUnique=$em3->findAll();
+
+                $Allcontributeur=array();
+
+                foreach ($AllUser as $user) {
+                    if ($user->getRoles()[0]=="ROLE_ADMIN" or $user->getRoles()[0]=="ROLE_CONTRIBUTOR") {
+                        if ($type=="all") {
+                            $Allcontributeur[]=$user;
+                        }else{
+                            foreach ($AllListecompetence as $competence) {
+                                if ($competence->getCompetence()->getNom()==$type and $competence->getUser()==$user) {
+                                    $Allcontributeur[]=$user;
+                                }                    
+                            }
+                        }
+                    }
+                }
+
+                return $this->render('index/liste_contributeur.html.twig', [
+                    'type' => $type,
+                    'listecontributeur' => $Allcontributeur,
+                    'listecompetence' => $AllListecompetence,
+                    'competenceUnique' => $CompetenceUnique,
+                ]);
+            }
+        } return $this->redirectToRoute('listeblog');   
     }
 }
 

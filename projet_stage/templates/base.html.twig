@@ -30,6 +30,7 @@
                             {% if app.user %}
                                 {% if is_granted('ROLE_ADMIN') or is_granted('ROLE_CONTRIBUTOR') %}
                                     <a href="listeproto" class="btn_navbar_test">Proto</a>
+                                    <a href="listecontributeur_all" class="btn_navbar_test">Liste des contributeurs</a>
                                 {% elseif is_granted('ROLE_USER') %}
                                     <a href="pagerequetecontrib" class="btn_navbar_test">Devenir contributeur</a>  
                                 {% endif %}

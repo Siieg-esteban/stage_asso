@@ -1,0 +1,54 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Hello IndexController!{% endblock %}
+
+{% block body %}
+{% if is_granted('ROLE_ADMIN') or is_granted('ROLE_CONTRIBUTOR') %}
+    <style>
+        .example-wrapper { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; }
+        .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
+    </style>
+
+    {# listing #}
+    <div class="example-wrapper">
+        <h1>LISTE CONTRIBUTEUR</h1>
+
+        <br>
+
+        Liste des competences :
+        <ul>
+            <li><a href="listecontributeur_all" class='name_user'>tout les contributeurs</a></li>
+            {% for competences in competenceUnique %} 
+                <li><a href="listecontributeur_{{ competences.nom }}" class='name_user'>{{ competences.nom|replace({"_":' '}) }}</a></li>
+            {% endfor %}
+        </ul>
+
+        <br>
+
+        {% if type == "all" %}
+            Liste des contributeurs :
+        {% else %}  
+            Liste des contributeurs : {{ type|replace({"_":' '}) }}
+        {% endif %}
+        
+        <br>
+
+        {% for contributeur in listecontributeur %} 
+            <a href="pageuser{{ contributeur.id }}" class='name_user'>{{ contributeur.name }}</a> :
+            {% for competence in listecompetence %} 
+                {% if competence.user == contributeur %}
+                    {{ competence.competence.nom|replace({"_":' '}) }}    
+                {% endif %}
+            {% endfor %}
+            <br>
+        {% endfor %}
+
+    </div>
+
+{# redirect #}
+{% else %}
+    <script>
+        window.location.href = 'listeblog';
+    </script>
+{% endif %}
+{% endblock %}

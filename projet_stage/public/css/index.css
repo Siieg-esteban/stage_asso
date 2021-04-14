@@ -165,12 +165,13 @@ html, body {
 .btn_article{
 	padding: 5px;
 	text-decoration: none;
-	color: black;
+	color: white;
+	background-color: #2C2C2C;
+	border-radius: 5px;
 }
 .btn_article:hover{
-	color: black;
-	border: 2px solid;
-	border-color: black;
+	color: white;
+	background-color: #FA8218;
 }
 .name_user{
 	text-decoration: none;
@@ -179,4 +180,10 @@ html, body {
 .name_user:hover{
 	text-decoration: none;
 	color: black;
+}
+
+.background_sombre{
+	background-color: #B0B0B0;
+	padding: 20px 10px 5px 10px;
+	border-radius: 10px;
 }
