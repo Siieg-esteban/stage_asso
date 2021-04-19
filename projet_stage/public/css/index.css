@@ -187,3 +187,6 @@ html, body {
 	padding: 20px 10px 5px 10px;
 	border-radius: 10px;
 }
+#pageactive{
+	color: #FA8218;
+}
