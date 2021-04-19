@@ -12,8 +12,32 @@
         {% endblock %}
 
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.bundle.min.js" integrity="sha384-JEW9xMcG8R+pH31jmWH6WWP0WintQrMb4s7ZOdauHnUtxwoG2vI5DkLtS3qm9Ekf" crossorigin="anonymous"></script>
+        
+        <script>
+            var pagetype='{{ pagetype }}';
+            console.log(pagetype);
+            window.onload= function() {
+                if (pagetype=='blog'){
+                    document.getElementById("pageblog").id = "pageactive";
+                }else if (pagetype=='jeu'){
+                    document.getElementById("pagejeu").id = "pageactive";
+                }else if (pagetype=='proto'){
+                    document.getElementById("pageproto").id = "pageactive";
+                }else if (pagetype=='user'){
+                    document.getElementById("pageuser").id = "pageactive";
+                }else if (pagetype=='requete_contributeur'){
+                    document.getElementById("pagedevenir").id = "pageactive";
+                }else if (pagetype=='liste_contributeur'){
+                    document.getElementById("pagelistcontrib").id = "pageactive";
+                }else if (pagetype=='connexion'){
+                    document.getElementById("pageconnexion").id = "pageactive";
+                }else if (pagetype=='inscription'){
+                    document.getElementById("pageinscription").id = "pageactive";
+                }
+            };
+        </script>
+
         {% block javascripts %}
-            {#{{ encore_entry_script_tags('app') }}#}
         {% endblock %}
     </head>
     <body>
@@ -25,29 +49,29 @@
                 <div class="naviga_btn">
                     <div class="row">
                         <div class="col">
-                            <a href="listeblog" class="btn_navbar_test">Blog</a>
-                            <a href="listejeu" class="btn_navbar_test">Jeu</a>
+                            <a href="listeblog" id="pageblog" class="btn_navbar_test">Blog</a>
+                            <a href="listejeu" id="pagejeu" class="btn_navbar_test">Jeu</a>
                             {% if app.user %}
                                 {% if is_granted('ROLE_ADMIN') or is_granted('ROLE_CONTRIBUTOR') %}
-                                    <a href="listeproto" class="btn_navbar_test">Proto</a>
-                                    <a href="listecontributeur_all" class="btn_navbar_test">Liste des contributeurs</a>
+                                    <a href="listeproto" id="pageproto" class="btn_navbar_test">Proto</a>
+                                    <a href="listecontributeur_all" id="pagelistcontrib" class="btn_navbar_test">Liste des contributeurs</a>
                                 {% elseif is_granted('ROLE_USER') %}
-                                    <a href="pagerequetecontrib" class="btn_navbar_test">Devenir contributeur</a>  
+                                    <a href="pagerequetecontrib" id="pagedevenir" class="btn_navbar_test">Devenir contributeur</a>  
                                 {% endif %}
                             {% endif %}
                         </div>
 
                         <div class="col text-end">
                             {% if app.user %}
-                                <span class="white">Bonjour</span><a href="pageuser{{ app.user.id }}" class="btn_navbar_test">{{app.user.getName()}}</a>
+                                <span class="white">Bonjour</span><a href="pageuser{{ app.user.id }}" id="pageuser" class="btn_navbar_test">{{app.user.getName()}}</a>
                                 {% set base64 = app.user.avatar %}
                                 {% if base64 %}
                                     <img src="data:image/png;base64, {{ base64 }}" style="max-width:40px;max-height:40px">
                                 {% endif %}
                                 <a href="logout" class="btn_navbar_test">Déconnexion</a>
                             {% else %}
-                                <a href="login" class="btn_navbar_test">Connexion</a>
-                                <a href="register" class="btn_navbar_test">Inscription</a>
+                                <a href="login" id="pageconnexion" class="btn_navbar_test">Connexion</a>
+                                <a href="register" id="pageinscription" class="btn_navbar_test">Inscription</a>
                             {% endif %}
                         </div>
                     </div>

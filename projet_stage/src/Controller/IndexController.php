@@ -110,6 +110,7 @@ class IndexController extends AbstractController
         }
 
         return $this->render('index/liste_blog.html.twig', [
+            'pagetype' => 'blog',
             'form' => $form->createView(),
             'listeblog' => $bloglist,
         ]);
@@ -250,6 +251,7 @@ class IndexController extends AbstractController
         }
 
         return $this->render('index/liste_jeu.html.twig', [
+            'pagetype' => 'jeu',
             'form' => $form->createView(),
             'listejeu' => $jeulist,
         ]);
@@ -329,6 +331,7 @@ class IndexController extends AbstractController
         }
 
         return $this->render('index/liste_proto.html.twig', [
+            'pagetype' => 'proto',
             'form' => $form->createView(),
             'listeproto' => $protolist,
         ]);
@@ -365,6 +368,7 @@ class IndexController extends AbstractController
         }
 
         return $this->render('index/page_blog.html.twig', [
+            'pagetype' => 'blog',
             'blog' => $blog,
             'comments' => $comment,
             'images' => $images,
@@ -416,6 +420,7 @@ class IndexController extends AbstractController
         }
 
         return $this->render('index/page_jeu.html.twig', [
+            'pagetype' => 'jeu',
             'jeu' => $jeu,
             'comments' => $comment,
             'images' => $images,
@@ -639,6 +644,7 @@ class IndexController extends AbstractController
         }
 
         return $this->render('index/page_proto.html.twig', [
+            'pagetype' => 'proto',
             'form' => $form->createView(),
             'upform' => $form2->createView(),
             'proto' => $proto,
@@ -779,6 +785,7 @@ class IndexController extends AbstractController
         }
 
         return $this->render('index/page_user.html.twig', [
+            'pagetype' => 'user',
             'user' => $theUser,
             'competences' => $competence,
             'typeCompetences' => $typeCompetence,
@@ -975,6 +982,7 @@ class IndexController extends AbstractController
         }
 
         return $this->render('index/page_messagerie.html.twig', [
+            'pagetype' => 'user',
             'imagesmessagerie' => $allMessageImg,
             'fichiersmessagerie' => $allfichiercom,
             'form' => $form->createView(),
@@ -1297,13 +1305,13 @@ class IndexController extends AbstractController
                         $em->persist($imagetest);
                         $em->flush();
                     }
-                    
                     return $this->redirectToRoute('liste'.$type); 
                 }
                 
                 return $this->render('index/page_update.html.twig', [
-                    'images' => $images,
+                    'pagetype' => $type,
                     'type' => $type,
+                    'images' => $images,
                     'page' => $page,
                     'form' => $form->createView(),
                 ]);
@@ -1612,6 +1620,7 @@ class IndexController extends AbstractController
         }
 
         return $this->render('index/page_requete_contrib.html.twig', [
+            'pagetype' => 'requete_contributeur',
             'form' => $form->createView(),
         ]);
     }
@@ -1700,6 +1709,7 @@ class IndexController extends AbstractController
                 }
 
                 return $this->render('index/liste_contributeur.html.twig', [
+                    'pagetype' => 'liste_contributeur',
                     'type' => $type,
                     'listecontributeur' => $Allcontributeur,
                     'listecompetence' => $AllListecompetence,
