@@ -4,8 +4,20 @@ html, body {
 	height: 100%;
 	width: 100%;
 	max-width: 100%;
-	/* overflow-y: auto;
-	overflow-x: hidden; */
+}
+.row{
+	max-width: 100%;
+	margin: 0px;
+	padding: 0px;
+}
+.col-10{
+	max-width: 100%;
+	margin: 0px;
+	padding: 0px;
+}
+.mb-3{
+	margin: 0px;
+	padding: 0px;
 }
 
 #conteneur_all {
@@ -29,7 +41,6 @@ html, body {
 	z-index: 9;
 	background-color: black;
 	opacity: 50%;
-	margin-left: -10px;
 	height: 100%;
 	width: 100%;
 }
@@ -68,7 +79,7 @@ html, body {
 	top: 0px;
 	z-index: 8;
 	background-color: #2C2C2C;
-	margin: -20px ;
+	margin: -20px 0px -20px 0px;
 }
 
 .btn_navbar_test {
@@ -164,7 +175,7 @@ html, body {
 }
 .bloc_page{
 	background-color: #F2A530;
-	margin: 30px -5px 15px 0px;
+	margin: 30px 0px 15px 0px;
 }
 .bloc_conteneur{
 	margin-bottom: 10px;
@@ -172,8 +183,8 @@ html, body {
 #titre_page{
 	color: white;
 	width: 40%;
-	font-size: 1.8em;
-	font-weight: 700;
+	font-size: 2em;
+	font-weight: 800;
 }
 #titre_page_article{
 	margin: 50px 0px 20px 0px;
@@ -221,7 +232,4 @@ html, body {
 
 #pageactive{
 	color: #F2A530;
-}
-.row{
-	max-width: 100%;
 }
