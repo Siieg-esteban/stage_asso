@@ -6,109 +6,127 @@
 
 <div class="row">
 
-    <div class="col">
+    {% set image_blog = blog.image %}
+
+    <img src="data:image/png;base64, {{ image_blog }}" class="main_image">
+
+    <div class="col bloc_page">
+    </div>
+    <div class="col-10 bloc_titre_page">
+        <h3 id="titre_page">Article de blog :</h3>
     </div>
 
-    <div class="col-8">
+    <div class="col-2">
+        <div class="conteneur_image_full">
+            <img src="data:image/png;base64, {{ image_blog }}" class="image_lien_jeu">
+        </div>
+    </div>
 
-        <h3 id="titre_page_article">Article de blog</h3>
-        <div class="ligne"></div>
-
-        <div id='conteneur_page'> 
-            <div class="text-muted">posté par <a href="pageuser{{ blog.auteur.id }}" class='name_user'>{{ blog.auteur.name }}</a> 
-            le {{ blog.datetime|date('d/m/Y H:i') }}</div>
-            <h1>{{ blog.titre|raw }}</h1>
-            <br>
-            {{ blog.contenue|raw }}
-
-            <div class="ligne2 conteneur_image"></div><br>
-
-            {# affichage image #}
-            <div class="row ">
-                {% for img in images %}
-                    <div class="col-4 text-center display_image">
-                        <img src="data:image/png;base64, {{ img.image }}" style="max-width:100%;max-height:100%">
-                    </div>
-                {% endfor %}
+    <div class="col-7">
+        <div class='conteneur_page'> 
+            <div class="card_head">
+                <div class="page_date">posté par <a href="pageuser{{ blog.auteur.id }}" class='name_user2'>{{ blog.auteur.name }}</a> 
+                le {{ blog.datetime|date('d/m/Y H:i') }}</div>
+                <div class="page_title">{{ blog.titre|raw }}</div>
             </div>
 
-            {# lien vers ce jeu #}
-            {% if blog.jeu %}
-                <br><div class="ligne2 conteneur_image"></div><br>
-                Lien du jeu :
-                <a href="pagejeu{{ blog.jeu.id }}" class="name_user">{{ blog.jeu.titre }}</a>
-            {% endif %}
-        </div>
+            <div class="conteneur_contenue">
+                {{ blog.contenue|raw }}
 
-        <br><br>
+                <div class="ligne2 conteneur_image"></div><br>
 
-        {# Commentaire #}
-        <h3>Commentaire :</h3><br>
-        {% for com in comments %}
-            {% if com.envoyer.roles[0] == 'ROLE_ADMIN'%}
-                {% set role = "Admin" %}
-            {% elseif com.envoyer.roles[0] == 'ROLE_CONTRIBUTOR'%} 
-                {% set role = "Contributeur" %}
-            {% else %}
-                {% set role = "Utilisateur" %}
-            {% endif %}
-
-            {# <div id="Com{{ com.id }}">
-                le {{ com.datetime|date('d/m/Y H:i') }} {{ role }} <a href="pageuser{{ com.envoyer.id }}">{{ com.envoyer.name }}</a> dit : {{ com.contenue }}
-            </div> #}
-
-            <form id="UpdateCom{{ com.id }}" action="updatecom_com_{{ com.id }}" style="display: none">
-                <textarea name="textComment" class="form-control" rows="3" >{{ com.contenue }}</textarea>
-                
-                <br><button class="btn btn-primary">Valider modification</button> 
-            </form>
-
-            <div class="card mb-3" style="max-width: 1000px;" id="Com{{ com.id }}">
-                <div class="row g-0">
-                    <div class="col-md-3 d-flex {# align-items-center #} justify-content-center image_dans_com">
-                        {% if com.envoyer == app.user %}
-                            <img src="data:image/png;base64,{{ base64 }}" style="max-width:100%;max-height:100%;object-fit: contain;" />
-                        {% else %}
-                            <img src="data:image/png;base64,{{ com.envoyer.avatar }}" style="max-width:100%;max-height:100%;object-fit: contain;" />
-                        {% endif %}
-                    </div>
-                    <div class="col-md-9">
-                        <div class="card-body">
-                            <p class="card-text"><small class="text-muted">le {{ com.datetime|date('d/m/Y H:i') }} <a href="pageuser{{ com.envoyer.id }}" class='name_user'>{{ com.envoyer.name }}</a> ({{ role }}) dit : </small></p>
-                            <div class="card-title">{{ com.contenue }}</div>
+                {# affichage image #}
+                <div class="row ">
+                    {% for img in images %}
+                        <div class="col-4 text-center display_image">
+                            <img src="data:image/png;base64, {{ img.image }}" style="max-width:100%;max-height:100%">
                         </div>
-                    </div>
+                    {% endfor %}
                 </div>
             </div>
+        </div>    
+    </div>
 
-            {% if app.user %}
-                {% if is_granted('ROLE_ADMIN') or com.envoyer == app.user %}
-                    <a href="deletecom_com_{{ com.id }}">Supprimer</a>
+    <div class="col-3 conteneur_page">
+        {# lien vers ce jeu #}
+        {% if blog.jeu %}
+            <div class="titre_lien">
+                Le jeu : {{ blog.jeu.titre }}
+            </div>
+            <div class="conteneur_lien">
+                <a href="pagejeu{{ blog.jeu.id }}" class="name_user"><img src="data:image/png;base64, {{ blog.jeu.image }}" class="image_lien_jeu"></a>
+                
+            </div>
+        {% endif %}
+    </div>
 
-                    <button id="btnUpdateCom{{ com.id }}" onclick="showUpdateCom({{ com.id }})" class="btn btn-primary">Modifier</button>          
+    <div class="col bloc_com"></div>
+    <div class="col-10">
+        <div class="bloc_titre_com">
+            {# Commentaire titre #}
+            <h3 id="titre_page">Commentaire :</h3>
+        </div>
+    </div>
+
+    <div class="col-2"></div>
+    {# Commentaire #}
+    <div class="col-7">
+        <div class="card_forme">
+            {% if app.user %} 
+                <form id="formCom" action="commentaire" >
+                    <textarea name="textComment" class="form-control" rows="1" placeholder="laisser un commentaire"></textarea>
+                    <input type="hidden" name="type" value="blog"> 
+                    <input type="hidden" name="pageid" value="{{ blog.id }}"> 
+                    <button class="btn_article2">envoyer</button> 
+                </form>               
+                {# style="display: none" <button id="btnFormCom" class="btn btn-primary" onclick="showFormCom()">laisser un commentaire</button>  #}
+            {% endif %}   
+
+            {% for com in comments %}
+                {% if com.envoyer.roles[0] == 'ROLE_ADMIN'%}
+                    {% set role = "Admin" %}
+                {% elseif com.envoyer.roles[0] == 'ROLE_CONTRIBUTOR'%} 
+                    {% set role = "Contributeur" %}
+                {% else %}
+                    {% set role = "Utilisateur" %}
                 {% endif %}
-            {% endif %}
-        {% endfor %}
 
-        <br>
+                <div class="bloc_contenue_com">
+                    <form id="UpdateCom{{ com.id }}" action="updatecom_com_{{ com.id }}" style="display: none">
+                        <textarea name="textComment" class="form-control com_modif_form" rows="3" >{{ com.contenue }}</textarea>
+                        
+                        <button class="btn_article2 com_modif_form2">Valider modification</button> 
+                    </form>
 
-        {% if app.user %} 
-            <form id="formCom" action="commentaire" style="display: none">
-                <textarea name="textComment" class="form-control" rows="3" placeholder="plouf"></textarea>
+                    <div class="card mb-3 no_border" style="max-width: 1000px;" id="Com{{ com.id }}">
+                        <div class="row g-0">
+                            <div class="col-md-3 d-flex {# align-items-center #} justify-content-center image_dans_com">
+                                {% if com.envoyer == app.user %}
+                                    <img src="data:image/png;base64,{{ base64 }}" style="max-width:100%;max-height:100%;object-fit: contain;" />
+                                {% else %}
+                                    <img src="data:image/png;base64,{{ com.envoyer.avatar }}" style="max-width:100%;max-height:100%;object-fit: contain;" />
+                                {% endif %}
+                            </div>
+                            <div class="col-md-9 com_contenue">
+                                <div class="card-body image_dans_com">
+                                    <p class="card_contenue2">le {{ com.datetime|date('d/m/Y H:i') }} <a href="pageuser{{ com.envoyer.id }}" class='name_user'>{{ com.envoyer.name }}</a> ({{ role }}) dit : </p>
+                                    <div class="card_contenue">{{ com.contenue }}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 
-                <input type="hidden" name="type" value="blog"> 
-                <input type="hidden" name="pageid" value="{{ blog.id }}"> 
-                
-                <br><button class="btn btn-primary">envoyer</button> 
-            </form> 
-            
-            <button id="btnFormCom" class="btn btn-primary" onclick="showFormCom()">laisser un commentaire</button> 
-        {% endif %}   
-    
+                    {% if app.user %}
+                        {% if is_granted('ROLE_ADMIN') or com.envoyer == app.user %}
+                            <a href="deletecom_com_{{ com.id }}" class="btn_article2 btn_place">Supprimer</a>
+                            <button id="btnUpdateCom{{ com.id }}" onclick="showUpdateCom({{ com.id }})" class="btn_article2 btn_place">Modifier</button>          
+                        {% endif %}
+                    {% endif %}
+                </div>
+            {% endfor %} 
+        </div>
     </div>
-
-    <div class="col">
-    </div>
+    <div class="col-3"></div>
 
 </div>
 {% endblock %}
@@ -118,7 +136,7 @@
         var visible=false;
         var visible2=false;
         
-        function showFormCom(){
+        {# function showFormCom(){
             if (visible==false){
                 document.getElementById("formCom").style.display = "block";
                 document.getElementById('btnFormCom').innerHTML = "Fermer";
@@ -128,7 +146,7 @@
                 document.getElementById("btnFormCom").innerHTML = "laisser un commentaire";
                 visible=false;
             }
-        }
+        } #}
 
         function showUpdateCom($id){
             if (visible2==false){
