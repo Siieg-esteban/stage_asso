@@ -22,6 +22,7 @@ use App\Form\UpdatecomType;
 use App\Form\NewMessageType;
 use App\Form\UpdateMessageType;
 use App\Form\MakerequeteType;
+use App\Form\UpdateUserType;
 
 use App\Entity\Blog;
 use App\Entity\Jeu;
@@ -784,7 +785,32 @@ class IndexController extends AbstractController
             } 
         }
 
+        $form = $this->createForm(UpdateUserType::class, $theUser);
+        $form->handlerequest($request);
+
+        if($form->isSubmitted() and $form->isValid()){
+            if ($this->getUser()){
+                if ($this->getUser()==$theUser or $this->getUser()->getRoles()[0]=="ROLE_ADMIN" ) {
+                    $testdata = $form->getData();
+
+                    $theUser->setName($testdata->getName());
+                    $theUser->setDescription($testdata->getDescription());
+                    if ($form->get("avatar")->getData()) {
+                        $mainImage=$form->get("avatar")->getData();
+                        $base64=base64_encode(file_get_contents($mainImage)); 
+                        $theUser->setAvatar($base64);
+                    }
+                    $em=$this->getDoctrine()->getManager();
+                    $em->persist($theUser);
+                    $em->flush();
+
+                    return $this->redirectToRoute('pageuser',['id' => $id]);   
+                }
+            }
+        }
+
         return $this->render('index/page_user.html.twig', [
+            'form' => $form->createView(),
             'pagetype' => 'user',
             'user' => $theUser,
             'competences' => $competence,
@@ -1049,6 +1075,26 @@ class IndexController extends AbstractController
             $em->flush();
         }
         return $this->redirectToRoute('pageuser',['id' => $test]);      
+    }
+
+    /**
+     * @Route("/updatecompetence_{id}", name="updatecompetence")
+     */
+    public function updatecompetence(Request $request,$id): Response
+    {
+        $em=$this->getDoctrine()->getRepository(Listecompetence::class);
+        $competence=$em->findOneBy(array('id'=>$id));
+        $idUser=$competence->getUser()->getId();
+
+        if ($this->getUser()){
+            if ($this->getUser()==$competence->getUser() or $this->getUser()->getRoles()[0]=="ROLE_ADMIN" ) {
+                $em=$this->getDoctrine()->getManager();
+                $em->remove($competence);
+                $em->flush();
+            }
+        }
+        
+        return $this->redirectToRoute('pageuser',['id' => $idUser]);      
     }
 
     /**

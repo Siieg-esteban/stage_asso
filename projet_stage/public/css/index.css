@@ -35,6 +35,16 @@ html, body {
   	transform: translate(-50%, -50%);
 	background-color: aliceblue;
 }
+#formUpdate {
+	position: fixed; 
+	z-index: 10;
+	padding: 20px;
+	top: 50%;
+  	left: 50%;
+	width: 80%;
+  	transform: translate(-50%, -50%);
+	background-color: aliceblue;
+}
 
 #background_form {
 	position: fixed;

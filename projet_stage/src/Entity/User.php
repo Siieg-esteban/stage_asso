@@ -53,6 +53,13 @@ class User implements UserInterface
      */
     private $dateinscrip;
 
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="description", type="text", length=0, nullable=true)
+     */
+    private $description;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -177,5 +184,17 @@ class User implements UserInterface
     {
         // If you store any temporary, sensitive data on the user, clear it here
         // $this->plainPassword = null;
+    }
+
+    public function getDescription(): ?string
+    {
+        return $this->description;
+    }
+
+    public function setDescription(string $description): self
+    {
+        $this->description = $description;
+
+        return $this;
     }
 }

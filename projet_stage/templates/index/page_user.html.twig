@@ -40,22 +40,54 @@
 
         <br><br>
 
+        {% if user.description %}
+            {{ user.description|raw }}
+            <br><br>
+        {% endif %}
+
+        {# si sa propre page, update info #}
+        {% if user == app.user %}
+            <div id="formUpdate" style="display: none">
+                {{ form_start(form) }}
+                    {{ form_row(form.name, {
+                        label: "Nom d'utilisateur"
+                    }) }}
+                    {{ form_row(form.description, {
+                        label: "Description de l'utilisateur"
+                    }) }}
+                    {{ form_row(form.avatar, {
+                        label: 'Avatar'
+                    }) }}
+                    
+                    <button type="submit" class="btn btn-primary">Mettre à jour</button>
+                    <button id="btnFormUpdate2" class="btn btn-primary" onclick="showFormUpdate()" type="button">Fermer</button> 
+                {{ form_end(form) }}
+            </div>
+            <button id="btnFormUpdate" class="btn_article" onclick="showFormUpdate()">Mettre à jour votre profil</button>
+            <br><br>
+        {% endif %}
+
         {# liste des competence de user #}
         {% if user.roles[0] == 'ROLE_ADMIN' or user.roles[0] == 'ROLE_CONTRIBUTOR' %}
+            Liste des compétences :<br>
             {% if competences %}
-                liste des compétences :<br>
                 {% for competence in competences %} 
-                    {{ competence.competence.nom|replace({"_":' '}) }}<br>
+                    {{ competence.competence.nom|replace({"_":' '}) }}
+                    {% if user == app.user %}
+                        <a href="updatecompetence_{{ competence.id }}" class='btn_article'>Supprimer la compétence</a><br>
+                    {% endif %}
                 {% endfor %}
+            {% else %}
+                - Aucune compétence enregistrait pour le moment<br>
             {% endif %}
         
             {# ajouter competence #}
             {% if user == app.user %}
-            <button id="btnFormCom" class="btn btn-primary" onclick="showFormCom()">ajouter une competence</button> 
+            <button id="btnFormCom" class="btn btn-primary" onclick="showFormCom()">Ajouter une compétence</button> 
             
             <form id="formCom" action="competence" style="display: none">
                 <select name="newCompetence">
-                    <option value="null" disabled selected>choisir une competence</option>
+                    <option value="null" disabled selected>Choisir une compétence</option>
                     {% for typecompetence in typeCompetences %} 
 
                         {% set dejaCompetent = false %}
@@ -72,7 +104,7 @@
 
                     {% endfor %}
                 </select>
-                <br><button class="btn btn-primary">envoyer</button> 
+                <br><button class="btn btn-primary">Ajouter</button> 
             </form>   
             {% endif %}
         {% endif %}
@@ -163,6 +195,7 @@
     <script>
         var visible=false;
         var visible2=false;
+        var visible3=false;
         
         function showFormCom(){
             if (visible==false){
@@ -171,6 +204,20 @@
             }else{
                 document.getElementById("formCom").style.display = "none";
                 visible=false;
+            }
+        }
+
+        function showFormUpdate(){
+            if (visible3==false){
+                document.getElementById("formUpdate").style.display = "block";
+                document.getElementById("background_form").style.display = "block";
+                document.getElementById("btnFormUpdate").innerHTML = "Fermer";
+                visible3=true;
+            }else{
+                document.getElementById("formUpdate").style.display = "none";
+                document.getElementById("background_form").style.display = "none";
+                document.getElementById("btnFormUpdate").innerHTML = "Mettre à jour votre profil";
+                visible3=false;
             }
         }
 
