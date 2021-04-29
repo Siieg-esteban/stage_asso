@@ -3,69 +3,120 @@
 {% block title %}Hello IndexController!{% endblock %}
 
 {% block body %}
-<style>
-    .example-wrapper { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; }
-    .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
-</style>
+    {# form add jeu #}
+    <div id="formJeu" style="display: none">
+        {{ form_start(form) }}
+            {{ form_row(form.titre, {
+                label: 'Titre du Jeu : '
+            }) }}
+            {{ form_row(form.contenue, {
+                label: 'Contenue de la page : '
+            }) }}
+            {{ form_row(form.mainimage, {
+                label: 'Image principal : '
+            }) }}
+            {{ form_row(form.etat, {
+                label: 'Etat actuelle : '
+            }) }}
+            {{ form_row(form.image, {
+                label: 'Images : '
+            }) }}
+            {{ form_row(form.fileWeb, {
+                label: 'Zip du jeu pour le web : '
+            }) }}
+            {{ form_row(form.fileDl, {
+                label: 'Zip du jeu téléchargement : '
+            }) }}
+            {{ form_row(form.nomdossier, {
+                label: 'Nom du dossier dans le zip : '
+            }) }}
+            {{ form_row(form.longueur, {
+                label: 'Longueur de la fenetre du jeu (en pixel) : '
+            }) }}
+            {{ form_row(form.largeur, {
+                label: 'Largeur de la fenetre du jeu (en pixel) : '
+            }) }}
+            
+            <button type="submit" class="btn">Créer</button>
+            <button id="btnFormJeu2" class="btn btn-primary" onclick="showFormJeu()" type="button">Fermer</button> 
+        {{ form_end(form) }}
+    </div>
 
-{# listing #}
-<div class="example-wrapper">
-    <h1>LISTE JEU</h1>
+    {# random game #}
+    {% set base64 = randomGame.image %}
+    <a href="pagejeu{{ randomGame.id }}" class='lien_liste'>
+        <img src="data:image/png;base64, {{ base64 }}" class="cover">
+        <div class="random_game_text">
+            <span class="random_game_date">le {{ randomGame.datetime|date('d/m/Y H:i') }} par {{ randomGame.auteur.name }}</span><br>
+            <span class="random_game_titre">{{ randomGame.titre }}</span><br>
+            <span class="random_game_date">
+            {% if randomGame.type %}
+                {% if randomGame.type == "all" %}
+                    jeu disponible sur navigateur et en téléchargement 
+                {% elseif randomGame.type == "dl" %}
+                    jeu disponible en téléchargement 
+                {% elseif randomGame.type == "web" %}
+                    jeu disponible sur navigateur
+                {% elseif randomGame.type == "null" %}
+                    jeu non jouable pour le moment
+                {% endif %}
+            {% endif %}</span><br>
+        </div>
+    </a>
+    
+    {# titre page #}
+    <div class="row">
+        <div class="col bloc_page">
+        </div>
+        <div class="col-10 bloc_titre_page">
+            <h3 id="titre_page">Liste des Jeu :</h3>
+        </div>
+    </div>
 
-    {% for jeu in listejeu %} 
-        <a href="pagejeu{{ jeu.id }}"><span>{{ jeu.titre| raw}}</span> : <span>{{ jeu.datetime|date('d/m/Y H:i') }}</span></a>
-        
-        {% if app.user %}
-            {% if is_granted('ROLE_ADMIN') or jeu.auteur == app.user %}
-                <a href="deletepage/jeu/{{ jeu.id }}" >Supprimer</a>
-                <a href="updatepage_jeu_{{ jeu.id }}" >Modifier</a>
+    <div class="row">
+        <div class="col-2 text-start">
+            {% if is_granted('ROLE_ADMIN') or is_granted('ROLE_CONTRIBUTOR') %}
+                {# btn show form add jeu #}
+                <button id="btnFormJeu" class="btn_article" onclick="showFormJeu()">Créer un nouveau Jeu !</button> 
             {% endif %}
-        {% endif %}
-
-        <br>
-    {% endfor %}
-</div>
-
-{% if is_granted('ROLE_ADMIN') or is_granted('ROLE_CONTRIBUTOR') %}
-{# form add jeu #}
-<button id="btnFormJeu" class="btn btn-primary" onclick="showFormJeu()">Créer un nouveau Jeu !</button> 
-<div id="formJeu" style="display: none">
-    {{ form_start(form) }}
-        {{ form_row(form.titre, {
-            label: 'Titre du Jeu : '
-        }) }}
-        {{ form_row(form.contenue, {
-            label: 'Contenue de la page : '
-        }) }}
-        {{ form_row(form.mainimage, {
-            label: 'Image principal : '
-        }) }}
-        {{ form_row(form.etat, {
-            label: 'Etat actuelle : '
-        }) }}
-        {{ form_row(form.image, {
-            label: 'Images : '
-        }) }}
-        {{ form_row(form.fileWeb, {
-            label: 'Zip du jeu pour le web : '
-        }) }}
-        {{ form_row(form.fileDl, {
-            label: 'Zip du jeu téléchargement : '
-        }) }}
-        {{ form_row(form.nomdossier, {
-            label: 'Nom du dossier dans le zip : '
-        }) }}
-        {{ form_row(form.longueur, {
-            label: 'Longueur de la fenetre du jeu (en pixel) : '
-        }) }}
-        {{ form_row(form.largeur, {
-            label: 'Largeur de la fenetre du jeu (en pixel) : '
-        }) }}
+        </div>
+        <div class="col-10">
         
-        <button type="submit" class="btn">Créer</button>
-    {{ form_end(form) }}
-</div>
-{% endif %}
+        {# listing #}
+        <div class="row conteneur_image_liste_jeu">
+        {% for jeu in listejeu %} 
+            
+            <div class="col-3 zero_padding card_image_liste_jeu" onmouseover="card_image_liste_jeu_hover({{ jeu.id }})" onmouseleave="card_image_liste_jeu_leave({{ jeu.id }})">
+                <a href="pagejeu{{ jeu.id }}" class='lien_liste'>
+                    {# <a href="pagejeu{{ jeu.id }}"><span>{{ jeu.titre| raw}}</span> : <span>{{ jeu.datetime|date('d/m/Y H:i') }}</span></a> #}
+                    <div class="gradient_overlay">
+                        {% if jeu == randomGame %}
+                            <img src="data:image/png;base64, {{ base64 }}" class="image_liste_jeu" id="image_jeu_{{ jeu.id }}">
+                        {% else %}
+                            <img src="data:image/png;base64, {{ jeu.image }}" class="image_liste_jeu" id="image_jeu_{{ jeu.id }}">
+                        {% endif %}
+                    </div>
+
+                    <div class="contenue_image_liste_jeu">
+                        <span class="titre_image_liste_jeu">{{ jeu.titre|raw }}</span><br>
+                        <span class="text_image_liste_jeu">le {{ jeu.datetime|date('d/m/Y H:i') }} par <span class="name_user">{{ jeu.auteur.name }}</span></span><br>
+                        
+                        {# si admin or auteur : delete and update #}
+                        {% if app.user %}
+                            {% if is_granted('ROLE_ADMIN') or jeu.auteur == app.user %}
+                                <div class="position_btn_image_liste_jeu">
+                                    <a href="deletepage/jeu/{{ jeu.id }}" class="btn_article">Supprimer</a>
+                                    <a href="updatepage_jeu_{{ jeu.id }}" class="btn_article">Modifier</a>
+                                </div>
+                            {% endif %}
+                        {% endif %}
+                    </div>
+                </a>
+           </div>
+        {% endfor %}
+        </div>
+        </div>
+    </div>
 
 {% endblock %}
 
@@ -76,13 +127,23 @@
         function showFormJeu(){
             if (visible==false){
                 document.getElementById("formJeu").style.display = "block";
+                document.getElementById("background_form").style.display = "block";
                 document.getElementById("btnFormJeu").innerHTML = "Fermer";
                 visible=true;
             }else{
                 document.getElementById("formJeu").style.display = "none";
+                document.getElementById("background_form").style.display = "none";
                 document.getElementById("btnFormJeu").innerHTML = "Créer un nouveau Jeu !";
                 visible=false;
             }
+        }
+        function card_image_liste_jeu_hover(x){
+            document.getElementById("image_jeu_"+x).style.transition = "0.4s";
+            document.getElementById("image_jeu_"+x).style.transform = "scale(1.2)";
+        }
+        function card_image_liste_jeu_leave(x){
+            document.getElementById("image_jeu_"+x).style.transition = "0.4s";
+            document.getElementById("image_jeu_"+x).style.transform = "scale(1)";
         }
     </script>
 {% endblock %}

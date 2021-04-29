@@ -15,7 +15,7 @@ html, body {
 	margin: 0px;
 	padding: 0px;
 }
-.mb-3{
+.mb-3,.zero_padding{
 	margin: 0px;
 	padding: 0px;
 }
@@ -25,7 +25,7 @@ html, body {
 	background-color: rgb(97, 97, 97);
 }
 
-#formBlog {
+#formBlog,#formJeu {
 	position: fixed; 
 	z-index: 10;
 	padding: 20px;
@@ -72,7 +72,7 @@ html, body {
 	border-left-color: #FA8218;
 } */
 
-#btnFormBlog {
+#btnFormBlog,#btnFormJeu {
 	position: fixed;
 }
 
@@ -223,6 +223,10 @@ html, body {
 	border-left: 1px solid;
 	border-color: #1F1F1F;
 }
+.card_image_liste_jeu:nth-child(2n),.card_image_liste_jeu:nth-child(3n),.card_image_liste_jeu:nth-child(4n) {
+	border-left: 1px solid;
+	border-color: #404040;
+}
 .contenue{
 	width: 90%;
 	color: white;
@@ -343,11 +347,78 @@ html, body {
 
 .main_image{
 	max-width:100%;
-	max-height:400px;
+	max-height:300px;
 	object-fit:cover;
 	padding:0px;
 	margin-top: 40px;
 	margin-bottom: -30px;
+}
+.cover{
+	width:100%;
+	max-height:300px;
+	object-fit:cover;
+	padding:0px;
+	margin-top: 40px;
+	margin-bottom: -30px;
+}
+.image_liste_jeu{
+	width:100%;
+	height:320px;
+	object-fit:cover;
+	padding:0px;
+}
+.conteneur_image_liste_jeu{
+	margin-top: -15px;
+}
+.text_image_liste_jeu{
+	color: white;
+	font-size: 0.9em;
+	font-weight: 300;
+}
+.titre_image_liste_jeu{
+	color: white;
+	font-size: 1.5em;
+	font-weight: 450;
+}
+.contenue_image_liste_jeu{
+	/* padding-left: 4%; */
+	padding: 8px 4% 15px 4%;
+	background-color: #191818;
+}
+.position_btn_image_liste_jeu{
+	padding: 8px 0px 4px 0px;
+	margin-left: -5px;
+}
+.gradient_overlay{
+	position: relative;
+	overflow: hidden;
+}
+.gradient_overlay::after {
+	content: '';
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	background: rgb(25,24,24);
+	background: linear-gradient(0deg, rgba(25,24,24,1) 0%, rgba(0,0,0,0.8) 15%, rgba(0,212,255,0) 50%);
+}
+.random_game_text{
+	padding:0px;
+	max-width:100%;
+	max-height:300px;
+	margin-top: -180px;
+	margin-bottom: 55px;
+	margin-left: 4%;
+	color: white;
+}
+.random_game_date{
+	font-size: 1.2em;
+	font-weight: 400;
+}
+.random_game_titre{
+	font-size: 2.8em;
+	font-weight: 1000;
 }
 .image_lien_jeu{
 	max-width:100%;

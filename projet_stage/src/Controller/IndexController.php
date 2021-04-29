@@ -125,6 +125,8 @@ class IndexController extends AbstractController
         $em=$this->getDoctrine()->getRepository(Jeu::class);
         $Alljeu=$em->findAll();
         $countjeu=count($Alljeu);
+        $randNumber=random_int(1, $countjeu);
+        $randomGame=$Alljeu[$randNumber-1];
 
         $jeulist=array();
         for ($i=0;$i<$countjeu;$i++) { 
@@ -255,6 +257,7 @@ class IndexController extends AbstractController
             'pagetype' => 'jeu',
             'form' => $form->createView(),
             'listejeu' => $jeulist,
+            'randomGame' => $randomGame,
         ]);
     }
 

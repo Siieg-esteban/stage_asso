@@ -114,10 +114,14 @@
             }
         }
         function card_head_hover(x){
+            document.getElementById("card_head_"+x).style.transition = "0.4s";
+            document.getElementById("card_forme_"+x).style.transition = "0.4s";
             document.getElementById("card_head_"+x).style.backgroundColor = "#F2C030";
             document.getElementById("card_forme_"+x).style.backgroundColor = "#333333";
         }
         function card_head_leave(x){
+            document.getElementById("card_head_"+x).style.transition = "0.4s";
+            document.getElementById("card_forme_"+x).style.transition = "0.4s";
             document.getElementById("card_head_"+x).style.backgroundColor = "#F2A530";
             document.getElementById("card_forme_"+x).style.backgroundColor = "#1F1F1F";
         }
