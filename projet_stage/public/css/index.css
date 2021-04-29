@@ -127,6 +127,14 @@ html, body {
 	font-weight: 400;
 	text-align: center;
 }
+.conteneur_lien2{
+	background-color: #1F1F1F;
+	color: white;
+	padding: 10px;
+	margin-left: -12px;
+	font-size: 1.1em;
+	font-weight: 400;
+}
 .conteneur_image_full{
 	background-color: #1F1F1F;
 	color: white;
@@ -144,6 +152,15 @@ html, body {
 	margin-left: -12px;
 	font-size: 1.4em;
 	font-weight: 500;
+}
+
+.text_blog_liee{
+	font-size: 0.9em;
+	font-weight: 300;
+}
+.titre_blog_liee{
+	font-size: 1.5em;
+	font-weight: 450;
 }
 
 .image_dans_com {
@@ -441,4 +458,16 @@ html, body {
 .btn_place{
 	margin-top: -20px;
 
+}
+#div_contributeur{
+	margin-top: 15px;
+	margin-left: 35px;
+}
+#telecharger_titre{
+	font-size: 1.5em;
+	font-weight: 450;
+}
+
+#height_jeu,#width_jeu{
+	visibility:hidden;
 }

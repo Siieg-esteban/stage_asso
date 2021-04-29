@@ -7,7 +7,6 @@
 <div class="row">
 
     {% set image_blog = blog.image %}
-
     {# image bannier #}
     <img src="data:image/png;base64, {{ image_blog }}" class="main_image">
 
@@ -34,7 +33,7 @@
             <div class="conteneur_contenue">
                 {{ blog.contenue|raw }}
 
-                <div class="ligne2 conteneur_image"></div><br>
+                {# <div class="ligne2 conteneur_image"></div><br> #}
 
                 {# affichage image #}
                 <div class="row ">
@@ -61,6 +60,7 @@
         {% endif %}
     </div>
 
+    {# part commentaire #}
     <div class="col bloc_com"></div>
     <div class="col-10">
         <div class="bloc_titre_com">
@@ -127,6 +127,7 @@
             {% endfor %} 
         </div>
     </div>
+
     <div class="col-3"></div>
 
 </div>
@@ -136,18 +137,6 @@
     <script>
         var visible=false;
         var visible2=false;
-        
-        {# function showFormCom(){
-            if (visible==false){
-                document.getElementById("formCom").style.display = "block";
-                document.getElementById('btnFormCom').innerHTML = "Fermer";
-                visible=true;
-            }else{
-                document.getElementById("formCom").style.display = "none";
-                document.getElementById("btnFormCom").innerHTML = "laisser un commentaire";
-                visible=false;
-            }
-        } #}
 
         function showUpdateCom($id){
             if (visible2==false){

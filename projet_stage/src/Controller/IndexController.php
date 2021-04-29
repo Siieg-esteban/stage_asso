@@ -1488,7 +1488,7 @@ class IndexController extends AbstractController
                     $page=$com->getReceveur();
                 }
 
-                $com->setContenue($request->request->get("textComment"));
+                $com->setContenue($request->query->get("textComment"));
 
                 $files = $request->files->all();
                 if ($request->getMethod() == "POST") {

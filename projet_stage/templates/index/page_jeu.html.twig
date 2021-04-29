@@ -3,133 +3,196 @@
 {% block title %}Hello IndexController!{% endblock %}
 
 {% block body %}
-<style>
-    .example-wrapper { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; }
-    .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
-</style>
 
-<div class="example-wrapper">
-    <h3>PAGE JEU</h3>
+<div class="row">
 
-    le {{ jeu.datetime|date('d/m/Y H:i') }}
-    <br>
-    <h1>{{ jeu.titre| raw }}</h1>
-    <br>
+    {% set image_jeu = jeu.image %}
+    {# image bannier #}
+    <img src="data:image/png;base64, {{ image_jeu }}" class="main_image">
 
-    {# affichage du jeu #}
-    {% if jeu.type == 'all' or jeu.type == 'web' %}
-        <div>
-            <iframe id="inlineFrameExample"
-                title="Inline Frame Example"
-                width="{{ jeu.largeur }}"
-                height="{{ jeu.longueur }}"
-                {# src="jeuWeb/{{ jeu.lienweb }}/{{ jeu.nomdossier }}/{{ jeu.nomdossier }}.html"> #}
-                src="jeuWeb/{{ jeu.lienweb }}/{{ jeu.nomdossier }}/{{ jeu.nomdossier }}.html">
-            </iframe>
-        </div>
-    {% endif %}
-
-    {# téléchargement du jeu #}
-    {% if jeu.type == 'all' or jeu.type == 'dl' %}
-        <div>
-            {{ jeu.liendl }} : <a href="jeuDl/{{ jeu.liendl }}" download='{{ jeu.liendl }}'>télécharger</a>
-        </div>
-    {% endif %}
-
-    <br>
-    {{ jeu.contenue| raw }}
-    <br>
-
-    <div>
-    {% for img in images %}
-        <img src="data:image/png;base64, {{ img.image }}" style="max-width:600px;max-height:600px">
-        <br><br>
-    {% endfor %}
+    <div class="col bloc_page">
+    </div>
+    <div class="col-10 bloc_titre_page">
+        <h3 id="titre_page">Page du jeu :</h3>
     </div>
 
-    <br><br><br>
-
-    {% if listecontrib %}
-    {# contributeur #}
-        <h3>Liste des contributeurs a ce jeu :</h3>
-        {% for contrib in listecontrib %}
-            <a href="pageuser{{ contrib.user.id }}">{{ contrib.user.name }}</a>
-
-            {% set testimage = contrib.user.avatar %}
-
-            {% if testimage %}
-                <img src="data:image/png;base64,{{ testimage }}" width='60px' height='60px' />
-            {% endif %}
-
-            <br><br>
-        {% endfor %}
-        <br><br><br>
-    {% endif %}
-
-    
-
-    {% if listeblog %}
-        {# blog liée #}
-        <h3>Article liée à ce jeu :</h3>
-        {% for blog in listeblog %}
-            le {{ blog.datetime|date('d/m/Y H:i') }} : <a href="pageblog{{ blog.id }}">{{ blog.titre }}.</a> type : {{ blog.type }}
-            <br><br>
-        {% endfor %}
-    {% endif %}  
-
-    <br><br><br>
-
-    {# commentaire #}
-    <h3>Commentaire :</h3>
-    {% for com in comments %}
-        {% if com.envoyer.roles[0] == 'ROLE_ADMIN'%}
-            {% set role = 'Admin' %}
-        {% elseif com.envoyer.roles[0] == 'ROLE_CONTRIBUTOR'%} 
-            {% set role = 'Contributeur' %}
-        {% else %}
-            {% set role = 'Utilisateur' %}
-        {% endif %}
-        
-        <div id="Com{{ com.id }}">
-            le {{ com.datetime|date('d/m/Y H:i') }} {{ role }} <a href="pageuser{{ com.envoyer.id }}">{{ com.envoyer.name }}</a> dit : {{ com.contenue }}
+    {# image bannier en entier #}
+    <div class="col-2">
+        <div class="conteneur_image_full">
+            <img src="data:image/png;base64, {{ image_jeu }}" class="image_lien_jeu">
         </div>
+    </div>
 
-        <form id="UpdateCom{{ com.id }}" action="updatecom_com_{{ com.id }}" style="display: none">
-            <textarea name="textComment" class="form-control" rows="3" >{{ com.contenue }}</textarea>
-            
-            <br><button class="btn btn-light">Valider modification</button> 
-        </form>
-        
-        {% if app.user %}
-            {% if is_granted('ROLE_ADMIN') or com.envoyer == app.user %}
-                <a href="deletecom_com_{{ com.id }}">Supprimer</a>
+    <div class="col-8">
+        <div class='conteneur_page'> 
 
-                <button id="btnUpdateCom{{ com.id }}" onclick="showUpdateCom({{ com.id }})">Modifier</button> 
-            {% endif %}
+            <div class="card_head">
+                <div class="page_date">posté par <a href="pageuser{{ jeu.auteur.id }}" class='name_user2'>{{ jeu.auteur.name }}</a> 
+                le {{ jeu.datetime|date('d/m/Y H:i') }}</div>
+                <div class="page_title">{{ jeu.titre|raw }}</div>
+            </div>
+
+            <div class="conteneur_contenue">
+
+                {# affichage du jeu #}
+                {% if jeu.type == 'all' or jeu.type == 'web' %}
+                    <div id="width_jeu">{{ jeu.largeur }}</div>
+                    <div id="height_jeu">{{ jeu.longueur }}</div>
+                    <div>
+                        <p align="center">
+                            <iframe id="inlineFrameExample"
+                                title="Inline Frame Example"
+                                {# width="{{ jeu.largeur }}"
+                                height="{{ jeu.longueur }}" #}
+                                {# src="jeuWeb/{{ jeu.lienweb }}/{{ jeu.nomdossier }}/{{ jeu.nomdossier }}.html"> #}
+                                src="jeuWeb/{{ jeu.lienweb }}/{{ jeu.nomdossier }}/{{ jeu.nomdossier }}.html">
+                            </iframe>
+                        </p>
+                    </div>
+                {% endif %}
+
+                {# téléchargement du jeu #}
+                {% if jeu.type == 'all' or jeu.type == 'dl' %}
+                    <span id="telecharger_titre">Télécharger :</span>
+                    <div>
+                        {{ jeu.liendl }} : <a href="jeuDl/{{ jeu.liendl }}" download='{{ jeu.liendl }}' class="name_user">télécharger</a>
+                    </div>
+                {% endif %}
+
+                <br>
+                {{ jeu.contenue|raw }}
+
+                <div class="row ">
+                    {% for img in images %}
+                        <div class="col-4 text-center display_image">
+                            <img src="data:image/png;base64, {{ img.image }}" style="max-width:100%;max-height:100%">
+                        </div>
+                    {% endfor %}
+                </div><br>
+
+                {% if listecontrib %}
+                {# contributeur #}
+                    <h3>Liste des contributeurs à ce jeu :</h3>
+                    <div id="div_contributeur">
+                        <ul>
+                        {% for contrib in listecontrib %}
+                            <li><a href="pageuser{{ contrib.user.id }}" class="name_user">{{ contrib.user.name }}</a></li>
+
+                            {# {% if contrib.user == app.user %}
+                                <img src="data:image/png;base64,{{ base64 }}" width='60px' height='60px' />
+                            {% else %}
+                                {% set testimage = contrib.user.avatar %}
+
+                                {% if testimage %}
+                                    <img src="data:image/png;base64,{{ testimage }}" width='60px' height='60px' />
+                                {% endif %}
+                            {% endif %} #}
+
+                        {% endfor %}
+                        </ul>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <div class="col-2 conteneur_page">
+        {# blog liée a ce jeu #}
+        {% if listeblog %}
+            <div class="titre_lien">
+                Article liée à ce jeu :
+            </div>
+            <div class="conteneur_lien2">
+                {% for blog in listeblog %}
+                    <span class="text_blog_liee">le {{ blog.datetime|date('d/m/Y H:i') }} :</span><br>
+                    <span class="titre_blog_liee"><a href="pageblog{{ blog.id }}" class="name_user">{{ blog.titre }}</a></span><br>
+                    <span class="text_blog_liee">type : {{ blog.type }}</span><br><br>
+                {% endfor %}
+            </div>
         {% endif %}
-        <br><br>
-    {% endfor %}
+    </div>
 
-    {% if app.user %}
-        <form id="formCom" action="commentaire" style="display: none">
-            <textarea name="textComment" class="form-control" rows="3" placeholder="plouf"></textarea>
-            
-            <input type="hidden" name="type" value="jeu"> 
-            <input type="hidden" name="pageid" value="{{ jeu.id }}"> 
-            
-            <br><button class="btn btn-light">envoyer</button> 
-        </form>  
+    {# part commentaire #}
+    <div class="col-2 bloc_com"></div>
+    <div class="col-10">
+        <div class="bloc_titre_com">
+            {# Commentaire titre #}
+            <h3 id="titre_page">Commentaire :</h3>
+        </div>
+    </div>
 
-        <button id="btnFormCom" class="btn btn-light" onclick="showFormCom()">laisser un commentaire</button> 
-    {% endif %}  
+    <div class="col-2"></div>
+    {# Commentaire #}
+    <div class="col-8">
+        <div class="card_forme">
+            {% if app.user %} 
+                <form id="formCom" action="commentaire" >
+                    <textarea name="textComment" class="form-control" rows="1" placeholder="laisser un commentaire"></textarea>
+                    <input type="hidden" name="type" value="jeu"> 
+                    <input type="hidden" name="pageid" value="{{ jeu.id }}"> 
+                    <button class="btn_article2">envoyer</button> 
+                </form>               
+                {# style="display: none" <button id="btnFormCom" class="btn btn-primary" onclick="showFormCom()">laisser un commentaire</button>  #}
+            {% endif %}
+
+            {% for com in comments %}
+                {% if com.envoyer.roles[0] == 'ROLE_ADMIN'%}
+                    {% set role = 'Admin' %}
+                {% elseif com.envoyer.roles[0] == 'ROLE_CONTRIBUTOR'%} 
+                    {% set role = 'Contributeur' %}
+                {% else %}
+                    {% set role = 'Utilisateur' %}
+                {% endif %}
+               
+                <div class="bloc_contenue_com">
+                    <form id="UpdateCom{{ com.id }}" action="updatecom_com_{{ com.id }}" style="display: none">
+                        <textarea name="textComment" class="form-control com_modif_form" rows="3" >{{ com.contenue }}</textarea>
+                        
+                        <button class="btn_article2 com_modif_form2">Valider modification</button> 
+                    </form>
+
+                    <div class="card mb-3 no_border" style="max-width: 1000px;" id="Com{{ com.id }}">
+                        <div class="row g-0">
+                            <div class="col-md-3 d-flex {# align-items-center #} justify-content-center image_dans_com">
+                                {% if com.envoyer == app.user %}
+                                    <img src="data:image/png;base64,{{ base64 }}" style="max-width:100%;max-height:100%;object-fit: contain;" />
+                                {% else %}
+                                    <img src="data:image/png;base64,{{ com.envoyer.avatar }}" style="max-width:100%;max-height:100%;object-fit: contain;" />
+                                {% endif %}
+                            </div>
+                            <div class="col-md-9 com_contenue">
+                                <div class="card-body image_dans_com">
+                                    <p class="card_contenue2">le {{ com.datetime|date('d/m/Y H:i') }} <a href="pageuser{{ com.envoyer.id }}" class='name_user'>{{ com.envoyer.name }}</a> ({{ role }}) dit : </p>
+                                    <div class="card_contenue">{{ com.contenue }}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {% if app.user %}
+                        {% if is_granted('ROLE_ADMIN') or com.envoyer == app.user %}
+                            <a href="deletecom_com_{{ com.id }}" class="btn_article2 btn_place">Supprimer</a>
+                            <button id="btnUpdateCom{{ com.id }}" onclick="showUpdateCom({{ com.id }})" class="btn_article2 btn_place">Modifier</button> 
+                        {% endif %}
+                    {% endif %}
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="col-2"></div>
 
 </div>
+
 {% endblock %}
 
 {% block javascripts %}
     <script>
         var visible=false;
         var visible2=false;
+
+        var true_height_jeu=document.getElementById('height_jeu').innerHTML;
+        var true_width_jeu=document.getElementById('width_jeu').innerHTML;
         
         function showFormCom(){
             if (visible==false){
