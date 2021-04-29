@@ -36,18 +36,17 @@
 
                 {# affichage du jeu #}
                 {% if jeu.type == 'all' or jeu.type == 'web' %}
-                    <div id="width_jeu">{{ jeu.largeur }}</div>
-                    <div id="height_jeu">{{ jeu.longueur }}</div>
-                    <div>
-                        <p align="center">
-                            <iframe id="inlineFrameExample"
-                                title="Inline Frame Example"
-                                {# width="{{ jeu.largeur }}"
-                                height="{{ jeu.longueur }}" #}
-                                {# src="jeuWeb/{{ jeu.lienweb }}/{{ jeu.nomdossier }}/{{ jeu.nomdossier }}.html"> #}
-                                src="jeuWeb/{{ jeu.lienweb }}/{{ jeu.nomdossier }}/{{ jeu.nomdossier }}.html">
-                            </iframe>
-                        </p>
+                    <div class="responsive-embed" id="resp-test">
+                        <iframe id="inlineFrameExample"
+                            class="resp-iframe"
+                            title="Inline Frame Example"
+                            scrolling="no"
+                            {# width="{{ jeu.largeur }}"
+                            height="{{ jeu.longueur }}" #}
+                            width="100%"
+                            height="100%"
+                            src="jeuWeb/{{ jeu.lienweb }}/{{ jeu.nomdossier }}/{{ jeu.nomdossier }}.html">
+                        </iframe>
                     </div>
                 {% endif %}
 
@@ -191,9 +190,6 @@
         var visible=false;
         var visible2=false;
 
-        var true_height_jeu=document.getElementById('height_jeu').innerHTML;
-        var true_width_jeu=document.getElementById('width_jeu').innerHTML;
-        
         function showFormCom(){
             if (visible==false){
                 document.getElementById("formCom").style.display = "block";
@@ -218,6 +214,13 @@
                 document.getElementById('btnUpdateCom'+$id).innerHTML = "Modifier";
                 visible2=false;
             }
+        }
+
+        window.onload = function(){
+            var true_height_jeu= {{ jeu.longueur }} ;
+            var true_width_jeu= {{ jeu.largeur }} ;
+            var ratio=true_height_jeu/true_width_jeu*100;
+            document.getElementById("resp-test").style.paddingTop = ratio+"%";
         }
     </script>
 {% endblock %}
