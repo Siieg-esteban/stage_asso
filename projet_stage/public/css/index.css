@@ -25,7 +25,7 @@ html, body {
 	background-color: rgb(97, 97, 97);
 }
 
-#formBlog,#formJeu {
+#formBlog,#formJeu,#formProto,#formCom_proto,#UpdateCom_proto {
 	position: fixed; 
 	z-index: 10;
 	padding: 20px;
@@ -144,6 +144,9 @@ html, body {
 	font-size: 1.1em;
 	font-weight: 400;
 	text-align: center;
+}
+#conteneur_contrib{
+	margin-top: 10px;
 }
 .titre_lien{
 	background-color: #F2A530;
@@ -338,6 +341,12 @@ html, body {
 .btn_article2:hover{
 	color: white;
 	background-color: #F2A530;
+}
+.btn_com_proto{
+	margin: 15px 15px 5px 15px;
+}
+.max_with_proto{
+	max-width: 90px;
 }
 .name_user{
 	text-decoration: none;

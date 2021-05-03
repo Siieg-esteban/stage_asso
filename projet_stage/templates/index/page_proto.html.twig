@@ -3,152 +3,217 @@
 {% block title %}Hello IndexController!{% endblock %}
 
 {% block body %}
-{# redirction si pas contrib ou admin #}
 {% if is_granted('ROLE_ADMIN') or is_granted('ROLE_CONTRIBUTOR') %}
-    <style>
-        .example-wrapper { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; }
-        .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
-    </style>
 
-    <div class="example-wrapper">
-        <h3>PAGE PROTO</h3>
+    <div class="row">
 
-        {# proto contenue #}
-        le {{ proto.datetime|date('d/m/Y H:i') }}
-        <br>
-        <h1>{{ proto.titre| raw }}</h1>
-        <br>
-        {{ proto.contenue| raw }}
-        <br>
+        {% set image_proto = proto.image %}
+        {# image bannier #}
+        <img src="data:image/png;base64, {{ image_proto }}" class="main_image">
 
-        {# image proto #}
-        {% for img in images %}
-            <img src="data:image/png;base64, {{ img.image }}" style="max-width:600px;max-height:600px">
-            <br><br>
-        {% endfor %}
-
-        <br><br><br>
-
-        {% if listecontrib %}
-        {# contributeur #}
-            <h3>Liste des contributeurs :</h3>
-            {% set contributeurProjet = false %}
-            {% for contrib in listecontrib %}
-                <a href="pageuser{{ contrib.user.id }}">{{ contrib.user.name }}</a>
-
-                {% set testimage = contrib.user.avatar %}
-
-                {% if testimage %}
-                    <img src="data:image/png;base64,{{ testimage }}" width='60px' height='60px' />
-                {% endif %}
-
-                <br><br>
-                {# rejoindre le projet si pas deja dedant #}
-                {% if contrib.user == app.user %}
-                    {% set contributeurProjet = true %}
-                {% endif %}
-            {% endfor %}
-            {% if contributeurProjet == false %}
-                devenir contributeur sur le projet : <a href="newcontrib{{ proto.id }}">{{ proto.titre| raw }}</a>
-            {% endif %}
-        {% endif %}
-
-        <br><br><br>
-
-        {# commentaire #}
-        <h3>Commentaire :</h3>
-        {% for com in comments %}
-            {% if com.envoyer.roles[0] == 'ROLE_ADMIN'%}
-                {% set role = 'Admin' %}
-            {% elseif com.envoyer.roles[0] == 'ROLE_CONTRIBUTOR'%} 
-                {% set role = 'Contributeur' %}
-            {% else %}
-                {% set role = 'Utilisateur' %}
-            {% endif %}
-
-            <div id="Com{{ com.id }}">
-                le {{ com.datetime|date('d/m/Y H:i') }} {{ role }} <a href="pageuser{{ com.envoyer.id }}">{{ com.envoyer.name }}</a> dit : 
-                <span id='com_contenue_{{ com.id }}'>{{ com.contenue| raw }}</span>
-            </div>    
-
-            {# affichage image com #}    
-            {% for img in imagesCom %}
-                {% if img.com == com %}
-                    <img src="data:image/png;base64, {{ img.image }}" style="max-width:600px;max-height:600px"> 
-                    {% if app.user %}
-                        {% if is_granted('ROLE_ADMIN') or com.envoyer == app.user %}
-                            <a class='btn_update{{ com.id }}' style="display: none" href="deleteimagecom_{{ img.id }}">Supprimer</a>
-                        {% endif %}
-                    {% endif %}
-                <br><br>
-                {% endif %}
-            {% endfor %}
-
-            {# afficgage fichier com #}   
-            {% for file in fichierCom %}
-                {% if file.com == com %}
-                    {{ file.lien }} : <a href="upload/{{ file.lien }}" download='{{ file.lien }}'>télécharger</a>
-                    {% if app.user %}
-                        {% if is_granted('ROLE_ADMIN') or com.envoyer == app.user %}
-                            <a class='btn_update{{ com.id }}' style="display: none" href="deletefichiercom_{{ file.lien }}" >Supprimer</a>
-                        {% endif %}
-                    {% endif %} 
-                <br>
-                {% endif %}
-            {% endfor %}
-            
-            {# update com #}
-            {% if app.user %}
-                {% if is_granted('ROLE_ADMIN') or com.envoyer == app.user %}
-                    <a href="deletecom_com_{{ com.id }}">Supprimer</a>
-
-                    <button id="btnUpdateCom{{ com.id }}" onclick="showUpdateCom({{ com.id }})">Modifier</button> 
-                {% endif %}
-            {% endif %}
-            <br><br><br>
-
-        {% endfor %}
-
-        {# form update com #}
-        <div id="UpdateCom" style="display: none">
-            {{ form_start(upform) }}
-                {{ form_row(upform.contenue2, {
-                    label: 'contenue'
-                }) }}
-                {{ form_row(upform.image2, {
-                    label: 'images'
-                }) }}
-                {{ form_row(upform.upload2, {
-                    label: 'fichier'
-                }) }}
-                {{ form_row(upform.comid) }}
-
-                <button type="submit" class="btn">Créer</button>
-            {{ form_end(upform) }} 
+        {# titre #}
+        <div class="col-2 bloc_page">
+        </div>
+        <div class="col-10 bloc_titre_page">
+            <h3 id="titre_page">Page de prototype :</h3>
         </div>
 
-        {% if app.user %}
-            {# form com #}
-            <div id="formCom" style="display: none">
-                {{ form_start(form) }}
-                    {{ form_row(form.contenue, {
-                        label: 'contenue'
-                    }) }}
-                    {{ form_row(form.image, {
-                        label: 'images'
-                    }) }}
-                    {{ form_row(form.upload, {
-                        label: 'fichier'
-                    }) }}
+        <div class="col-2">
+            <div class="conteneur_image_full">
+                <img src="data:image/png;base64, {{ image_proto }}" class="image_lien_jeu">
+            </div>
+        </div>
 
-                    <button type="submit" class="btn">Créer</button>
-                {{ form_end(form) }}
-            </div>   
-            
-            <button id="btnFormCom" class="btn btn-light" onclick="showFormCom()">laisser un commentaire</button> 
-        {% endif %} 
+        {# conteneur main page #}
+        <div class="col-7">
+            <div class='conteneur_page'> 
 
+                {# proto titre #}
+                <div class="card_head">
+                    <div class="page_date">créé par <a href="pageuser{{ proto.auteur.id }}" class='name_user2'>{{ proto.auteur.name }}</a> 
+                    le {{ proto.datetime|date('d/m/Y H:i') }}</div>
+                    <div class="page_title">{{ proto.titre|raw }}</div>
+                </div>
+                
+                {# proto contenue #}
+                <div class="conteneur_contenue">
+                    {{ proto.contenue|raw }}
+
+                    {# affichage image #} 
+
+                    <div class="row ">
+                        {% for img in images %}
+                            <div class="col-4 text-center display_image">
+                                <img src="data:image/png;base64, {{ img.image }}" style="max-width:100%;max-height:100%">
+                            </div>
+                        {% endfor %}
+                    </div>
+
+                    {% if listecontrib %}
+                        {# contributeur #}
+                        <div id="conteneur_contrib">
+                            <h3>Liste des contributeurs :</h3>
+                            {% set contributeurProjet = false %}
+                            <ul>
+                            {% for contrib in listecontrib %}
+                                <li><a href="pageuser{{ contrib.user.id }}" class="name_user">{{ contrib.user.name }}</a></li>
+
+                                {% set testimage = contrib.user.avatar %}
+
+                                {# {% if testimage %}
+                                    <img src="data:image/png;base64,{{ testimage }}" width='60px' height='60px' />
+                                {% endif %} #}
+
+                                {# rejoindre le projet si pas deja dedant #}
+                                {% if contrib.user == app.user %}
+                                    {% set contributeurProjet = true %}
+                                {% endif %}
+                            {% endfor %}
+                            </ul>
+                            {% if contributeurProjet == false %}
+                                devenir contributeur sur le projet : <a href="newcontrib{{ proto.id }}" class="name_user">{{ proto.titre| raw }}</a>
+                            {% endif %}
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <div class="col-3">
+        </div>
+
+        {# partie commentaire #}
+        <div class="col-2 bloc_com"></div>
+        <div class="col-10">
+            <div class="bloc_titre_com">
+                {# Commentaire titre #}
+                <h3 id="titre_page">Commentaire :</h3>
+            </div>
+        </div>
+
+        <div class="col-2"></div>
+
+        {# Commentaire #}
+        <div class="col-7">
+            <div class="card_forme"> 
+
+                {# laisser un com #}
+                {% if app.user %}
+                    {# form com #}
+                    <div id="formCom_proto" style="display: none">
+                        Laisser un commentaire : 
+                        {{ form_start(form) }}
+                            {{ form_row(form.contenue, {
+                                label: 'contenue'
+                            }) }}
+                            {{ form_row(form.image, {
+                                label: 'images'
+                            }) }}
+                            {{ form_row(form.upload, {
+                                label: 'fichier'
+                            }) }}
+
+                            <button type="submit" class="btn_article2">Créer</button>
+                            <button type="button" id="btnFormCom2" class="btn_article2" onclick="showFormCom()">Fermer</button>
+                        {{ form_end(form) }}
+                    </div>   
+                    
+                    <button id="btnFormCom" class="btn_article2 btn_com_proto" onclick="showFormCom()">laisser un commentaire</button> 
+                {% endif %} 
+
+                {# form update com #}
+                <div id="UpdateCom_proto" style="display: none">
+                    Modifier un commentaire : 
+                    {{ form_start(upform) }}
+                        {{ form_row(upform.contenue2, {
+                            label: 'contenue'
+                        }) }}
+                        {{ form_row(upform.image2, {
+                            label: 'images'
+                        }) }}
+                        {{ form_row(upform.upload2, {
+                            label: 'fichier'
+                        }) }}
+                        {{ form_row(upform.comid) }}
+
+                        <button type="submit" class="btn_article2">Modifier</button>
+                        <button type="button" id="btnUpdateCom2" class="btn_article2" onclick="showUpdateCom()">Fermer</button>
+                    {{ form_end(upform) }} 
+                </div>
+
+                {% for com in comments %}
+                    {% if com.envoyer.roles[0] == 'ROLE_ADMIN'%}
+                        {% set role = 'Admin' %}
+                    {% elseif com.envoyer.roles[0] == 'ROLE_CONTRIBUTOR'%} 
+                        {% set role = 'Contributeur' %}
+                    {% else %}
+                        {% set role = 'Utilisateur' %}
+                    {% endif %}
+
+                    <div class="bloc_contenue_com">
+                        <div class="card mb-3 no_border" style="max-width: 1000px;" id="Com{{ com.id }}">
+                            <div class="row g-0">
+                                <div class="col-md-3 d-flex {# align-items-center #} justify-content-center image_dans_com">
+                                    {% if com.envoyer == app.user %}
+                                        <img src="data:image/png;base64,{{ base64 }}" style="max-width:100%;max-height:100%;object-fit: contain;" />
+                                    {% else %}
+                                        <img src="data:image/png;base64,{{ com.envoyer.avatar }}" style="max-width:100%;max-height:100%;object-fit: contain;" />
+                                    {% endif %}
+                                </div>
+                                <div class="col-md-9 com_contenue">
+                                    <div class="card-body image_dans_com">
+                                        <p class="card_contenue2">le {{ com.datetime|date('d/m/Y H:i') }} <a href="pageuser{{ com.envoyer.id }}" class='name_user'>{{ com.envoyer.name }}</a> ({{ role }}) dit : </p>
+                                        <div id="com_contenue_{{ com.id }}" class="card_contenue">{{ com.contenue|raw }}</div>
+
+                                        {# affichage image com #}    
+                                        {% for img in imagesCom %}
+                                            {% if img.com == com %}
+                                                <img src="data:image/png;base64, {{ img.image }}" style="max-width:600px;max-height:600px"> 
+                                                {% if app.user %}
+                                                    {% if is_granted('ROLE_ADMIN') or com.envoyer == app.user %}
+                                                        <a class='btn_update{{ com.id }} btn_article2 max_with_proto' style="display: none" href="deleteimagecom_{{ img.id }}">Supprimer</a>
+                                                    {% endif %}
+                                                {% endif %}
+                                            <br><br>
+                                            {% endif %}
+                                        {% endfor %}
+
+                                        {# afficgage fichier com #}   
+                                        {% for file in fichierCom %}
+                                            {% if file.com == com %}
+                                                <span class="card_contenue">{{ file.lien }} : </span><a href="upload/{{ file.lien }}" download='{{ file.lien }}' class="name_user">télécharger</a>
+                                                {% if app.user %}
+                                                    {% if is_granted('ROLE_ADMIN') or com.envoyer == app.user %}
+                                                        <a class='btn_update{{ com.id }} btn_article2 max_with_proto' style="display: none" href="deletefichiercom_{{ file.lien }}" >Supprimer</a>
+                                                    {% endif %}
+                                                {% endif %} 
+                                            <br>
+                                            {% endif %}
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {# update com #}
+                        {% if app.user %}
+                            {% if is_granted('ROLE_ADMIN') or com.envoyer == app.user %}
+                                <a href="deletecom_com_{{ com.id }}" class="btn_article2">Supprimer</a>
+                                <button id="btnUpdateCom{{ com.id }}" onclick="showUpdateCom({{ com.id }})" class="btn_article2">Modifier texte/Ajouter image</button> 
+                                <button {# id="btnUpdateCom{{ com.id }}" #} onclick="showBtnComDelete({{ com.id }})" class="btn_article2">Supprimer image/fichier</button> 
+                            {% endif %}
+                        {% endif %}
+                    </div>
+
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="col-3"></div>
+        
     </div>
+
+{# redirction si pas contrib ou admin #}
 {% else %}
     <script>
         window.location.href = 'listeblog';
@@ -165,11 +230,13 @@
         
         function showFormCom(){
             if (visible==false){
-                document.getElementById("formCom").style.display = "block";
+                document.getElementById("formCom_proto").style.display = "block";
+                document.getElementById("background_form").style.display = "block";
                 document.getElementById('btnFormCom').innerHTML = "Fermer";
                 visible=true;
             }else{
-                document.getElementById("formCom").style.display = "none";
+                document.getElementById("formCom_proto").style.display = "none";
+                document.getElementById("background_form").style.display = "none";
                 document.getElementById("btnFormCom").innerHTML = "laisser un commentaire";
                 visible=false;
             }
@@ -177,32 +244,32 @@
 
         function showUpdateCom($id){
             if (visible2==false){
-                document.getElementById('UpdateCom').style.display = 'block';
-
-                document.getElementById('btnUpdateCom'+$id).innerHTML = "Fermer";
-                document.getElementById("updatecom_comid").value = $id;
+                document.getElementById('UpdateCom_proto').style.display = 'block';
+                document.getElementById("background_form").style.display = "block";
+                document.getElementById("updatecom_comid").value=$id;
                 var testdata = document.getElementById("com_contenue_"+$id).innerHTML;
                 CKEDITOR.instances['updatecom_contenue2'].setData(testdata);
-                var btn_update = document.getElementsByClassName("btn_update"+$id);
-                var lengthOfArray=btn_update.length;
+                visible2=true;
+            }else{
+                document.getElementById('UpdateCom_proto').style.display = 'none';
+                document.getElementById("background_form").style.display = "none";
 
+                CKEDITOR.instances['updatecom_contenue2'].setData('');
+                visible2=false;
+            }
+        }
+        function showBtnComDelete($id){
+            var btn_update = document.getElementsByClassName("btn_update"+$id);
+            var lengthOfArray=btn_update.length;
+
+            if (btn_update[0].style.display=='none'){
                 for (var i=0; i<lengthOfArray;i++){
                     btn_update[i].style.display='block';
                 }
-                visible2=true;
             }else{
-                document.getElementById('UpdateCom').style.display = 'none';
-
-                document.getElementById('btnUpdateCom'+$id).innerHTML = "Modifier";
-                document.getElementById("updatecom_comid").value = "";
-                CKEDITOR.instances['updatecom_contenue2'].setData('');
-                var btn_update = document.getElementsByClassName("btn_update"+$id);
-                var lengthOfArray=btn_update.length;
-
                 for (var i=0; i<lengthOfArray;i++){
                     btn_update[i].style.display='none';
                 }
-                visible2=false;
             }
         }
     </script>

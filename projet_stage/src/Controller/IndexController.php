@@ -270,6 +270,12 @@ class IndexController extends AbstractController
         $Allproto=$em->findAll();
         $countproto=count($Allproto);
 
+        $em2=$this->getDoctrine()->getRepository(Com::class);
+        $AllProtoCom=$em2->findBy(array('type'=>'proto'));
+
+        $em3=$this->getDoctrine()->getRepository(Listecontributeur::class);
+        $contribAll=$em3->findBy(array('type'=>'proto'));
+
         $protolist=array();
         for ($i=0;$i<$countproto;$i++) { 
             $protolist[]=$Allproto[$i];
@@ -338,6 +344,8 @@ class IndexController extends AbstractController
             'pagetype' => 'proto',
             'form' => $form->createView(),
             'listeproto' => $protolist,
+            'protoCom' => $AllProtoCom,
+            'contribAll' => $contribAll,
         ]);
     }
 

@@ -33,8 +33,6 @@
             <div class="conteneur_contenue">
                 {{ blog.contenue|raw }}
 
-                {# <div class="ligne2 conteneur_image"></div><br> #}
-
                 {# affichage image #}
                 <div class="row ">
                     {% for img in images %}
@@ -60,7 +58,7 @@
         {% endif %}
     </div>
 
-    {# part commentaire #}
+    {# partie commentaire #}
     <div class="col bloc_com"></div>
     <div class="col-10">
         <div class="bloc_titre_com">
@@ -70,6 +68,7 @@
     </div>
 
     <div class="col-2"></div>
+
     {# Commentaire #}
     <div class="col-7">
         <div class="card_forme">

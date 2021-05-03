@@ -4,31 +4,7 @@
 
 {% block body %}
 {% if is_granted('ROLE_ADMIN') or is_granted('ROLE_CONTRIBUTOR') %}
-    <style>
-        .example-wrapper { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; }
-        .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
-    </style>
-
-    {# listing #}
-    <div class="example-wrapper">
-        <h1>LISTE PROTO</h1>
-
-        {% for proto in listeproto %} 
-            <a href="pageproto{{ proto.id}}"><span>{{ proto.titre| raw}}</span> : <span>{{ proto.datetime|date('d/m/Y H:i') }}</span></a>
-            
-            {% if app.user %}
-                {% if is_granted('ROLE_ADMIN') or proto.auteur == app.user %}
-                    <a href="deletepage/proto/{{ proto.id }}" >Supprimer</a>
-                    <a href="updatepage_proto_{{ proto.id }}" >Modifier</a>
-                {% endif %}
-            {% endif %}
-            
-            <br>
-        {% endfor %}
-    </div>
-
     {# form add proto #}
-    <button id="btnFormProto" class="btn btn-primary" onclick="showFormProto()">Créer un nouveau proto !</button> 
     <div id="formProto" style="display: none">
         {{ form_start(form) }}
             {{ form_row(form.titre, {
@@ -38,21 +14,113 @@
                 label: 'Contenue de la page : '
             }) }}
             {{ form_row(form.mainimage, {
-                label: 'Image principal : '
+                label: 'Image de couverture : '
             }) }}
             {{ form_row(form.image, {
                 label: 'Images : '
             }) }}
+            {{ form_row(form.upload, {
+                label: 'Fichiers : '
+            }) }}
             <button type="submit" class="btn">Créer</button>
+            <button id="btnFormProto2" class="btn btn-primary" onclick="showFormProto()" type="button">Fermer</button> 
         {{ form_end(form) }}
     </div>
-    
-{# redirect #}
+
+    <br>
+
+    <div class="row">
+        <div class="col bloc_page">
+        </div>
+        <div class="col-10 bloc_titre_page">
+            <h3 id="titre_page">Liste des prototype :</h3>
+        </div>
+    </div>
+
+    <div class="row">
+
+        <div class="col text-start">
+            {% if is_granted('ROLE_ADMIN') or is_granted('ROLE_CONTRIBUTOR') %}
+                {# btn show form add proto #}
+                <button id="btnFormProto" class="btn_article" onclick="showFormProto()">Créer un nouveau proto !</button> 
+            {% endif %}
+        </div>
+
+        {# listing #}
+        <div class="col-10">
+            {# liste proto #}
+            <div class="row bloc_conteneur">
+                {% for proto in listeproto %} 
+
+                    <div class="col-12 card_forme" id="card_forme_{{ proto.id }}">
+
+                        {# affiche nombre de contributeur #}    
+                        {% set number2 = 0 %}
+                        {% for contrib in contribAll %}
+                            {% if contrib.proto == proto %}
+                                {% set number2 = number2 + 1 %}
+                            {% endif %}
+                        {% endfor %}
+
+                        {# affiche nombre commentaire/reponse #}
+                        {% set number = 0 %}
+                        {% for Com in protoCom %}
+                            {% if Com.proto == proto %}
+                                {% set number = number + 1 %}
+                            {% endif %}
+                        {% endfor %}
+
+                        {# card #}
+                        <a href="pageproto{{ proto.id }}" onmouseover="card_head_hover({{ proto.id }})" onmouseleave="card_head_leave({{ proto.id }})" class='lien_liste'>
+                            <div class=" mb-3 card_article_list" style="max-width: 2000px;">
+                                <div class="card_head" id="card_head_{{ proto.id }}">
+                                    <p class="card-date">le {{ proto.datetime|date('d/m/Y H:i') }}</p>
+                                    <h4 class="card-title">{{ proto.titre }}</h4>
+                                </div>
+
+                                <div class="row g-0">
+                                    <div class="col-md-3">
+                                        {% set base64 = proto.image %}
+                                        {% if base64 %}
+                                            {# <img src="data:image/png;base64, {{ base64 }}" style="max-width:100%;max-height:100%"> #}
+                                            <img src="data:image/png;base64, {{ base64 }}" style="width:100%;height:100%;object-fit: contain;">
+                                        {% endif %}
+                                    </div>
+                                    <div class="col-md-9 card_all"><br>
+                                        <div class="card-body card_all">
+                                            <p class="card-text contenue">{{ proto.contenue|slice(0, 250)|striptags }} [...]</p> 
+                                            <p class="card-text contenue">nombre de contributeur : {{ number2 }}</p>
+                                            <p class="card-text contenue">nombre de reponse : {{ number }}</p>
+                                            <p class="card-text contenue">par <span class="name_user">{{ proto.auteur.name }}</span></p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </a>
+
+                        {% if app.user %}
+                            {% if is_granted('ROLE_ADMIN') or proto.auteur == app.user %}
+                            <div class="d-flex flex-row-reverse">
+                                <div class="div_btn_article p-2">
+                                    <a class="btn_article" href="updatepage_proto_{{ proto.id }}">Modifier</a>
+                                    <a class="btn_article" href="deletepage/proto/{{ proto.id }}">Supprimer</a>
+                                </div>
+                            </div>
+                            {% endif %}
+                        {% endif %}
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+   
+{# redirect si pas contributeur/admin #}
 {% else %}
     <script>
         window.location.href = 'listeblog';
     </script>
 {% endif %}
+
 {% endblock %}
 
 {% block javascripts %}
@@ -62,13 +130,27 @@
         function showFormProto(){
             if (visible==false){
                 document.getElementById("formProto").style.display = "block";
+                document.getElementById("background_form").style.display = "block";
                 document.getElementById("btnFormProto").innerHTML = "Fermer";
                 visible=true;
             }else{
                 document.getElementById("formProto").style.display = "none";
+                document.getElementById("background_form").style.display = "none";
                 document.getElementById("btnFormProto").innerHTML = "Créer un nouveau proto !";
                 visible=false;
             }
+        }
+        function card_head_hover(x){
+            document.getElementById("card_head_"+x).style.transition = "0.4s";
+            document.getElementById("card_forme_"+x).style.transition = "0.4s";
+            document.getElementById("card_head_"+x).style.backgroundColor = "#F2C030";
+            document.getElementById("card_forme_"+x).style.backgroundColor = "#333333";
+        }
+        function card_head_leave(x){
+            document.getElementById("card_head_"+x).style.transition = "0.4s";
+            document.getElementById("card_forme_"+x).style.transition = "0.4s";
+            document.getElementById("card_head_"+x).style.backgroundColor = "#F2A530";
+            document.getElementById("card_forme_"+x).style.backgroundColor = "#1F1F1F";
         }
     </script>
 {% endblock %}
