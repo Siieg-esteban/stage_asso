@@ -345,6 +345,9 @@ html, body {
 .btn_com_proto{
 	margin: 15px 15px 5px 15px;
 }
+#btn_modifier_page{
+	margin: 10px 0px 0px -5px;
+}
 .max_with_proto{
 	max-width: 90px;
 }

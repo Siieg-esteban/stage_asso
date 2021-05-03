@@ -20,6 +20,11 @@
         <div class="conteneur_image_full">
             <img src="data:image/png;base64, {{ image_blog }}" class="image_lien_jeu">
         </div>
+        {% if is_granted('ROLE_ADMIN') or blog.auteur == app.user %}
+            <div id="btn_modifier_page">
+                <a class="btn_article" href="updatepage_blog_{{ blog.id }}">Modifier le blog</a>
+            </div>
+        {% endif %}
     </div>
 
     <div class="col-7">

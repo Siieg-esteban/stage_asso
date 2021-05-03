@@ -22,6 +22,11 @@
             <div class="conteneur_image_full">
                 <img src="data:image/png;base64, {{ image_proto }}" class="image_lien_jeu">
             </div>
+            {% if is_granted('ROLE_ADMIN') or proto.auteur == app.user %}
+                <div id="btn_modifier_page">
+                    <a class="btn_article" href="updatepage_proto_{{ proto.id }}">Modifier le prototype</a>
+                </div>
+            {% endif %}
         </div>
 
         {# conteneur main page #}

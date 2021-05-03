@@ -1362,7 +1362,7 @@ class IndexController extends AbstractController
                         $em->persist($imagetest);
                         $em->flush();
                     }
-                    return $this->redirectToRoute('liste'.$type); 
+                    return $this->redirectToRoute('page'.$type,['id' => $id]); 
                 }
                 
                 return $this->render('index/page_update.html.twig', [

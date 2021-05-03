@@ -21,6 +21,11 @@
         <div class="conteneur_image_full">
             <img src="data:image/png;base64, {{ image_jeu }}" class="image_lien_jeu">
         </div>
+        {% if is_granted('ROLE_ADMIN') or jeu.auteur == app.user %}
+            <div id="btn_modifier_page">
+                <a class="btn_article" href="updatepage_jeu_{{ jeu.id }}">Modifier la page du jeu</a>
+            </div>
+        {% endif %}
     </div>
 
     <div class="col-8">
