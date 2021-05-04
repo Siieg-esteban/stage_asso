@@ -4,44 +4,60 @@
 
 {% block body %}
 {% if is_granted('ROLE_ADMIN') or is_granted('ROLE_CONTRIBUTOR') %}
-    <style>
-        .example-wrapper { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; }
-        .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
-    </style>
 
     {# listing #}
-    <div class="example-wrapper">
-        <h1>LISTE CONTRIBUTEUR</h1>
+    <div id="liste_contrib_conteneur" class="row">
+        <div class="col bloc_page"></div>
+        <div class="col-10 bloc_titre_page">
+            <h3 id="titre_page">Liste des contributeur :</h3>
+        </div>
 
-        <br>
+        <div class="col-2"></div>
+        <div class="col-7">
+            <div id="liste_contrib_espace" class='conteneur_page'> 
+                <div class="card_head">
+                    <div  class="page_mid">Liste des competences :</div>
+                </div>
 
-        Liste des competences :
-        <ul>
-            <li><a href="listecontributeur_all" class='name_user'>tout les contributeurs</a></li>
-            {% for competences in competenceUnique %} 
-                <li><a href="listecontributeur_{{ competences.nom }}" class='name_user'>{{ competences.nom|replace({"_":' '}) }}</a></li>
-            {% endfor %}
-        </ul>
+                <div class="conteneur_contenue">
+                    <ul>
+                        <li><a href="listecontributeur_all" class='name_user'>tout les contributeurs</a></li>
+                        {% for competences in competenceUnique %} 
+                            <li><a href="listecontributeur_{{ competences.nom }}" class='name_user'>{{ competences.nom|replace({"_":' '}) }}</a></li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="col-3"></div>
 
-        <br>
+        <div class="col-2"></div>
+        <div class="col-7">
+            <div class='conteneur_page'>
+                <div class="card_head">
+                    <div class="page_mid">
+                        {% if type == "all" %}
+                            Liste des contributeurs :
+                        {% else %}  
+                            Liste des contributeurs : {{ type|replace({"_":' '}) }}
+                        {% endif %}
+                    </div>
+                </div>
 
-        {% if type == "all" %}
-            Liste des contributeurs :
-        {% else %}  
-            Liste des contributeurs : {{ type|replace({"_":' '}) }}
-        {% endif %}
-        
-        <br>
-
-        {% for contributeur in listecontributeur %} 
-            <a href="pageuser{{ contributeur.id }}" class='name_user'>{{ contributeur.name }}</a> :
-            {% for competence in listecompetence %} 
-                {% if competence.user == contributeur %}
-                    {{ competence.competence.nom|replace({"_":' '}) }}    
-                {% endif %}
-            {% endfor %}
-            <br>
-        {% endfor %}
+                <div class="conteneur_contenue">
+                    {% for contributeur in listecontributeur %} 
+                        <a href="pageuser{{ contributeur.id }}" class='name_user'>{{ contributeur.name }}</a> :
+                        {% for competence in listecompetence %} 
+                            {% if competence.user == contributeur %}
+                                {{ competence.competence.nom|replace({"_":' '}) }}    
+                            {% endif %}
+                        {% endfor %}
+                        <br>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        <div class="col-3"></div>
 
     </div>
 

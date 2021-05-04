@@ -114,6 +114,7 @@ class IndexController extends AbstractController
             'pagetype' => 'blog',
             'form' => $form->createView(),
             'listeblog' => $bloglist,
+            'countblog' => $countblog,
         ]);
     }
 
@@ -258,6 +259,7 @@ class IndexController extends AbstractController
             'form' => $form->createView(),
             'listejeu' => $jeulist,
             'randomGame' => $randomGame,
+            'countjeu' => $countjeu,
         ]);
     }
 
@@ -336,16 +338,15 @@ class IndexController extends AbstractController
                 $em->persist($imagetest);
                 $em->flush();
             }
-
             return $this->redirect($request->getUri());
         }
-
         return $this->render('index/liste_proto.html.twig', [
             'pagetype' => 'proto',
             'form' => $form->createView(),
             'listeproto' => $protolist,
             'protoCom' => $AllProtoCom,
             'contribAll' => $contribAll,
+            'countproto' => $countproto,
         ]);
     }
 

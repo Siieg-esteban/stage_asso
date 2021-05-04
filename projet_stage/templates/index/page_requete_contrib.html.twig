@@ -3,66 +3,69 @@
 {% block title %}Hello IndexController!{% endblock %}
 
 {% block body %}
-    <style>
-        .example-wrapper { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; }
-        .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
-    </style>
 
-    <div class="example-wrapper">
-        <h3>PAGE DEVENIR CONTRIB</h3>
+    {# form demande devenir contributeur #}
+    <div id="formDemande" style="display: none">
+        {{ form_start(form) }}
+            {{ form_row(form.demande, {
+                label: 'contenue'
+            }) }}
+            {{ form_row(form.image, {
+                label: 'images'
+            }) }}
+            {{ form_row(form.upload, {
+                label: 'fichier'
+            }) }}
+            <button type="submit" class="btn">Créer</button>
+            <button type="button" id="btnFormCom2" class="btn btn-primary" onclick="showFormCom()">Fermer</button>
+        {{ form_end(form) }} 
+    </div>
 
-        <h1>Comment devenir contributeur ?</h1>
+    <div id="liste_contrib_conteneur" class="row">
 
-        <br>
-
-        {# message selon role actuelle utilisateur #}
-        {% if app.user %}
-            {% if is_granted('ROLE_ADMIN') %}
-                <h3>Vous êtes un Administrateur !</h3>
-            {% elseif is_granted('ROLE_CONTRIBUTOR')%} 
-                <h3>Vous êtes déjà un contributeur !</h3>
-            {% else %}
-                <h3>Vous n'êtes pas encore contributeur</h3>
-            {% endif %}
-        {% endif %}
-
-        <br>
-
-        <div> {# régle/explication pour devenir contributeur et son role #}
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus vitae lectus et nulla elementum cursus. Morbi pellentesque dui id ornare venenatis. Curabitur nulla dui, egestas a fermentum at, finibus quis dui. Nulla eget purus faucibus, finibus neque in, efficitur mi. Nunc viverra turpis nisi, in scelerisque nunc egestas ac. Donec ultrices egestas lobortis. Proin eget turpis at metus pretium porttitor. Morbi volutpat lorem ac mauris suscipit lobortis. In luctus ipsum urna, non blandit urna aliquam sit amet.
-            <br>
-            Vestibulum cursus finibus augue a volutpat. Phasellus sagittis dolor venenatis diam rutrum, efficitur egestas ligula finibus. Donec fringilla varius interdum. Curabitur a bibendum nunc. Suspendisse tempor ullamcorper leo ac congue. Integer hendrerit dapibus ante, tempus laoreet magna tincidunt mattis. Duis leo nisi, pharetra sed erat in, pulvinar tempor metus. Sed blandit nunc vitae dapibus sollicitudin. Nulla nec pharetra ipsum.
-            <br>
-            Suspendisse at varius enim. Vestibulum non purus ut odio dictum vehicula. Cras varius lacus in lorem laoreet, in tempus ex condimentum. Suspendisse sit amet velit justo. Aenean ac dui ut odio luctus feugiat. Curabitur varius elementum enim ac varius. Aliquam erat volutpat. Nullam eget sem odio. Proin scelerisque eros placerat nulla porttitor, a aliquam massa volutpat. Pellentesque ac convallis libero, vitae condimentum ex. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Ut et sollicitudin lorem. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras sodales risus eget mi gravida, blandit egestas purus efficitur. Maecenas fermentum diam nec orci posuere, in elementum mauris porta.
+        <div class="col-2 bloc_page">
+        </div>
+        <div class="col-10 bloc_titre_page">
+            <h3 id="titre_page">Comment devenir contributeur ?</h3>
         </div>
 
-        <br>
-
-
-
-
-        {# form demande devenir contributeur #}
-        <div id="formDemande" style="display: none">
-            {{ form_start(form) }}
-                {{ form_row(form.demande, {
-                    label: 'contenue'
-                }) }}
-                {{ form_row(form.image, {
-                    label: 'images'
-                }) }}
-                {{ form_row(form.upload, {
-                    label: 'fichier'
-                }) }}
-                <button type="submit" class="btn">Créer</button>
-            {{ form_end(form) }} 
+        <div class="col-2">
+            <button id="btnFormCom" class="btn_article" onclick="showFormCom()">Devenir contributeur</button>
         </div>
 
-        <button id="btnFormCom" class="btn btn-primary" onclick="showFormCom()">Devenir contributeur</button>
+        <div class="col-7">
+            <div id="liste_contrib_espace" class='conteneur_page'> 
+                <div class="card_head">
+                    <div class="page_mid">
+                        {# message selon role actuelle utilisateur #}
+                        {% if app.user %}
+                            {% if is_granted('ROLE_ADMIN') %}
+                                <h3>Vous êtes un Administrateur !</h3>
+                            {% elseif is_granted('ROLE_CONTRIBUTOR')%} 
+                                <h3>Vous êtes déjà un contributeur !</h3>
+                            {% else %}
+                                <h3>Vous n'êtes pas encore contributeur</h3>
+                            {% endif %}
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="conteneur_contenue">{# régle/explication pour devenir contributeur et son role #}
+                    <span class="titre_blog_liee">C'est quoi un contributeur ?</span><br><br>
+                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus vitae lectus et nulla elementum cursus. Morbi pellentesque dui id ornare venenatis. Curabitur nulla dui, egestas a fermentum at, finibus quis dui. Nulla eget purus faucibus, finibus neque in, efficitur mi. Nunc viverra turpis nisi, in scelerisque nunc egestas ac. Donec ultrices egestas lobortis. Proin eget turpis at metus pretium porttitor. Morbi volutpat lorem ac mauris suscipit lobortis. In luctus ipsum urna, non blandit urna aliquam sit amet.
+                    <br><br>
+                    <span class="titre_blog_liee">Comment devenir contributeur ?</span><br><br>
+                    Vestibulum cursus finibus augue a volutpat. Phasellus sagittis dolor venenatis diam rutrum, efficitur egestas ligula finibus. Donec fringilla varius interdum. Curabitur a bibendum nunc. Suspendisse tempor ullamcorper leo ac congue. Integer hendrerit dapibus ante, tempus laoreet magna tincidunt mattis. Duis leo nisi, pharetra sed erat in, pulvinar tempor metus. Sed blandit nunc vitae dapibus sollicitudin. Nulla nec pharetra ipsum.
+                    <br>
+                    Suspendisse at varius enim. Vestibulum non purus ut odio dictum vehicula. Cras varius lacus in lorem laoreet, in tempus ex condimentum. Suspendisse sit amet velit justo. Aenean ac dui ut odio luctus feugiat. Curabitur varius elementum enim ac varius. Aliquam erat volutpat. Nullam eget sem odio. Proin scelerisque eros placerat nulla porttitor, a aliquam massa volutpat. Pellentesque ac convallis libero, vitae condimentum ex. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Ut et sollicitudin lorem. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras sodales risus eget mi gravida, blandit egestas purus efficitur. Maecenas fermentum diam nec orci posuere, in elementum mauris porta.
+                </div>
+                <br>
+            </div>
+        </div>
+        <div class="col-3"></div>
+
         
-
-
-
-
+        
     </div>
 {% endblock %}
 
@@ -73,10 +76,12 @@
         function showFormCom(){
             if (visible==false){
                 document.getElementById("formDemande").style.display = "block";
+                document.getElementById("background_form").style.display = "block";
                 document.getElementById('btnFormCom').innerHTML = "Fermer";
                 visible=true;
             }else{
                 document.getElementById("formDemande").style.display = "none";
+                document.getElementById("background_form").style.display = "none";
                 document.getElementById('btnFormCom').innerHTML = "Devenir contributeur";
                 visible=false;
             }
