@@ -3,191 +3,217 @@
 {% block title %}Hello IndexController!{% endblock %}
 
 {% block body %}
-    <style>
-        .example-wrapper { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; }
-        .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
-    </style>
 
-    <div class="example-wrapper">
-        <h3>PAGE USER</h3>
+    {% for demande in demandeContrib %}
+        {# div qui contien les info de la demande #}
+        <div id='infoDemande{{ demande.id }}' class="demande_contrib_info" style="display: none">
 
-        <h1>{{ user.name }}</h1>
+            {{ demande.demande|raw }} <br>
 
-        {% if user == app.user %}
-            <img src="data:image/png;base64,{{ base64 }}" style="max-width:100%;max-height:100%;object-fit: contain;" />
-        {% else %}
-            <img src="data:image/png;base64,{{ user.avatar }}" style="max-width:100%;max-height:100%;object-fit: contain;" />
-        {% endif %}
+            {# affichage image #}
+            Images : <br>
+            {% for fichier in FichierDemande %}
+                {% if fichier.type == 'image' and fichier.requete == demande %}
+                    <img src="data:image/png;base64, {{ fichier.image }}" style="max-width:600px;max-height:600px"> <br>
+                {% endif %}
+            {% endfor %}
 
-        {% if user.roles[0] == 'ROLE_ADMIN'%}
-            <h4>Roles : Admin</h4>
-        {% elseif user.roles[0] == 'ROLE_CONTRIBUTOR'%} 
-            <h4>Roles : Contributeur</h4>
-        {% else %}
-            <h4>Roles : Utilisateur</h4>
-        {% endif %}
+            {# affichage fichier #}
+            Fichiers : <br>
+            {% for fichier in FichierDemande %}
+                {% if fichier.type == 'fichier' and fichier.requete == demande %}
+                    {{ fichier.lien }} : <a href="demande/{{ fichier.lien }}" download='{{ fichier.lien }}' class="btn_article">télécharger</a> <br>
+                {% endif %}
+            {% endfor %}
 
+            <br>
+            <a href="reponce_demande_1_{{ demande.id }}" class="btn_article">Accepter la demande</a><br>
+            <a href="reponce_demande_2_{{ demande.id }}" class="btn_article">Refuser la demande</a><br>
+            <button onclick="showDemande({{ demande.id }})" class="btn_article">Fermer</button>                                   
+        </div>
+    {% endfor %}
 
-        {% set testimage = user.avatar %}
+    <div id="liste_contrib_conteneur" class="row">
+        <div class="col bloc_page">
+        </div>
+        <div class="col-10 bloc_titre_page">
+            <h3 id="titre_page">Page de l'utilisateur : {{ user.name }}</h3>
+        </div>
 
-        {% if testimage %}
-            <img src="data:image/png;base64,{{ testimage }}" width='60px' height='60px' />
-        {% endif %}
-
-        <br>
-        
-        inscrit depuis le {{ user.dateinscrip|date('d/m/Y') }}
-
-        <br><br>
-
-        {% if user.description %}
-            {{ user.description|raw }}
-            <br><br>
-        {% endif %}
-
-        {# si sa propre page, update info #}
-        {% if user == app.user %}
-            <div id="formUpdate" style="display: none">
-                {{ form_start(form) }}
-                    {{ form_row(form.name, {
-                        label: "Nom d'utilisateur"
-                    }) }}
-                    {{ form_row(form.description, {
-                        label: "Description de l'utilisateur"
-                    }) }}
-                    {{ form_row(form.avatar, {
-                        label: 'Avatar'
-                    }) }}
-                    
-                    <button type="submit" class="btn btn-primary">Mettre à jour</button>
-                    <button id="btnFormUpdate2" class="btn btn-primary" onclick="showFormUpdate()" type="button">Fermer</button> 
-                {{ form_end(form) }}
-            </div>
-            <button id="btnFormUpdate" class="btn_article" onclick="showFormUpdate()">Mettre à jour votre profil</button>
-            <br><br>
-        {% endif %}
-
-        {# liste des competence de user #}
-        {% if user.roles[0] == 'ROLE_ADMIN' or user.roles[0] == 'ROLE_CONTRIBUTOR' %}
-            Liste des compétences :<br>
-            {% if competences %}
-                {% for competence in competences %} 
-                    {{ competence.competence.nom|replace({"_":' '}) }}
-                    {% if user == app.user %}
-                        <a href="updatecompetence_{{ competence.id }}" class='btn_article'>Supprimer la compétence</a><br>
-                    {% endif %}
-                {% endfor %}
-            {% else %}
-                - Aucune compétence enregistrait pour le moment<br>
-            {% endif %}
-        
-            {# ajouter competence #}
-            {% if user == app.user %}
-            <button id="btnFormCom" class="btn btn-primary" onclick="showFormCom()">Ajouter une compétence</button> 
-            
-            <form id="formCom" action="competence" style="display: none">
-                <select name="newCompetence">
-                    <option value="null" disabled selected>Choisir une compétence</option>
-                    {% for typecompetence in typeCompetences %} 
-
-                        {% set dejaCompetent = false %}
-
-                        {% for competence in competences %} 
-                            {% if typecompetence == competence.competence %}
-                                {% set dejaCompetent = true %}
-                            {% endif %}
+        {# messagerie et liste de demande contrib #}
+        <div class="col-2">
+            {# messagerie #}
+            {% if app.user %}
+                {# user sur sa propre page #}
+                {% if user.id == app.user.id %}
+                    <div class='conteneur_page conteneur_left_user'>
+                        <div class="titre_lien2">Conversation :</div>          
+                    </div>
+                    <div class="conteneur_contenue conteneur_left_user">
+                        {% for personne in personnes %} 
+                            <a href="pagemessagerie{{ personne.id }}" class="name_user"><span> {{ personne.name }} </span></a><br>
                         {% endfor %}
-
-                        {% if dejaCompetent == false %}
-                            <option value={{ typecompetence.id }}>{{ typecompetence.nom|replace({"_":' '}) }}</option>
-                        {% endif %}
-
-                    {% endfor %}
-                </select>
-                <br><button class="btn btn-primary">Ajouter</button> 
-            </form>   
+                    </div>
+                {# user sur une autre page #}
+                {% else %}
+                    <a href="pagemessagerie{{ user.id }}"><button class="btn_article">envoyer un message privée a {{ user.name }}</button></a><br><br>
+                {% endif %}
             {% endif %}
-        {% endif %}
 
-        <br><br>
+            {# liste demande devenir contrib #}
+            {% if user == app.user and user.roles[0] == 'ROLE_ADMIN' %}
+                <div class='conteneur_page conteneur_left_user'>
+                    <div class="titre_lien2">Demandes pour devenir contributeur :</div> 
+                </div>
+                <div class="conteneur_contenue conteneur_left_user">
+                    {% for demande in demandeContrib %}
+                        
 
-        {# messagerie#}
-        {% if app.user %}
-            {# user sur sa propre page #}
-            {% if user.id == app.user.id %}
-                <h3>liste des conversation :</h3>
-                {% for personne in personnes %} 
-                    <a href="pagemessagerie{{ personne.id }}"><span> {{ personne.name }} </span></a><br>
-                {% endfor %}
-            {# user sur une autre page #}
-            {% else %}
-                <a href="pagemessagerie{{ user.id }}">envoyer un message privée a {{ user.name }}</a><br><br>
+                        {{ demande.user.name }} : 
+                        {# btn pour montrer les infos d'une div/personne #}
+                        <button id='btnShowDemande{{ demande.id }}' onclick="showDemande({{ demande.id }})" class="btn_article">
+                            Voire la demande
+                        </button><br>
+                    
+                    {% endfor %}
+                </div>
             {% endif %}
-        {% endif %}
+        </div>
 
-        {# liste des blogs #}
-        {% if blogs %}
-            liste des blogs écrit :<br>
-            {% for blog in blogs %}
-                <a href="pageblog{{ blog.id }}">le {{ blog.datetime|date('d/m/Y H:i') }} : {{ blog.titre }}</a>
-                <br>
-            {% endfor %}
-        {% endif %}
-
-        <br>
-
-        {# liste des jeux #}
-        {% if contribs %}
-            a participer sur ces jeux :<br>
-            {% for contrib in contribs %}
-                <a href="pagejeu{{ contrib.jeu.id }}">{{ contrib.jeu.titre }} / upvote:{{ contrib.jeu.upvote }} / {{ contrib.jeu.etat }}</a>
-                <br>
-            {% endfor %}
-        {% endif %}
-
-        <br>
-
-        {# liste demande devenir contrib #}
-        {% if user == app.user and user.roles[0] == 'ROLE_ADMIN' %}
-            Liste des demandes pour devenir contributeur :<br><br>
-            {% for demande in demandeContrib %}
-                {# div qui contien les info #}
-                <div id='infoDemande{{ demande.id }}' style="display: none">
-
-                    {{ demande.demande|raw }} <br>
-
-                    {# affichage image #}
-                    Images : <br>
-                    {% for fichier in FichierDemande %}
-                        {% if fichier.type == 'image' and fichier.requete == demande %}
-                            <img src="data:image/png;base64, {{ fichier.image }}" style="max-width:600px;max-height:600px"> <br>
-                        {% endif %}
-                    {% endfor %}
-
-                    {# affichage fichier #}
-                    Fichiers : <br>
-                    {% for fichier in FichierDemande %}
-                        {% if fichier.type == 'fichier' and fichier.requete == demande %}
-                            {{ fichier.lien }} : <a href="demande/{{ fichier.lien }}" download='{{ fichier.lien }}'>télécharger</a> <br>
-                        {% endif %}
-                    {% endfor %}
-
-                    <br>
-                    <a href="reponce_demande_1_{{ demande.id }}">Accepter la demande</a><br>
-                    <a href="reponce_demande_2_{{ demande.id }}">Refuser la demande</a>
-
-
+        {# info user et liste blog/jeu participer #}
+        <div class="col-7">
+            <div class='conteneur_page'>
+                <div class="titre_lien2">
+                    Info sur l'utilisateur :
                 </div>
 
-                {{ demande.user.name }} : 
-                {# btn pour montrer les infos d'une div/personne #}
-                <button id='btnShowDemande{{ demande.id }}' onclick="showDemande({{ demande.id }})" class="btn btn-primary">
-                    Voire la demande
-                </button><br>
-            
-            {% endfor %}
-        {% endif %}
+                <div class="conteneur_contenue">
+                    {% if user.roles[0] == 'ROLE_ADMIN'%}
+                        Roles : Admin
+                    {% elseif user.roles[0] == 'ROLE_CONTRIBUTOR'%} 
+                        Roles : Contributeur
+                    {% else %}
+                        Roles : Utilisateur
+                    {% endif %}
 
+                    <div>inscrit depuis le {{ user.dateinscrip|date('d/m/Y') }}</div>
+
+                    <br>
+                    {% if user.description %}
+                        {{ user.description|raw }}
+                    {% endif %}
+
+                    {# si sa propre page, update info #}
+                    {% if user == app.user %}
+                        <div id="formUpdate" style="display: none">
+                            {{ form_start(form) }}
+                                {{ form_row(form.name, {
+                                    label: "Nom d'utilisateur"
+                                }) }}
+                                {{ form_row(form.description, {
+                                    label: "Description de l'utilisateur"
+                                }) }}
+                                {{ form_row(form.avatar, {
+                                    label: 'Avatar'
+                                }) }}
+                                
+                                <button type="submit" class="btn btn-primary">Mettre à jour</button>
+                                <button id="btnFormUpdate2" class="btn btn-primary" onclick="showFormUpdate()" type="button">Fermer</button> 
+                            {{ form_end(form) }}
+                        </div>
+                        <button id="btnFormUpdate" class="btn_article zero_marge" onclick="showFormUpdate()">Mettre à jour votre profil</button>
+                        <br><br>
+                    {% endif %}
+
+                    <div class="row">
+                        <div class="col-6 zero_padding">
+                            {# liste des blogs #}
+                            {% if blogs %}
+                                <div class="titre_lien2 bloc_liste_blog_user">
+                                    liste des blogs écrit :
+                                </div><br>
+                                {% for blog in blogs %}
+                                    <a href="pageblog{{ blog.id }}" class="name_user">{# le {{ blog.datetime|date('d/m/Y H:i') }} : #}{{ blog.titre }}</a>
+                                    <br>
+                                {% endfor %}
+                            {% endif %}
+                        </div>
+
+                        <div class="col-6 zero_padding">
+                            {# liste des jeux #}
+                            {% if contribs %}
+                                <div class="titre_lien2 bloc_liste_jeu_user">
+                                    a participer sur ces jeux :
+                                </div><br>
+                                <div id="page_user_liste_jeu">
+                                    {% for contrib in contribs %}
+                                        <a href="pagejeu{{ contrib.jeu.id }}" class="name_user">{{ contrib.jeu.titre }} / upvote:{{ contrib.jeu.upvote }} / {{ contrib.jeu.etat }}</a>
+                                        <br>
+                                    {% endfor %}
+                                </div> 
+                            {% endif %}
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        {# avatar et competence #}
+        <div class="col-3 conteneur_right_user">
+            <div class='conteneur_page'>                 
+                    {% if user == app.user %}
+                        <img src="data:image/png;base64,{{ base64 }}" style="width:100%;" />
+                    {% else %}
+                        <img src="data:image/png;base64,{{ user.avatar }}" style="width:100%" />
+                    {% endif %}
+
+                {# liste des competence de user #}
+                {% if user.roles[0] == 'ROLE_ADMIN' or user.roles[0] == 'ROLE_CONTRIBUTOR' %}
+                    <div class="titre_lien2">Liste des compétences :</div>
+                    <div class="conteneur_contenue"><br>
+                        {% if competences %}
+                            {% for competence in competences %} 
+                                <div class="div_competence_user">
+                                    {{ competence.competence.nom|replace({"_":' '}) }}
+                                    {% if user == app.user %}
+                                        <a href="updatecompetence_{{ competence.id }}" class='btn_article'>Supprimer la compétence</a><br>
+                                    {% endif %}
+                                </div>
+                            {% endfor %}
+                        {% else %}
+                            - Aucune compétence enregistrait pour le moment<br>
+                        {% endif %}
+                    
+                        {# ajouter competence #}
+                        {% if user == app.user %}
+                        <form id="formCom" action="competence" style="display: none">
+                            <select name="newCompetence">
+                                <option value="null" disabled selected>Choisir une compétence à ajouter</option>
+                                {% for typecompetence in typeCompetences %} 
+
+                                    {% set dejaCompetent = false %}
+
+                                    {% for competence in competences %} 
+                                        {% if typecompetence == competence.competence %}
+                                            {% set dejaCompetent = true %}
+                                        {% endif %}
+                                    {% endfor %}
+
+                                    {% if dejaCompetent == false %}
+                                        <option value={{ typecompetence.id }}>{{ typecompetence.nom|replace({"_":' '}) }}</option>
+                                    {% endif %}
+
+                                {% endfor %}
+                            </select>
+                            <br><button class="btn_article">Ajouter</button> 
+                        </form>   
+                        <button id="btnFormCom" class="btn_article" onclick="showFormCom()">Ajouter une compétence</button>
+                        {% endif %}
+                    </div>
+                {% endif %}
+            </div>    
+        </div>
     </div>
 {% endblock %}
 
@@ -200,9 +226,11 @@
         function showFormCom(){
             if (visible==false){
                 document.getElementById("formCom").style.display = "block";
+                document.getElementById("btnFormCom").innerHTML = "Fermer";
                 visible=true;
             }else{
                 document.getElementById("formCom").style.display = "none";
+                document.getElementById("btnFormCom").innerHTML = "Ajouter une compétence";
                 visible=false;
             }
         }
@@ -224,12 +252,16 @@
         function showDemande($id){
             if (visible2==false){
                 document.getElementById('infoDemande'+$id).style.display = 'block';
-                document.getElementById('btnShowDemande'+$id).innerHTML = "Fermer";
+                document.getElementById("background_form").style.display = "block";
+                document.body.scrollIntoView({behavior: 'smooth', block: 'start'});
+                //document.getElementById('btnShowDemande'+$id).innerHTML = "Fermer";
 
                 visible2=true;
             }else{
                 document.getElementById('infoDemande'+$id).style.display = 'none';
-                document.getElementById('btnShowDemande'+$id).innerHTML = "Voire la demande";
+                document.getElementById("background_form").style.display = "none";
+                document.body.scrollIntoView({behavior: 'smooth', block: 'start'});
+                //document.getElementById('btnShowDemande'+$id).innerHTML = "Voire la demande";
                 
                 visible2=false;
             }

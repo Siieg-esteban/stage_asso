@@ -3,26 +3,42 @@
 {% block title %}Inscription{% endblock %}
 
 {% block body %}
-    <br>
+<div class="row" id="liste_contrib_conteneur">
+
+    <div class="col-2 bloc_page">
+    </div>
+    <div class="col-10 bloc_titre_page">
+        <h3 id="titre_page">Inscription :</h3>
+    </div>
+    
     {% for flashError in app.flashes('verify_email_error') %}
         <div class="alert alert-danger" role="alert">{{ flashError }}</div>
     {% endfor %}
 
-    <h1>Inscription</h1>
+    <div class="col-2"></div>
 
-    {{ form_start(registrationForm) }}
-        {{ form_row(registrationForm.username, {
-            label: 'Email'
-        }) }}
-        {{ form_row(registrationForm.name, {
-            label: 'Pseudo'
-        }) }}
-        {{ form_row(registrationForm.plainPassword, {
-            label: 'Password'
-        }) }}
-        {{ form_row(registrationForm.Avatar) }}
-        {{ form_row(registrationForm.agreeTerms) }}
+    <div class="col-7">
+        <div class='conteneur_contenue conteneur_connection'>
+            {{ form_start(registrationForm) }}
+                {{ form_row(registrationForm.username, {
+                    label: 'Email :'
+                }) }}
+                {{ form_row(registrationForm.name, {
+                    label: 'Pseudo :'
+                }) }}
+                {{ form_row(registrationForm.plainPassword, {
+                    label: 'Mot de passe :'
+                }) }}
+                {{ form_row(registrationForm.Avatar, {
+                    label: 'Avatar :'
+                }) }}
+                {{ form_row(registrationForm.agreeTerms) }}
 
-        <button type="submit" class="btn">Inscription</button>
-    {{ form_end(registrationForm) }}
+                <button type="submit" class="btn_article">Inscription</button>
+            {{ form_end(registrationForm) }}
+        </div>
+    </div>
+
+    <div class="col-3"></div>
+</div>
 {% endblock %}
