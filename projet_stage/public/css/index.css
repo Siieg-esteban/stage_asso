@@ -26,7 +26,7 @@ body{background-color: rgb(97, 97, 97);}
 	background-color: rgb(97, 97, 97);
 }
 
-#formBlog,#formJeu,#formProto,#formCom_proto,#UpdateCom_proto,#formDemande {
+#formBlog,#formProto,#formCom_proto,#UpdateCom_proto,#formDemande,#formMes,#UpdateMes {
 	position: fixed; 
 	z-index: 10;
 	padding: 20px;
@@ -34,16 +34,18 @@ body{background-color: rgb(97, 97, 97);}
   	left: 50%;
 	width: 80%;
   	transform: translate(-50%, -50%);
-	background-color: aliceblue;
+	background-color: #1F1F1F;
+	color: white;
 }
-.demande_contrib_info {
+.demande_contrib_info,#formJeu {
 	position: absolute; 
 	z-index: 10;
 	padding: 20px;
 	left: auto;
 	right: 10%;
 	width: 80%;
-	background-color: aliceblue;
+	background-color: #1F1F1F;
+	color: white;
 }
 #formUpdate {
 	position: fixed; 
@@ -53,7 +55,8 @@ body{background-color: rgb(97, 97, 97);}
   	left: 50%;
 	width: 80%;
   	transform: translate(-50%, -50%);
-	background-color: aliceblue;
+	background-color: #1F1F1F;
+	color: white;
 }
 
 #background_form {
@@ -73,6 +76,9 @@ body{background-color: rgb(97, 97, 97);}
 	text-decoration: none;
 	color: black;
 	
+}
+.lien_sans_deco{
+	text-decoration: none;
 }
 .card_article_list{
 	margin-bottom: -5px;
@@ -168,6 +174,9 @@ body{background-color: rgb(97, 97, 97);}
 .conteneur_connection{
 	margin-top: -15px;
 }
+.conteneur_update{
+	margin-top: -15px;
+}
 #liste_contrib_conteneur{
 	padding-top: 24px;
 }
@@ -188,6 +197,9 @@ body{background-color: rgb(97, 97, 97);}
 	padding: 10px;
 	font-size: 1.4em;
 	font-weight: 500;
+}
+.decalage_haut{
+	margin-top: -5px;
 }
 
 .text_blog_liee{
@@ -405,6 +417,21 @@ body{background-color: rgb(97, 97, 97);}
 .btn_sign_in{
 	margin-top: 30px;
 }
+.btn_delete_img_update{
+	margin-top: 12px;
+}
+#btn_debut_conv{
+	position: -webkit-sticky;
+	position: sticky;
+	/* position: fixed; */
+	top:100px
+}
+#btn_fin_conv{
+	position: -webkit-sticky;
+	position: sticky;
+	/* position: fixed; */
+	top:150px
+}
 .alert_login{
 	margin-bottom: 28px;
 }
@@ -510,8 +537,10 @@ body{background-color: rgb(97, 97, 97);}
 	font-weight: 1000;
 }
 .image_lien_jeu{
-	max-width:100%;
-	max-height:100%;
+	/* max-width:100%;
+	max-height:100%; */
+	width:100%;
+	height:100%;
 	padding:0px;
 }
 #formCom{
@@ -585,6 +614,57 @@ iframe{
 }
 .zero_marge{
 	margin: 0px;
+}
+.liste_contrib_page_user:nth-child(2n){
+	background-color: #3d3d3d;
+	padding-left: 10px;
+	margin-left: -10px;
+}
+.liste_blog_page_user:nth-child(2n){
+	background-color: #3d3d3d;
+	padding-left: 10px;
+	margin-left: -10px;
+}
+.message_recu{
+	background-color: #3d3d3d;
+	max-width: 80%;
+	display: inline-block;
+	padding: 10px 20px 10px 20px;
+	border-radius: 5px;
+}
+.message_envoyer{
+	background-color: #3d3d3d;
+	max-width: 80%;
+	display: inline-block;
+	padding: 10px 20px 10px 20px;
+	border-radius: 5px;
+}
+.conteneur_message_envoyer{
+	text-align: right;
+	margin: 0px 30px 0px 30px;
+}
+.conteneur_message_recu{
+	margin: 0px 30px 0px 30px;
+}
+#notif_nb_demande_contrib{
+	display: inline;
+	background-color: #dc4144;
+	color: white;
+	font-size: 1.3em;
+	font-weight: 450;
+	padding: 5px 15px 5px 15px;
+	margin-left: 15px;
+	border-radius: 25px;
+}
+#message_notif_nb_demande_contrib{
+	position: absolute;
+	right: 6%;
+	top: 30%;
+	color: white;
+	text-decoration: none;
+	background-color: #3d3d3d;
+	padding: 16px 12px 16px 12px;
+	border-radius: 10px;
 }
 
 

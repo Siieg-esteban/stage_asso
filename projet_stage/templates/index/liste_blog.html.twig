@@ -25,8 +25,8 @@
             label: 'Images : '
         }) }}
         
-        <button type="submit" class="btn btn-primary">Créer</button>
-        <button id="btnFormBlog2" class="btn btn-primary" onclick="showFormBlog()" type="button">Fermer</button> 
+        <button type="submit" class="btn_article2">Créer</button>
+        <button id="btnFormBlog2" class="btn_article2" onclick="showFormBlog()" type="button">Fermer</button> 
     {{ form_end(form) }}
 </div>
 
@@ -98,8 +98,8 @@
                         {% if is_granted('ROLE_ADMIN') or blog.auteur == app.user %}
                         <div class="d-flex flex-row-reverse">
                             <div class="div_btn_article p-2">
-                                <a class="btn_article" href="updatepage_blog_{{ blog.id }}">Modifier</a>
-                                <a class="btn_article" href="deletepage/blog/{{ blog.id }}">Supprimer</a>
+                                <a class="btn_article2" href="updatepage_blog_{{ blog.id }}">Modifier</a>
+                                <a class="btn_article2" href="deletepage/blog/{{ blog.id }}">Supprimer</a>
                             </div>
                         </div>
                         {% endif %}

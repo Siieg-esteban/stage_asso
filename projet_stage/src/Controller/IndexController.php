@@ -43,7 +43,7 @@ use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Validator\Constraints\File;
 
 class IndexController extends AbstractController
-{
+{   
     /**
      * @Route("/listeblog", name="listeblog")
      */
@@ -52,6 +52,20 @@ class IndexController extends AbstractController
         $em=$this->getDoctrine()->getRepository(Blog::class);
         $Allblog=$em->findAll();
         $countblog=count($Allblog);
+
+        if ($this->getUser()) {
+            if ($this->getUser()->getRoles()[0]=="ROLE_ADMIN" ) {
+                $emtest=$this->getDoctrine()->getRepository(RequeteContributeur::class);
+                $demandeContrib=$emtest->findAll();
+                $countDemandeContrib=count($demandeContrib);
+            }
+            else {
+                $countDemandeContrib=0;      
+            }
+        }
+        else {
+            $countDemandeContrib=0;      
+        }
 
         $bloglist=array();
         for ($i=0;$i<$countblog;$i++) { 
@@ -111,6 +125,7 @@ class IndexController extends AbstractController
         }
 
         return $this->render('index/liste_blog.html.twig', [
+            'countDemandeContrib' => $countDemandeContrib,
             'pagetype' => 'blog',
             'form' => $form->createView(),
             'listeblog' => $bloglist,
@@ -128,6 +143,20 @@ class IndexController extends AbstractController
         $countjeu=count($Alljeu);
         $randNumber=random_int(1, $countjeu);
         $randomGame=$Alljeu[$randNumber-1];
+        
+        if ($this->getUser()) {
+            if ($this->getUser()->getRoles()[0]=="ROLE_ADMIN" ) {
+                $emtest=$this->getDoctrine()->getRepository(RequeteContributeur::class);
+                $demandeContrib=$emtest->findAll();
+                $countDemandeContrib=count($demandeContrib);
+            }
+            else {
+                $countDemandeContrib=0;      
+            }
+        }
+        else {
+            $countDemandeContrib=0;      
+        }
 
         $jeulist=array();
         for ($i=0;$i<$countjeu;$i++) { 
@@ -255,6 +284,7 @@ class IndexController extends AbstractController
         }
 
         return $this->render('index/liste_jeu.html.twig', [
+            'countDemandeContrib' => $countDemandeContrib,
             'pagetype' => 'jeu',
             'form' => $form->createView(),
             'listejeu' => $jeulist,
@@ -277,6 +307,20 @@ class IndexController extends AbstractController
 
         $em3=$this->getDoctrine()->getRepository(Listecontributeur::class);
         $contribAll=$em3->findBy(array('type'=>'proto'));
+
+        if ($this->getUser()) {
+            if ($this->getUser()->getRoles()[0]=="ROLE_ADMIN" ) {
+                $emtest=$this->getDoctrine()->getRepository(RequeteContributeur::class);
+                $demandeContrib=$emtest->findAll();
+                $countDemandeContrib=count($demandeContrib);
+            }
+            else {
+                $countDemandeContrib=0;      
+            }
+        }
+        else {
+            $countDemandeContrib=0;      
+        }
 
         $protolist=array();
         for ($i=0;$i<$countproto;$i++) { 
@@ -341,6 +385,7 @@ class IndexController extends AbstractController
             return $this->redirect($request->getUri());
         }
         return $this->render('index/liste_proto.html.twig', [
+            'countDemandeContrib' => $countDemandeContrib,
             'pagetype' => 'proto',
             'form' => $form->createView(),
             'listeproto' => $protolist,
@@ -357,6 +402,23 @@ class IndexController extends AbstractController
     {
         $em=$this->getDoctrine()->getRepository(Blog::class);
         $blog=$em->findOneby(array('id'=>$id));
+        
+        $AllBlogs=$em->findAll();
+        $AllOtherBlog=array();
+        foreach ($AllBlogs as $oneblog) {
+            if ($oneblog != $blog) {
+                $AllOtherBlog[]=$oneblog;
+            }
+        }
+        $CountOtherBlog=count($AllOtherBlog);
+
+        $random1=mt_rand(0,$CountOtherBlog-1);
+        $random2=mt_rand(0,$CountOtherBlog-1);
+        while ($random2==$random1) {
+            $random2=mt_rand(0,$CountOtherBlog-1);
+        }
+        $AutreBlog1=$AllOtherBlog[$random1];
+        $AutreBlog2=$AllOtherBlog[$random2];
 
         $em2=$this->getDoctrine()->getRepository(Com::class);
         $AllBlogCom=$em2->findBy(array('type'=>'blog'));
@@ -365,6 +427,20 @@ class IndexController extends AbstractController
         $em3=$this->getDoctrine()->getRepository(Imagejeuproto::class);
         $AllBlogImage=$em3->findBy(array('type'=>'blog'));
         $countImg=count($AllBlogImage);
+
+        if ($this->getUser()) {
+            if ($this->getUser()->getRoles()[0]=="ROLE_ADMIN" ) {
+                $emtest=$this->getDoctrine()->getRepository(RequeteContributeur::class);
+                $demandeContrib=$emtest->findAll();
+                $countDemandeContrib=count($demandeContrib);
+            }
+            else {
+                $countDemandeContrib=0;      
+            }
+        }
+        else {
+            $countDemandeContrib=0;      
+        }
 
         $comment=array();
         for ($i=0;$i<$countCom;$i++) {
@@ -381,10 +457,13 @@ class IndexController extends AbstractController
         }
 
         return $this->render('index/page_blog.html.twig', [
+            'countDemandeContrib' => $countDemandeContrib,
             'pagetype' => 'blog',
             'blog' => $blog,
             'comments' => $comment,
             'images' => $images,
+            'AutreBlog1' => $AutreBlog1,
+            'AutreBlog2' => $AutreBlog2,
         ]);
     }
 
@@ -395,6 +474,23 @@ class IndexController extends AbstractController
     {
         $em=$this->getDoctrine()->getRepository(Jeu::class);
         $jeu=$em->findOneby(array('id'=>$id));
+
+        $AllJeux=$em->findAll();
+        $AllOtherJeu=array();
+        foreach ($AllJeux as $oneJeu) {
+            if ($oneJeu != $jeu) {
+                $AllOtherJeu[]=$oneJeu;
+            }
+        }
+        $CountOtherJeu=count($AllOtherJeu);
+
+        $random1=mt_rand(0,$CountOtherJeu-1);
+        $random2=mt_rand(0,$CountOtherJeu-1);
+        while ($random2==$random1) {
+            $random2=mt_rand(0,$CountOtherJeu-1);
+        }
+        $AutreJeu1=$AllOtherJeu[$random1];
+        $AutreJeu2=$AllOtherJeu[$random2];
 
         $em2=$this->getDoctrine()->getRepository(Com::class);
         $AllJeuCom=$em2->findBy(array('type'=>'jeu'));
@@ -410,6 +506,20 @@ class IndexController extends AbstractController
         $em5=$this->getDoctrine()->getRepository(Listecontributeur::class);
         $contribAll=$em5->findBy(array('type'=>'jeu'));
         $countContrib=count($contribAll);
+
+        if ($this->getUser()) {
+            if ($this->getUser()->getRoles()[0]=="ROLE_ADMIN" ) {
+                $emtest=$this->getDoctrine()->getRepository(RequeteContributeur::class);
+                $demandeContrib=$emtest->findAll();
+                $countDemandeContrib=count($demandeContrib);
+            }
+            else {
+                $countDemandeContrib=0;      
+            }
+        }
+        else {
+            $countDemandeContrib=0;      
+        }
 
         $comment=array();
         for ($i=0;$i<$countCom;$i++) {
@@ -433,12 +543,15 @@ class IndexController extends AbstractController
         }
 
         return $this->render('index/page_jeu.html.twig', [
+            'countDemandeContrib' => $countDemandeContrib,
             'pagetype' => 'jeu',
             'jeu' => $jeu,
             'comments' => $comment,
             'images' => $images,
             'listeblog' => $bloglink,
             'listecontrib' => $contribList,
+            'AutreJeu1' => $AutreJeu1,
+            'AutreJeu2' => $AutreJeu2,
         ]);
     }
 
@@ -449,6 +562,23 @@ class IndexController extends AbstractController
     {
         $em=$this->getDoctrine()->getRepository(Proto::class);
         $proto=$em->findOneby(array('id'=>$id));
+
+        $AllProtos=$em->findAll();
+        $AllOtherProto=array();
+        foreach ($AllProtos as $oneProto) {
+            if ($oneProto != $proto) {
+                $AllOtherProto[]=$oneProto;
+            }
+        }
+        $CountOtherProto=count($AllOtherProto);
+
+        $random1=mt_rand(0,$CountOtherProto-1);
+        $random2=mt_rand(0,$CountOtherProto-1);
+        while ($random2==$random1) {
+            $random2=mt_rand(0,$CountOtherProto-1);
+        }
+        $AutreProto1=$AllOtherProto[$random1];
+        $AutreProto2=$AllOtherProto[$random2];
 
         $em2=$this->getDoctrine()->getRepository(Com::class);
         $AllProtoCom=$em2->findBy(array('type'=>'proto'));
@@ -469,6 +599,20 @@ class IndexController extends AbstractController
         $em6=$this->getDoctrine()->getRepository(Fichiercommunication::class);
         $allimagescom=$em6->findBy(array('type'=>'com'));;
         $fichiercomtest=array();
+
+        if ($this->getUser()) {
+            if ($this->getUser()->getRoles()[0]=="ROLE_ADMIN" ) {
+                $emtest=$this->getDoctrine()->getRepository(RequeteContributeur::class);
+                $demandeContrib=$emtest->findAll();
+                $countDemandeContrib=count($demandeContrib);
+            }
+            else {
+                $countDemandeContrib=0;      
+            }
+        }
+        else {
+            $countDemandeContrib=0;      
+        }
 
         $comment=array();
         for ($i=0;$i<$countCom;$i++) {
@@ -657,6 +801,7 @@ class IndexController extends AbstractController
         }
 
         return $this->render('index/page_proto.html.twig', [
+            'countDemandeContrib' => $countDemandeContrib,
             'pagetype' => 'proto',
             'form' => $form->createView(),
             'upform' => $form2->createView(),
@@ -666,6 +811,8 @@ class IndexController extends AbstractController
             'imagesCom' => $imagecomtest,
             'fichierCom' => $fichiercomtest,
             'listecontrib' => $contribList,
+            'AutreProto1' => $AutreProto1,
+            'AutreProto2' => $AutreProto2,
         ]);
     }
 
@@ -773,6 +920,20 @@ class IndexController extends AbstractController
         $em8=$this->getDoctrine()->getRepository(Imagefichierrequete::class);
         $AllFichierDemande=$em8->findAll();
 
+        if ($this->getUser()) {
+            if ($this->getUser()->getRoles()[0]=="ROLE_ADMIN" ) {
+                $emtest=$this->getDoctrine()->getRepository(RequeteContributeur::class);
+                $demandeContrib=$emtest->findAll();
+                $countDemandeContrib=count($demandeContrib);
+            }
+            else {
+                $countDemandeContrib=0;      
+            }
+        }
+        else {
+            $countDemandeContrib=0;      
+        }
+
         $contribList=array();
         for ($i=0;$i<$countContrib;$i++) {
             if ($contribUser[$i]->getType()=="jeu") {
@@ -822,6 +983,7 @@ class IndexController extends AbstractController
         }
 
         return $this->render('index/page_user.html.twig', [
+            'countDemandeContrib' => $countDemandeContrib,
             'form' => $form->createView(),
             'pagetype' => 'user',
             'user' => $theUser,
@@ -854,6 +1016,20 @@ class IndexController extends AbstractController
 
         $em4=$this->getDoctrine()->getRepository(Fichiercommunication::class);
         $allfichiercom=$em4->findBy(array('type'=>'messagerie'));;
+
+        if ($this->getUser()) {
+            if ($this->getUser()->getRoles()[0]=="ROLE_ADMIN" ) {
+                $emtest=$this->getDoctrine()->getRepository(RequeteContributeur::class);
+                $demandeContrib=$emtest->findAll();
+                $countDemandeContrib=count($demandeContrib);
+            }
+            else {
+                $countDemandeContrib=0;      
+            }
+        }
+        else {
+            $countDemandeContrib=0;      
+        }
 
         $messageList=array();
         for ($i=0;$i<$countAllMessage;$i++) {
@@ -1020,6 +1196,7 @@ class IndexController extends AbstractController
         }
 
         return $this->render('index/page_messagerie.html.twig', [
+            'countDemandeContrib' => $countDemandeContrib,
             'pagetype' => 'user',
             'imagesmessagerie' => $allMessageImg,
             'fichiersmessagerie' => $allfichiercom,
@@ -1196,6 +1373,20 @@ class IndexController extends AbstractController
             return $this->redirectToRoute('listeblog');  
         }
 
+        if ($this->getUser()) {
+            if ($this->getUser()->getRoles()[0]=="ROLE_ADMIN" ) {
+                $emtest=$this->getDoctrine()->getRepository(RequeteContributeur::class);
+                $demandeContrib=$emtest->findAll();
+                $countDemandeContrib=count($demandeContrib);
+            }
+            else {
+                $countDemandeContrib=0;      
+            }
+        }
+        else {
+            $countDemandeContrib=0;      
+        }
+
         $form->handleRequest($request);
 
         if ($this->getUser()){
@@ -1367,6 +1558,7 @@ class IndexController extends AbstractController
                 }
                 
                 return $this->render('index/page_update.html.twig', [
+                    'countDemandeContrib' => $countDemandeContrib,
                     'pagetype' => $type,
                     'type' => $type,
                     'images' => $images,
@@ -1606,6 +1798,20 @@ class IndexController extends AbstractController
         $form = $this->createForm(MakerequeteType::class, $requete);
         $form->handlerequest($request);
 
+        if ($this->getUser()) {
+            if ($this->getUser()->getRoles()[0]=="ROLE_ADMIN" ) {
+                $emtest=$this->getDoctrine()->getRepository(RequeteContributeur::class);
+                $demandeContrib=$emtest->findAll();
+                $countDemandeContrib=count($demandeContrib);
+            }
+            else {
+                $countDemandeContrib=0;      
+            }
+        }
+        else {
+            $countDemandeContrib=0;      
+        }
+
         if ($form->isSubmitted() && $form->isValid()) {
             $testdata = $form->getData();
 
@@ -1678,6 +1884,7 @@ class IndexController extends AbstractController
         }
 
         return $this->render('index/page_requete_contrib.html.twig', [
+            'countDemandeContrib' => $countDemandeContrib,
             'pagetype' => 'requete_contributeur',
             'form' => $form->createView(),
         ]);
@@ -1750,6 +1957,20 @@ class IndexController extends AbstractController
                 $em3=$this->getDoctrine()->getRepository(Competence::class);
                 $CompetenceUnique=$em3->findAll();
 
+                if ($this->getUser()) {
+                    if ($this->getUser()->getRoles()[0]=="ROLE_ADMIN" ) {
+                        $emtest=$this->getDoctrine()->getRepository(RequeteContributeur::class);
+                        $demandeContrib=$emtest->findAll();
+                        $countDemandeContrib=count($demandeContrib);
+                    }
+                    else {
+                        $countDemandeContrib=0;      
+                    }
+                }
+                else {
+                    $countDemandeContrib=0;      
+                }
+
                 $Allcontributeur=array();
 
                 foreach ($AllUser as $user) {
@@ -1767,6 +1988,7 @@ class IndexController extends AbstractController
                 }
 
                 return $this->render('index/liste_contributeur.html.twig', [
+                    'countDemandeContrib' => $countDemandeContrib,
                     'pagetype' => 'liste_contributeur',
                     'type' => $type,
                     'listecontributeur' => $Allcontributeur,

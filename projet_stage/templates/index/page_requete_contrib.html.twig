@@ -8,16 +8,16 @@
     <div id="formDemande" style="display: none">
         {{ form_start(form) }}
             {{ form_row(form.demande, {
-                label: 'contenue'
+                label: 'Contenue : '
             }) }}
             {{ form_row(form.image, {
-                label: 'images'
+                label: 'Images : '
             }) }}
             {{ form_row(form.upload, {
-                label: 'fichier'
+                label: 'Fichiers : '
             }) }}
-            <button type="submit" class="btn">Créer</button>
-            <button type="button" id="btnFormCom2" class="btn btn-primary" onclick="showFormCom()">Fermer</button>
+            <button type="submit" class="btn_article2">Créer</button>
+            <button type="button" id="btnFormCom2" class="btn_article2" onclick="showFormCom()">Fermer</button>
         {{ form_end(form) }} 
     </div>
 

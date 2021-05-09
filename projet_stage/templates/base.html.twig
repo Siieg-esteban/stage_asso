@@ -35,6 +35,18 @@
                     document.getElementById("pageinscription").id = "pageactive";
                 }
             };
+
+            function demande_contrib_hover(){
+                document.getElementById("message_notif_nb_demande_contrib").style.display = "block";
+                document.getElementById("message_notif_nb_demande_contrib").style.transition = "0.4s";
+                document.getElementById("message_notif_nb_demande_contrib").style.opacity = "1";
+                
+            }
+            function demande_contrib_leave(){
+                document.getElementById("message_notif_nb_demande_contrib").style.transition = "0.4s";
+                document.getElementById("message_notif_nb_demande_contrib").style.opacity = "0";
+                document.getElementById("message_notif_nb_demande_contrib").style.display = "none";
+            }
         </script>
 
         {% block javascripts %}
@@ -68,6 +80,18 @@
                                 {% if base64 %}
                                     <img src="data:image/png;base64, {{ base64 }}" style="max-width:40px;max-height:40px">
                                 {% endif %}
+
+                                {% if app.user %}
+                                    {% if is_granted('ROLE_ADMIN') %}
+                                        {% if not countDemandeContrib == 0 %}
+                                            <a href="pageuser{{ app.user.id }}" class="lien_sans_deco">
+                                                <div id="notif_nb_demande_contrib" onmouseover="demande_contrib_hover()" onmouseleave="demande_contrib_leave()">{{ countDemandeContrib }}</div>
+                                                <div id="message_notif_nb_demande_contrib" style="display: none">demande pour devenir contributeur</div>
+                                            </a>
+                                        {% endif %}
+                                    {% endif %}
+                                {% endif %}
+    
                                 <a href="logout" class="btn_navbar_test">Déconnexion</a>
                             {% else %}
                                 <a href="login" id="pageconnexion" class="btn_navbar_test">Connexion</a>

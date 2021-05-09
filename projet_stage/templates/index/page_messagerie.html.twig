@@ -1,127 +1,140 @@
 {% extends 'base.html.twig' %}
 
 {% block title %}Hello IndexController!{% endblock %}
+{% block stylesheets %}<link rel="stylesheet" href="css/messagerie.css">{% endblock %}
 
 {% block body %}
 {% if app.user %}
-    <style>
-        .example-wrapper { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; }
-        .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
-    </style>
 
-    <div class="example-wrapper">
-        <h3>PAGE MESSAGERIE</h3>
+    {# formulaire envoyer une message #}
+    <div id="formMes" style="display: none">
+        {{ form_start(form) }}
+            {{ form_row(form.contenue, {
+                label: 'Message : '
+            }) }}
+            {{ form_row(form.image, {
+                label: 'Images : '
+            }) }}
+            {{ form_row(form.upload, {
+                label: 'Fichiers : '
+            }) }}
+            
+            <button type="submit" class="btn_article2">Créer</button>
+            <button type="button" class="btn_article2" onclick="showFormMes()" >Fermer</button> 
+        {{ form_end(form) }}
+    </div>
 
-        <h1>Vous : {{ app.user.name }}</h1>
-        <h1>Message avec : {{ user.name }}</h1>
+    {# form update message #}
+    <div id="UpdateMes" style="display: none">
+        {{ form_start(upform) }}
+            {{ form_row(upform.contenue2, {
+                label: 'Contenue : '
+            }) }}
+            {{ form_row(upform.image2, {
+                label: 'Images : '
+            }) }}
+            {{ form_row(upform.upload2, {
+                label: 'Fichiers : '
+            }) }}
+            {{ form_row(upform.comid) }}
+
+            <button type="submit" class="btn_article2">Créer</button>
+            <button type="button" class="btn_article2" onclick="showUpdateMes({{ 0 }})">Fermer</button> 
+        {{ form_end(upform) }} 
+    </div>
+
+    <div id="liste_contrib_conteneur" class="row">
+        <div class="col bloc_page">
+        </div>
+        <div class="col-10 bloc_titre_page">
+            <h3 id="titre_page">Message avec : {{ user.name }}</h3>
+        </div>
+
+        {# <h1>Vous : {{ app.user.name }}</h1>
+        <h1>Message avec : {{ user.name }}</h1> #}
+
+        <div class="col-2">
+            <button onclick="haut_de_page()" id="btn_debut_conv" class="btn_article">Début de la conversation</button>
+            <button onclick="bas_de_page()" id="btn_fin_conv" class="btn_article">Dernier message</button>
+        </div>
 
         {# messagerie #}
-        <h3> Conversation :</h3>
-        {% if messages %}
-            ceci est le début de votre conversation avec {{ user.name }} <br><br>  
-            {% for message in messages %}
-                {# change couleur selon recu ou envoyer #}
-                {% if message.envoyer == user %}
-                    <div id="Mes{{ message.id }}">
-                        <div style="color:red";> {recu} 
-                        <span id='com_contenue_{{ message.id }}'>{{ message.contenue|raw }}</span></div><br>
-                    </div>
-                {% elseif message.receveur == user %}
-                    <div id="Mes{{ message.id }}">
-                        <div style="color:blue";> {envoyer} 
-                        <span id='com_contenue_{{ message.id }}'>{{ message.contenue|raw }}</span></div><br>
-                    </div>
-                {% endif %}
+        <div class="col-7">
+            <div class='conteneur_page'>
+                <div class="titre_lien2">    
+                    <h3> Conversation :</h3>
+                </div>
 
-                {# form update messagerie #}
-                {# <form id="UpdateMes{{ message.id }}" action="updatecom_mes_{{ message.id }}" method="post" style="display: none" enctype="multipart/form-data">
-                    <textarea name="textComment" class="form-control" rows="3" required>{{ message.contenue }}</textarea>
-                    <br>
-                    update image
-                    <input type="file" id="images" name="images" accept="image/png" multiple>
+                <div class="conteneur_contenue">
+                    {% if messages %}
+                        ceci est le début de votre conversation avec {{ user.name }} <br><br>  
+                        {% for message in messages %}
+                            {# change couleur selon recu ou envoyer #}
+                            {% if message.envoyer == user %}
+                                <div class="conteneur_message_recu">
+                                <div id="Mes{{ message.id }}" class="message_recu">
+                                    {# <div style="color:red";> {reçu}  #}
+                                        <span id='com_contenue_{{ message.id }}'>{{ message.contenue|raw }}</span>
+                                    {# </div>  #}
+                                </div><br>
+                            {% elseif message.receveur == user %}
+                                <div class="conteneur_message_envoyer">
+                                <div id="Mes{{ message.id }}" class="message_envoyer">
+                                    {# <div style="color:blue";> {envoyé}  #}
+                                        <span id='com_contenue_{{ message.id }}'>{{ message.contenue|raw }}</span>
+                                    {# </div>  #}
+                                </div><br>
+                            {% endif %}
+
+                            {# affichage image message #}    
+                            {% for img in imagesmessagerie %}
+                                {% if img.messagerie == message %}
+                                    <img src="data:image/png;base64, {{ img.image }}" style="max-width:450px;max-height:450px"> 
+                                    {% if app.user %}
+                                        {% if is_granted('ROLE_ADMIN') or message.envoyer == app.user %}
+                                            <a class='btn_update{{ message.id }} btn_article2' style="display: none" href="deleteimagecom_{{ img.id }}">Supprimer</a>
+                                        {% endif %}
+                                    {% endif %}
+                                <br>
+                                {% endif %}
+                            {% endfor %}
+
+                            {# afficgage fichier message #}   
+                            {% for file in fichiersmessagerie %}
+                                {% if file.messagerie == message %}
+                                    {{ file.lien }} : <a href="upload/{{ file.lien }}" download='{{ file.lien }}' class="btn_article2">télécharger</a>
+                                    {% if app.user %}
+                                        {% if is_granted('ROLE_ADMIN') or message.envoyer == app.user %}
+                                            <a class='btn_update{{ message.id }} btn_article2' style="display: none" href="deletefichiercom_{{ file.lien }}" >Supprimer</a>
+                                        {% endif %}
+                                    {% endif %} 
+                                <br>
+                                {% endif %}
+                            {% endfor %}
+
+                            {# update message #}
+                            {% if app.user %}
+                                {% if is_granted('ROLE_ADMIN') or message.envoyer == app.user %}
+                                    <a href="deletecom_mes_{{ message.id }}" class="btn_article2">Supprimer</a>
+                                    <button id="btnUpdateMes{{ message.id }}" class="btn_article2" onclick="showUpdateMes({{ message.id }})">Modifier</button> 
+                                {% endif %}
+                            {% endif %}
+                            <br><br>
+                        </div>
+                        {% endfor %}
+                    {% else %} 
+                        vous n'avez pas encore envoyer de message a {{ user.name }} <br><br>    
+                    {% endif %}
+
+                    <button id="btnFormMes" class="btn_article2" onclick="showFormMes()">envoyer un message a {{ user.name }}</button> 
                     
-                    <br><button class="btn btn-light">Valider modification</button> 
-                </form> #}
-
-                {# affichage image message #}    
-                {% for img in imagesmessagerie %}
-                    {% if img.messagerie == message %}
-                        <img src="data:image/png;base64, {{ img.image }}" style="max-width:600px;max-height:600px"> 
-                        {% if app.user %}
-                            {% if is_granted('ROLE_ADMIN') or message.envoyer == app.user %}
-                                <a class='btn_update{{ message.id }}' style="display: none" href="deleteimagecom_{{ img.id }}">Supprimer</a>
-                            {% endif %}
-                        {% endif %}
                     <br><br>
-                    {% endif %}
-                {% endfor %}
-
-                {# afficgage fichier message #}   
-                {% for file in fichiersmessagerie %}
-                    {% if file.messagerie == message %}
-                        {{ file.lien }} : <a href="upload/{{ file.lien }}" download='{{ file.lien }}'>télécharger</a>
-                        {% if app.user %}
-                            {% if is_granted('ROLE_ADMIN') or message.envoyer == app.user %}
-                                <a class='btn_update{{ message.id }}' style="display: none" href="deletefichiercom_{{ file.lien }}" >Supprimer</a>
-                            {% endif %}
-                        {% endif %} 
-                    <br>
-                    {% endif %}
-                {% endfor %}
-
-                {# update message #}
-                {% if app.user %}
-                    {% if is_granted('ROLE_ADMIN') or message.envoyer == app.user %}
-                        <a href="deletecom_mes_{{ message.id }}">Supprimer</a>
-
-                        <button id="btnUpdateMes{{ message.id }}" onclick="showUpdateMes({{ message.id }})">Modifier</button> 
-                    {% endif %}
-                {% endif %}
-                <br><br><br>
-
-
-            {% endfor %}
-        {% else %} 
-            vous n'avez pas encore envoyer de message a {{ user.name }} <br><br>    
-        {% endif %}
-
-        {# form update message #}
-        <div id="UpdateMes" style="display: none">
-            {{ form_start(upform) }}
-                {{ form_row(upform.contenue2, {
-                    label: 'contenue'
-                }) }}
-                {{ form_row(upform.image2, {
-                    label: 'images'
-                }) }}
-                {{ form_row(upform.upload2, {
-                    label: 'fichier'
-                }) }}
-                {{ form_row(upform.comid) }}
-
-                <button type="submit" class="btn">Créer</button>
-            {{ form_end(upform) }} 
+                </div>
+            </div>
         </div>
 
-        {# formulaire envoyer une message #}
-        <div id="formMes" style="display: none">
-            {{ form_start(form) }}
-                {{ form_row(form.contenue, {
-                    label: 'message'
-                }) }}
-                {{ form_row(form.image, {
-                    label: 'image'
-                }) }}
-                {{ form_row(form.upload, {
-                    label: 'fichier'
-                }) }}
-                
-                <button type="submit" class="btn">Créer</button>
-            {{ form_end(form) }}
+        <div class="col-3">
         </div>
-        <button id="btnFormMes" class="btn btn-light" onclick="showFormMes()">envoyer un message a {{ user.name }}</button> 
-        
-    <br><br>
 
     </div>
 {% else %}
@@ -139,11 +152,13 @@
         function showFormMes(){
             if (visible==false){
                 document.getElementById("formMes").style.display = "block";
-                document.getElementById('btnFormMes').innerHTML = "Fermer";
+                document.getElementById("background_form").style.display = "block";
+                //document.getElementById('btnFormMes').innerHTML = "Fermer";
                 visible=true;
             }else{
                 document.getElementById("formMes").style.display = "none";
-                document.getElementById("btnFormMes").innerHTML = "envoyer un message a {{ user.name }}";
+                document.getElementById("background_form").style.display = "none";
+                //document.getElementById("btnFormMes").innerHTML = "envoyer un message a {{ user.name }}";
                 visible=false;
             }
         }
@@ -151,8 +166,9 @@
         function showUpdateMes($id){
             if (visible2==false){
                 document.getElementById("UpdateMes").style.display = "block";
+                document.getElementById("background_form").style.display = "block";
                 
-                document.getElementById('btnUpdateMes'+$id).innerHTML = "Fermer";
+                //document.getElementById('btnUpdateMes'+$id).innerHTML = "Fermer";
                 document.getElementById("update_message_comid").value = $id;
                 var testdata = document.getElementById("com_contenue_"+$id).innerHTML;
                 CKEDITOR.instances['update_message_contenue2'].setData(testdata);
@@ -160,14 +176,15 @@
                 var lengthOfArray=btn_update.length;
 
                 for (var i=0; i<lengthOfArray;i++){
-                    btn_update[i].style.display='block';
+                    btn_update[i].style.display='inline';
                 }
                 visible2=true;
             }else{
                 document.getElementById("UpdateMes").style.display = "none";
+                document.getElementById("background_form").style.display = "none";
                 
-                document.getElementById('btnUpdateMes'+$id).innerHTML = "Modifier";
-                document.getElementById("update_message_comid").value = $id;
+                //document.getElementById('btnUpdateMes'+$id).innerHTML = "Modifier";
+                //document.getElementById("update_message_comid").value = $id;
                 CKEDITOR.instances['update_message_contenue2'].setData('');
                 var btn_update = document.getElementsByClassName("btn_update"+$id);
                 var lengthOfArray=btn_update.length;
@@ -177,6 +194,13 @@
                 }
                 visible2=false;
             }
+        }
+        function haut_de_page(){
+            document.body.scrollIntoView({behavior: 'smooth', block: 'start'});
+        }
+        function bas_de_page(){
+            var page = document.getElementById("conteneur_all");
+            page.scrollIntoView({behavior: 'smooth', block: 'end'});
         }
     </script>
 {% endblock %}

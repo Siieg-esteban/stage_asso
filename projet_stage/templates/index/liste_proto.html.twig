@@ -22,8 +22,8 @@
             {{ form_row(form.upload, {
                 label: 'Fichiers : '
             }) }}
-            <button type="submit" class="btn">Créer</button>
-            <button id="btnFormProto2" class="btn btn-primary" onclick="showFormProto()" type="button">Fermer</button> 
+            <button type="submit" class="btn_article2">Créer</button>
+            <button id="btnFormProto2" class="btn_article2" onclick="showFormProto()" type="button">Fermer</button> 
         {{ form_end(form) }}
     </div>
 
@@ -117,8 +117,8 @@
                             {% if is_granted('ROLE_ADMIN') or proto.auteur == app.user %}
                             <div class="d-flex flex-row-reverse">
                                 <div class="div_btn_article p-2">
-                                    <a class="btn_article" href="updatepage_proto_{{ proto.id }}">Modifier</a>
-                                    <a class="btn_article" href="deletepage/proto/{{ proto.id }}">Supprimer</a>
+                                    <a class="btn_article2" href="updatepage_proto_{{ proto.id }}">Modifier</a>
+                                    <a class="btn_article2" href="deletepage/proto/{{ proto.id }}">Supprimer</a>
                                 </div>
                             </div>
                             {% endif %}

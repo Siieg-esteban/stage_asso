@@ -25,7 +25,7 @@
                 label: 'Zip du jeu pour le web : '
             }) }}
             {{ form_row(form.fileDl, {
-                label: 'Zip du jeu téléchargement : '
+                label: 'Zip du jeu pour téléchargement : '
             }) }}
             {{ form_row(form.nomdossier, {
                 label: 'Nom du dossier dans le zip : '
@@ -37,8 +37,8 @@
                 label: 'Largeur de la fenetre du jeu (en pixel) : '
             }) }}
             
-            <button type="submit" class="btn">Créer</button>
-            <button id="btnFormJeu2" class="btn btn-primary" onclick="showFormJeu()" type="button">Fermer</button> 
+            <button type="submit" class="btn_article2">Créer</button>
+            <button id="btnFormJeu2" class="btn_article2" onclick="showFormJeu()" type="button">Fermer</button> 
         {{ form_end(form) }}
     </div>
 
@@ -121,8 +121,8 @@
                         {% if app.user %}
                             {% if is_granted('ROLE_ADMIN') or jeu.auteur == app.user %}
                                 <div class="position_btn_image_liste_jeu">
-                                    <a href="deletepage/jeu/{{ jeu.id }}" class="btn_article">Supprimer</a>
-                                    <a href="updatepage_jeu_{{ jeu.id }}" class="btn_article">Modifier</a>
+                                    <a href="deletepage/jeu/{{ jeu.id }}" class="btn_article2">Supprimer</a>
+                                    <a href="updatepage_jeu_{{ jeu.id }}" class="btn_article2">Modifier</a>
                                 </div>
                             {% endif %}
                         {% endif %}
@@ -132,7 +132,7 @@
         {% endfor %}
         </div>
         </div>
-    </div>
+    </div><br>
 
 {% endblock %}
 
@@ -144,11 +144,13 @@
             if (visible==false){
                 document.getElementById("formJeu").style.display = "block";
                 document.getElementById("background_form").style.display = "block";
+                document.body.scrollIntoView({behavior: 'smooth', block: 'start'});
                 document.getElementById("btnFormJeu").innerHTML = "Fermer";
                 visible=true;
             }else{
                 document.getElementById("formJeu").style.display = "none";
                 document.getElementById("background_form").style.display = "none";
+                //document.body.scrollIntoView({behavior: 'smooth', block: 'start'});
                 document.getElementById("btnFormJeu").innerHTML = "Créer un nouveau Jeu !";
                 visible=false;
             }

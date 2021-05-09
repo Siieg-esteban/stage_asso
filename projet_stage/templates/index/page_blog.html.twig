@@ -58,9 +58,21 @@
             </div>
             <div class="conteneur_lien">
                 <a href="pagejeu{{ blog.jeu.id }}" class="name_user"><img src="data:image/png;base64, {{ blog.jeu.image }}" class="image_lien_jeu"></a>
-                
             </div>
         {% endif %}
+
+        <div class="titre_lien">
+            D'autres blogs :
+        </div>
+        <div class="conteneur_lien2">
+            <span class="text_blog_liee">le {{ AutreBlog1.datetime|date('d/m/Y H:i') }} :</span><br>
+            <span class="titre_blog_liee"><a href="pageblog{{ AutreBlog1.id }}" class="name_user">{{ AutreBlog1.titre }}</a></span><br>
+            <span class="text_blog_liee">type : {{ AutreBlog1.type }}</span>
+            <br><br>
+            <span class="text_blog_liee">le {{ AutreBlog2.datetime|date('d/m/Y H:i') }} :</span><br>
+            <span class="titre_blog_liee"><a href="pageblog{{ AutreBlog2.id }}" class="name_user">{{ AutreBlog2.titre }}</a></span><br>
+            <span class="text_blog_liee">type : {{ AutreBlog2.type }}</span>
+        </div>
     </div>
 
     {# partie commentaire #}
