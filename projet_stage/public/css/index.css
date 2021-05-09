@@ -509,6 +509,9 @@ body{background-color: rgb(97, 97, 97);}
 	position: relative;
 	overflow: hidden;
 }
+.overflow_hidden{
+	overflow: hidden;
+}
 .gradient_overlay::after {
 	content: '';
 	position: absolute;
